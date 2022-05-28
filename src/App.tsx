@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 
 import { host } from './Constants';
 import { Folder } from './Types';
-import { getMaxId, getFolderName, getFirstFolder } from './Utils';
+import { getMaxId, getFolderName, getFirstFolder, postNewFile, postNewFolder } from './Utils';
 
 import MyEditor from './Components/Editor/Editor';
 import MyToolbar from './Components/Toolbar/Toolbar';
@@ -34,22 +34,6 @@ function App() {
 			setDirectory(data);
 		} catch (error: any) {
 			console.error(error.message)
-		}
-	}
-
-	const postNewFolder = async (folderName: string) => {
-		try {
-			await axios.post(`http://${host}/folders`, {folderName: folderName});
-		} catch (error) {
-			console.error("Error while creating new file:", error)
-		}
-	}
-
-	const postNewFile = async (folderName: string, fileName: string) => {
-		try {
-			await axios.post(`http://${host}/file`, { folderName: folderName, fileName: fileName });
-		} catch (error) {
-			console.error("Error while creating new file:", error)
 		}
 	}
 

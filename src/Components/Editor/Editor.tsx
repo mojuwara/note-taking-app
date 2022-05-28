@@ -1,9 +1,10 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 
 import { host } from "../../Constants";
-import { CustomElement, CustomText } from "../../Types";
+import { saveFileContents, getElemText } from "../../Utils";
+import { CustomElement } from "../../Types";
 
-import { createEditor, Descendant, Editor, Transforms, Text, Element as SlateElement } from 'slate'
+import { createEditor, Editor, Transforms, Text, Element as SlateElement } from 'slate'
 import { Slate, Editable, withReact } from 'slate-react'
 
 import Toolbar from '@mui/material/Toolbar';
@@ -19,7 +20,7 @@ import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered';
 
 import axios from "axios";
 
-const DefaultContent: CustomElement[] = [
+const DefaultContent = [
 	{ type: "paragraph", children: [{ text: "" }] }
 ];
 
@@ -38,143 +39,101 @@ function MyEditor(props: any) {
 		slate's internal operations to transform the value, for example:
 	*/
 
+	// How long to wait after the user stops making changes to save to server
 	const saveInterval = 1000 * 3;
+
+	// Timeout ID that triggers save to server
 	const [timeoutID, setTimeoutID] = useState<NodeJS.Timer>();
+
+	// Editor object
 	const editor = useMemo(() => withReact(createEditor()), []);
 
+	// Object where each key is the plain text in a block and its value is an array of strings
 	const [suggestions, setSuggestions] = useState<any>({});
 
-	// Fetch the initial value from localstorage
-	const initialValue: Descendant[] = useMemo(() => DefaultContent, []);
+	const initialValue = useMemo(() => DefaultContent, []);
 
+	// Load file from localStorage if available, else fetch from server and cache
 	useEffect(() => {
-		// Load file from localStorage if available, else fetch from server
 		const initFileContents = async () => {
 			const contents = localStorage.getItem(props.filePath);
 			if (contents) {
 				editor.children = JSON.parse(contents);
 				editor.onChange();
-			} else {
-				try {
-					// Receive data as a string so we don't have to stringify it for localStorage and parse again
-					const { data } = await axios.get<string>(`http://${host}/file_contents?filePath=${props.filePath}`);
-					localStorage.setItem(props.filePath, data);
-
-					editor.children = JSON.parse(data);
-					editor.onChange();
-				} catch (error) {
-					console.error(error);
-				}
+				return;
 			}
 
+			try {
+				const { data } = await axios.get<string>(`http://${host}/file_contents?filePath=${props.filePath}`);
+				localStorage.setItem(props.filePath, data);
+
+				editor.children = JSON.parse(data);
+				editor.onChange();
+			} catch (error) {
+				console.error(error);
+			}
 		}
 
 		initFileContents();
 	}, [editor, props.filePath]);
 
 	const handleKeyDown = (event: any) => {
-		if (event.key === '&') {
-			event.preventDefault();		// Prevent & from being inserted
-			editor.insertText('and');
-		}
-
-		if (event.key === '`' && event.ctrlKey) {
-			event.preventDefault();
-			// EditorCommands.toggleCodeBlock(editor);
-		}
-
 		// 'split' option will break up the text node before applying the bold formatting
 		if (event.key === 'b' && event.ctrlKey) {
 			event.preventDefault();
-			// EditorCommands.toggleBoldMark(editor);
+			EditorCommands.toggleMark(editor, "bold");
 		}
 	}
 
-	// Save editor contents
+	// Save editor contents if there were any text changes
 	const handleEditorChange = (value: any) => {
-		// Find out if any content has changed
 		const isAstChange = editor.operations.some(
 			op => 'set_selection' !== op.type
 		)
 
-		// Always save changes to localStorage
 		if (isAstChange) {
-			const newContent = JSON.stringify(value)
+			const newContent = JSON.stringify(value);
 			localStorage.setItem(props.filePath, newContent);
 
-			// Save contents to server if changes are made and left idle for 3 seconds
+			// Clear old timeout and create a new timeout to save to server
 			clearTimeout(timeoutID);
 			setTimeoutID(setTimeout(() => {
-				saveFileContents(props.filePath, newContent)
-					.then(response => {
-						console.log("Setting suggestions to", response);
-						setSuggestions(response);
-					})
+				saveFileContents(props.filePath, newContent).then(response => setSuggestions(response));
 			}, saveInterval));
 		}
 	}
 
-	// useEffect(() => editor.onChange(), [suggestions, editor]);
-
-	// Send file contents to server
-	const saveFileContents = async (filePath: string, contents: string) => {
-		try {
-			const headers = { Accept: "application/json" };
-			const { data } = await axios.put<any>(`http://${host}/file_contents`, { filePath: filePath, contents: contents }, { headers: headers });
-			return data;
-		} catch (error) {
-			console.error(error);
-			return []
-		}
-	}
-
+	// Find suggestions, if any, for the given block element
 	const getElemSuggestions = (element: CustomElement): string[] => {
 		const text = getElemText(element);
-		console.log("Suggestions", suggestions)
-		console.log("Text", text)
 		if (text in suggestions)
 			return suggestions[text];
 
-		return []
+		return [];
 	}
 
-	const getElemText = (element: CustomElement | CustomText): string => {
-		if ("text" in element)
-			return element["text"];
-
-		return element.children.map((child: any) => getElemText(child)).join("");
+	const getBlockElement = (props: any) => {
+		switch (props.element.type) {
+			case 'code':
+				return <CodeBlockElement {...props} />;
+			case 'listItem':
+				return <ListItemBlockElement {...props} />;
+			case 'orderedList':
+				return <OrderedListBlockElement {...props} />;
+			case 'unorderedList':
+				return <UnorderedListBlockElement {...props} />;
+			default:
+				return <DefaultBlockElement {...props} />;
+		}
 	}
 
 	const renderElement = (props: any) => {
-		let element: JSX.Element;
-		switch (props.element.type) {
-			case 'code':
-				element = <CodeBlockElement {...props} />;
-				break;
-			case 'listItem':
-				element = <ListItemBlockElement {...props} />;
-				break;
-			case 'orderedList':
-				element = <OrderedListBlockElement {...props} />;
-				break;
-			case 'unorderedList':
-				element = <UnorderedListBlockElement {...props} />;
-				break;
-			default:
-				element = <DefaultBlockElement {...props} />;
-		}
+		let element = getBlockElement(props);
 
-		const elemSuggestions = getElemSuggestions(props.element)
-		return (
-			<div style={{ borderBottom: "solid" }}>
-				<div style={{ width: '80%', display: 'inline-block' }}>{element}</div>
-
-				{elemSuggestions.length > 0 &&
-					<div style={{ width: '20%', border: 'solid', display: 'inline-block', position: 'absolute' }}>
-						{elemSuggestions.map((val, ndx) => <p key={ndx}>{val}<br /></p>)}
-					</div>}
-			</div>
-		);
+		const elemSuggestions = getElemSuggestions(props.element);
+		console.log("Suggestions", elemSuggestions);
+		console.log("Element", element)
+		return <BlockElementContainer element={element} suggestions={elemSuggestions} />
 	};
 
 	const renderLeaf = useCallback((props: any) => <Leaf {...props} />, []);
@@ -238,6 +197,30 @@ const BlockButton = (props: any) => {
 			{icon}
 		</IconButton>
 	)
+}
+
+// Contains the actual block elements
+const BlockElementContainer = ({element, suggestions}: any) => {
+	const makeSuggestions = () => {
+		return (
+			suggestions.length > 0 &&
+			<div style={{ width: '20%', border: 'solid', display: 'inline-block', position: 'absolute' }}>
+				{suggestions.map((val: string, ndx: number) => (
+					<p key={ndx}>
+						{val}
+						<br />
+					</p>
+				))}
+			</div>
+		);
+	}
+
+	return (
+		<div style={{ borderBottom: "solid" }}>
+			<div style={{ width: '80%', display: 'inline-block' }}>{element}</div>
+			{makeSuggestions()}
+		</div>
+	);
 }
 
 // Element renderers
