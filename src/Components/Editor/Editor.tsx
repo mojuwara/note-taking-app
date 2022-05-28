@@ -18,6 +18,17 @@ import FormatUnderlinedIcon from '@mui/icons-material/FormatUnderlined';
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered';
 
+import EditorCommands from "./EditorCommands";
+
+import {
+	CodeBlockElement,
+	DefaultBlockElement,
+	ListItemBlockElement,
+	BlockElementContainer,
+	OrderedListBlockElement,
+	UnorderedListBlockElement,
+} from './BlockElements';
+
 import axios from "axios";
 
 const DefaultContent = [
@@ -131,8 +142,6 @@ function MyEditor(props: any) {
 		let element = getBlockElement(props);
 
 		const elemSuggestions = getElemSuggestions(props.element);
-		console.log("Suggestions", elemSuggestions);
-		console.log("Element", element)
 		return <BlockElementContainer element={element} suggestions={elemSuggestions} />
 	};
 
@@ -199,71 +208,6 @@ const BlockButton = (props: any) => {
 	)
 }
 
-// Contains the actual block elements
-const BlockElementContainer = ({element, suggestions}: any) => {
-	const makeSuggestions = () => {
-		return (
-			suggestions.length > 0 &&
-			<div style={{ width: '20%', border: 'solid', display: 'inline-block', position: 'absolute' }}>
-				{suggestions.map((val: string, ndx: number) => (
-					<p key={ndx}>
-						{val}
-						<br />
-					</p>
-				))}
-			</div>
-		);
-	}
-
-	return (
-		<div style={{ borderBottom: "solid" }}>
-			<div style={{ width: '80%', display: 'inline-block' }}>{element}</div>
-			{makeSuggestions()}
-		</div>
-	);
-}
-
-// Element renderers
-const DefaultBlockElement = (props: any) => {
-	return (
-		<p {...props.attributes}>{props.children}</p>
-	);
-}
-
-const CodeBlockElement = (props: any) => {
-	return (
-		// props.attributes contains attrs that should be rendered at top-most elem of your block
-		// props.children contains the leaves, the text nodes
-		<pre {...props.attributes}>
-			<code>{props.children}</code>
-		</pre>
-	);
-}
-
-const OrderedListBlockElement = (props: any) => {
-	return (
-		<ol {...props.attributes}>
-			{props.children}
-		</ol>
-	);
-}
-
-const UnorderedListBlockElement = (props: any) => {
-	return (
-		<ul {...props.attributes}>
-			{props.children}
-		</ul>
-	);
-}
-
-const ListItemBlockElement = (props: any) => {
-	return (
-		<li {...props.attributes}>
-			{props.children}
-		</li>
-	);
-}
-
 // Tell Slate how to render leaves/text for custom formatting
 const Leaf = (props: any) => {
 	const style = {
@@ -275,91 +219,6 @@ const Leaf = (props: any) => {
 	return (
 		<span {...props.attributes} style={style}>{props.children}</span>
 	);
-}
-
-// Truen if the element exists just to wrap other elements(Ex with <ul>: <ul><li>...</li></ul>)
-const isWrappedType = (blk: string) => ["unorderedList", "orderedList"].includes(blk);
-
-// Helper functions we can reuse
-const EditorCommands = {
-	// Returns true if the given mark is active on the selected text
-	isMarkActive(editor: any, mark: string) {
-		const match = Array.from(Editor.nodes(editor, {
-			match: (n: any) => n[mark] === true,
-			universal: true,
-		}));
-
-		return !!match.length;
-	},
-
-	// Toggles the given mark on/off
-	toggleMark(editor: any, mark: string) {
-		const isActive = EditorCommands.isMarkActive(editor, mark);
-		const properties: TextProperties = {};
-		properties[mark] = !isActive;
-		Transforms.setNodes(
-			editor,
-			properties,
-			{ match: n => Text.isText(n), split: true }
-		);
-	},
-
-	// Returns true if the block type is active
-	isBlockActive(editor: any, block: string) {
-		const match = Array.from(Editor.nodes(editor, {
-			match: (n: any) => n.type === block,
-		}));
-
-		return !!match.length;
-	},
-
-	// Toggle the block on/off, 'paragraph' is the default block type
-	// Elements are a type of Node that contian more Elements or Text Nodes
-	toggleBlock(editor: any, block: string) {
-		// Unwrap list elements, set them to 'list-item' type, then wrap them inside the list item type
-		const isActive = EditorCommands.isBlockActive(editor, block);
-		if (isWrappedType(block)) {
-			if (!isActive) {
-				// Remove the current block type the nodes are in, if its a listItem
-				EditorCommands.unwrapNodes(editor);
-
-				// Set their type to listItem
-				Transforms.setNodes<SlateElement>(editor, { type: 'listItem' });
-
-				// Wrap them inside the given list type
-				Transforms.wrapNodes(editor, { type: block, children: [] });
-			} else {
-				// Set their type back to paragraph
-				Transforms.setNodes<SlateElement>(editor, { type: 'paragraph' });
-
-				// Remove the <ol> or <ul> type that was wrapping them
-				EditorCommands.unwrapNodes(editor);
-			}
-			return;
-		};
-
-		// In case the nodes are already wrapped in a <ul> or <ol>
-		EditorCommands.unwrapNodes(editor)
-
-		Transforms.setNodes(
-			editor,
-			{ type: isActive ? 'paragraph' : block },
-			{ match: n => Editor.isBlock(editor, n) }
-		);
-	},
-
-	unwrapNodes(editor: any) {
-		// Unwraps lists
-		Transforms.unwrapNodes(editor, {
-			match: n => (!Editor.isEditor(n) && SlateElement.isElement(n) && isWrappedType(n.type)),
-			split: true,
-		});
-	}
-};
-
-// To make TypeScript happy, all marks will have a bool value
-interface TextProperties {
-	[index: string]: boolean;
 }
 
 export default MyEditor;
