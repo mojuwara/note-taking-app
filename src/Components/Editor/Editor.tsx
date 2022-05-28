@@ -4,7 +4,7 @@ import { host } from "../../Constants";
 import { saveFileContents, getElemText } from "../../Utils";
 import { CustomElement } from "../../Types";
 
-import { createEditor, Editor, Transforms, Text, Element as SlateElement } from 'slate'
+import { createEditor } from 'slate'
 import { Slate, Editable, withReact } from 'slate-react'
 
 import Toolbar from '@mui/material/Toolbar';
