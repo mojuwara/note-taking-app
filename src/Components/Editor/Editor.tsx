@@ -31,6 +31,8 @@ import {
 
 import axios from "axios";
 
+import "./editor.css";
+
 const DefaultContent = [
 	{ type: "paragraph", children: [{ text: "" }] }
 ];
@@ -147,17 +149,9 @@ function MyEditor(props: any) {
 
 	const renderLeaf = useCallback((props: any) => <Leaf {...props} />, []);
 
-	const style = {
-		width: '100%',
-		minHeight: '500px',
-		height: '100%',
-		border: 'solid',
-	}
-
 	return (
-		<div style={style}>
 			<Slate editor={editor} value={initialValue} onChange={handleEditorChange}>
-				<Toolbar>
+				<Toolbar variant="dense" sx={{justifyContent: "center"}}>
 					<MarkButton editor={editor} mark="bold" icon={<FormatBoldIcon />} label="bold" />
 					<MarkButton editor={editor} mark="italic" icon={<FormatItalicIcon />} label="italic" />
 					<MarkButton editor={editor} mark="underline" icon={<FormatUnderlinedIcon />} label="underline" />
@@ -168,11 +162,11 @@ function MyEditor(props: any) {
 				<Divider />
 				<Editable
 					autoFocus
+					className="textEditor"
 					renderLeaf={renderLeaf}
 					onKeyDown={handleKeyDown}
 					renderElement={renderElement} />
 			</Slate>
-		</div>
 	);
 }
 

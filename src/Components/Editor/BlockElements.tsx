@@ -1,23 +1,36 @@
+import { useState } from 'react';
+import Popover from '@mui/material/Popover';
+
 // Contains the actual block elements
 export const BlockElementContainer = ({ element, suggestions }: any) => {
-	const makeSuggestions = () => {
-		return (
-			suggestions.length > 0 &&
-			<div style={{ width: '20%', border: 'solid', display: 'inline-block', position: 'absolute' }}>
-				{suggestions.map((val: string, ndx: number) => (
-					<p key={ndx}>
-						{val}
-						<br />
-					</p>
-				))}
-			</div>
-		);
-	}
+	const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+
+	const handleMouseEnter = (e: any) => setAnchorEl(e.currentTarget);
+
+	const handleMouseLeave = (e: any) => setAnchorEl(null);
+
+	const popover = (
+		<Popover
+			anchorEl={anchorEl}
+			open={Boolean(anchorEl)}
+			onClose={handleMouseLeave}
+			sx={{ pointerEvents: 'none', margin: "2px" }}
+			anchorOrigin={{ vertical: 'center', horizontal: 'right' }}
+			transformOrigin={{ vertical: 'center', horizontal: 'left' }}
+		>
+			{suggestions.map((val: any, ndx: any) => <p key={ndx} style={{padding: 2}}>{val}</p>)}
+		</Popover>
+	);
 
 	return (
-		<div style={{ borderBottom: "solid" }}>
-			<div style={{ width: '80%', display: 'inline-block' }}>{element}</div>
-			{makeSuggestions()}
+		<div>
+			<span
+				onMouseEnter={handleMouseEnter}
+				onMouseLeave={handleMouseLeave}
+				style={{ display: 'inline-block', background: (suggestions.length) ? "lightgrey" : "white" }}>
+				{element}
+			</span>
+			{(suggestions.length > 0) && popover}
 		</div>
 	);
 }
@@ -25,7 +38,7 @@ export const BlockElementContainer = ({ element, suggestions }: any) => {
 // Element renderers
 export const DefaultBlockElement = (props: any) => {
 	return (
-		<p {...props.attributes}>{props.children}</p>
+		<p {...props.attributes} style={{margin: 4}}>{props.children}</p>
 	);
 }
 
