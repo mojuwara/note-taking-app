@@ -1,4 +1,4 @@
-import { Editor, Transforms, Text, Element as SlateElement } from 'slate'
+import { Editor, Transforms, Element as SlateElement } from 'slate'
 
 // Truen if the element exists just to wrap other elements(Ex with <ul>: <ul><li>...</li></ul>)
 export const isWrappedType = (blk: string) => ["unorderedList", "orderedList"].includes(blk);
@@ -7,24 +7,18 @@ export const isWrappedType = (blk: string) => ["unorderedList", "orderedList"].i
 const EditorCommands = {
 	// Returns true if the given mark is active on the selected text
 	isMarkActive(editor: any, mark: string) {
-		const match = Array.from(Editor.nodes(editor, {
-			match: (n: any) => n[mark] === true,
-			universal: true,
-		}));
-
-		return !!match.length;
+		const marks: any = Editor.marks(editor);
+		return marks ? marks[mark] === true : false;
 	},
 
 	// Toggles the given mark on/off
 	toggleMark(editor: any, mark: string) {
 		const isActive = EditorCommands.isMarkActive(editor, mark);
-		const properties: TextProperties = {};
-		properties[mark] = !isActive;
-		Transforms.setNodes(
-			editor,
-			properties,
-			{ match: n => Text.isText(n), split: true }
-		);
+
+		if (isActive)
+			Editor.removeMark(editor, mark);
+		else
+			Editor.addMark(editor, mark, true);
 	},
 
 	// Returns true if the block type is active
@@ -79,10 +73,5 @@ const EditorCommands = {
 		});
 	}
 };
-
-// To make TypeScript happy, all marks will have a bool value
-interface TextProperties {
-	[index: string]: boolean;
-}
 
 export default EditorCommands;

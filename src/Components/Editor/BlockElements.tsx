@@ -1,5 +1,10 @@
 import { useState } from 'react';
-import Popover from '@mui/material/Popover';
+
+import Popper from '@mui/material/Popper';
+
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+
 
 // Contains the actual block elements
 export const BlockElementContainer = ({ element, suggestions }: any) => {
@@ -9,17 +14,27 @@ export const BlockElementContainer = ({ element, suggestions }: any) => {
 
 	const handleMouseLeave = (e: any) => setAnchorEl(null);
 
+	// const popover = (
+	// 	<Popover
+	// 		anchorEl={anchorEl}
+	// 		open={Boolean(anchorEl)}
+	// 		onClose={handleMouseLeave}
+	// 		sx={{ pointerEvents: 'none', margin: "2px" }}
+	// 		anchorOrigin={{ vertical: 'center', horizontal: 'right' }}
+	// 		transformOrigin={{ vertical: 'center', horizontal: 'left' }}
+	// 	>
+	// 		{suggestions.map((val: any, ndx: any) => <p key={ndx} style={{padding: 2}}>{val}</p>)}
+	// 	</Popover>
+	// );
+
 	const popover = (
-		<Popover
-			anchorEl={anchorEl}
-			open={Boolean(anchorEl)}
-			onClose={handleMouseLeave}
-			sx={{ pointerEvents: 'none', margin: "2px" }}
-			anchorOrigin={{ vertical: 'center', horizontal: 'right' }}
-			transformOrigin={{ vertical: 'center', horizontal: 'left' }}
-		>
-			{suggestions.map((val: any, ndx: any) => <p key={ndx} style={{padding: 2}}>{val}</p>)}
-		</Popover>
+		<Popper open={Boolean(anchorEl)} anchorEl={anchorEl} placement="right">
+				<Card variant="outlined" sx={{margin: 0}}>
+					<CardContent>
+						{suggestions.map((val: any, ndx: any) => <p key={ndx}>{val}</p>)}
+					</CardContent>
+				</Card>
+		</Popper>
 	);
 
 	return (

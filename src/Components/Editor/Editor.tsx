@@ -5,7 +5,9 @@ import { saveFileContents, getElemText } from "../../Utils";
 import { CustomElement } from "../../Types";
 
 import { createEditor } from 'slate'
-import { Slate, Editable, withReact } from 'slate-react'
+import { Slate, Editable, withReact, useSlate } from 'slate-react'
+
+import { withHistory } from 'slate-history'
 
 import Toolbar from '@mui/material/Toolbar';
 import Divider from '@mui/material/Divider';
@@ -19,6 +21,7 @@ import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered';
 
 import EditorCommands from "./EditorCommands";
+import editorShortcuts from "./EditorShortcuts";
 
 import {
 	CodeBlockElement,
@@ -59,7 +62,7 @@ function MyEditor(props: any) {
 	const [timeoutID, setTimeoutID] = useState<NodeJS.Timer>();
 
 	// Editor object
-	const editor = useMemo(() => withReact(createEditor()), []);
+	const editor = useMemo(() => withHistory(withReact(createEditor())), []);
 
 	// Object where each key is the plain text in a block and its value is an array of strings
 	const [suggestions, setSuggestions] = useState<any>({});
@@ -90,12 +93,8 @@ function MyEditor(props: any) {
 		initFileContents();
 	}, [editor, props.filePath]);
 
-	const handleKeyDown = (event: any) => {
-		// 'split' option will break up the text node before applying the bold formatting
-		if (event.key === 'b' && event.ctrlKey) {
-			event.preventDefault();
-			EditorCommands.toggleMark(editor, "bold");
-		}
+	const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+		editorShortcuts(editor, event);
 	}
 
 	// Save editor contents if there were any text changes
@@ -152,16 +151,17 @@ function MyEditor(props: any) {
 	return (
 			<Slate editor={editor} value={initialValue} onChange={handleEditorChange}>
 				<Toolbar variant="dense" sx={{justifyContent: "center"}}>
-					<MarkButton editor={editor} mark="bold" icon={<FormatBoldIcon />} label="bold" />
-					<MarkButton editor={editor} mark="italic" icon={<FormatItalicIcon />} label="italic" />
-					<MarkButton editor={editor} mark="underline" icon={<FormatUnderlinedIcon />} label="underline" />
-					<BlockButton editor={editor} block="code" icon={<CodeIcon />} label="code" />
-					<BlockButton editor={editor} block="orderedList" icon={<FormatListNumberedIcon />} label="orderedList" />
-					<BlockButton editor={editor} block="unorderedList" icon={<FormatListBulletedIcon />} label="unorderedList" />
+					<MarkButton mark="bold" icon={<FormatBoldIcon />} label="bold" />
+					<MarkButton mark="italic" icon={<FormatItalicIcon />} label="italic" />
+					<MarkButton mark="underline" icon={<FormatUnderlinedIcon />} label="underline" />
+					<BlockButton block="code" icon={<CodeIcon />} label="code" />
+					<BlockButton block="orderedList" icon={<FormatListNumberedIcon />} label="orderedList" />
+					<BlockButton block="unorderedList" icon={<FormatListBulletedIcon />} label="unorderedList" />
 				</Toolbar>
 				<Divider />
 				<Editable
 					autoFocus
+					spellCheck
 					className="textEditor"
 					renderLeaf={renderLeaf}
 					onKeyDown={handleKeyDown}
@@ -171,32 +171,41 @@ function MyEditor(props: any) {
 }
 
 const MarkButton = (props: any) => {
-	const { editor, mark, label, icon } = props;
-	const [active, setActive] = useState(EditorCommands.isMarkActive(editor, mark));
+	const editor = useSlate();
+	const { mark, label, icon } = props;
 
-	const handleClick = () => {
-		setActive(!active);
+	const handleClick = (e: any) => {
+		e.preventDefault();
 		EditorCommands.toggleMark(editor, mark);
 	}
 
+	const markActive = EditorCommands.isMarkActive(editor, mark);
 	return (
-		<IconButton aria-label={label} onClick={handleClick}>
+		<IconButton
+			aria-label={label}
+			onMouseDown={handleClick}
+			color={(markActive) ? "secondary" : "default"}
+		>
 			{icon}
 		</IconButton>
 	)
 }
 
 const BlockButton = (props: any) => {
-	const { editor, block, label, icon } = props;
-	const [active, setActive] = useState(EditorCommands.isBlockActive(editor, block));
+	const editor = useSlate();
+	const { block, label, icon } = props;
 
-	const handleClick = () => {
-		setActive(!active);
+	const handleClick = (e: any) => {
+		e.preventDefault();
 		EditorCommands.toggleBlock(editor, block);
 	}
 
+	const blockActive = EditorCommands.isBlockActive(editor, block);
 	return (
-		<IconButton aria-label={label} onClick={handleClick}>
+		<IconButton
+			aria-label={label}
+			onMouseDown={handleClick}
+			color={(blockActive) ? "secondary" : "default"}>
 			{icon}
 		</IconButton>
 	)

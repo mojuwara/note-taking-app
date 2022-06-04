@@ -16,6 +16,10 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 
+import AppTheme from './Themes';
+
+import { ThemeProvider } from '@mui/material/styles';
+
 import axios from 'axios';
 
 import './App.css';
@@ -83,22 +87,24 @@ function App() {
 	}
 
 	return (
-		<Box>
-			<MyToolbar
-				directory={directory}
-				onFileClick={(newPath: string) => setFilePath(newPath) }
-				onNewFile={() => setCreatingFile(true)}
-				onNewFolder={() => setCreatingFolder(true)} />
+		<ThemeProvider theme={AppTheme}>
+			<Box>
+				<MyToolbar
+					directory={directory}
+					onFileClick={(newPath: string) => setFilePath(newPath) }
+					onNewFile={() => setCreatingFile(true)}
+					onNewFolder={() => setCreatingFolder(true)} />
 
-			{filePath && <MyEditor filePath={filePath} />}
+				{filePath && <MyEditor filePath={filePath} />}
 
-			{creatingFile && <CreateFileDialog
-													onFileCreate={handleFileCreate}
-													onClose={() => setCreatingFile(false)} />}
-			{creatingFolder && <CreateFolderDialog
-														onFolderCreate={handleFolderCreate}
-														onClose={() => setCreatingFolder(false)} />}
-		</Box>
+				{creatingFile && <CreateFileDialog
+														onFileCreate={handleFileCreate}
+														onClose={() => setCreatingFile(false)} />}
+				{creatingFolder && <CreateFolderDialog
+															onFolderCreate={handleFolderCreate}
+															onClose={() => setCreatingFolder(false)} />}
+			</Box>
+		</ThemeProvider>
   );
 }
 
