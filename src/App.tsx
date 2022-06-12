@@ -31,6 +31,7 @@ function App() {
 	const [creatingFile, setCreatingFile] = useState(false);	// Creating a file
 	const [creatingFolder, setCreatingFolder] = useState(false);	// Creating a folder
 
+	// TODO: Store file names locally?
 	const fetchFiles = async () => {
 		try {
 			const headers = { Accept: 'application/json' };

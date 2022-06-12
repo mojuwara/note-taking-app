@@ -24,6 +24,9 @@ import EditorCommands from "./EditorCommands";
 import editorShortcuts from "./EditorShortcuts";
 
 import {
+	H1BlockElement,
+	H2BlockElement,
+	H3BlockElement,
 	CodeBlockElement,
 	DefaultBlockElement,
 	ListItemBlockElement,
@@ -37,7 +40,7 @@ import axios from "axios";
 import "./editor.css";
 
 const DefaultContent = [
-	{ type: "paragraph", children: [{ text: "" }] }
+	{ type: "paragraph", children: [{ text: "Let's take notes" }] }
 ];
 
 function MyEditor(props: any) {
@@ -134,6 +137,12 @@ function MyEditor(props: any) {
 				return <OrderedListBlockElement {...props} />;
 			case 'unorderedList':
 				return <UnorderedListBlockElement {...props} />;
+			case 'h1':
+				return <H1BlockElement {...props} />;
+			case 'h2':
+				return <H2BlockElement {...props} />;
+			case 'h3':
+				return <H3BlockElement {...props} />;
 			default:
 				return <DefaultBlockElement {...props} />;
 		}
@@ -161,7 +170,7 @@ function MyEditor(props: any) {
 				<Divider />
 				<Editable
 					autoFocus
-					spellCheck
+					// spellCheck
 					className="textEditor"
 					renderLeaf={renderLeaf}
 					onKeyDown={handleKeyDown}

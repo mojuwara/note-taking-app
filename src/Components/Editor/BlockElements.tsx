@@ -4,7 +4,7 @@ import Popper from '@mui/material/Popper';
 
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
-
+import { getElemText } from '../../Utils';
 
 // Contains the actual block elements
 export const BlockElementContainer = ({ element, suggestions }: any) => {
@@ -13,19 +13,6 @@ export const BlockElementContainer = ({ element, suggestions }: any) => {
 	const handleMouseEnter = (e: any) => setAnchorEl(e.currentTarget);
 
 	const handleMouseLeave = (e: any) => setAnchorEl(null);
-
-	// const popover = (
-	// 	<Popover
-	// 		anchorEl={anchorEl}
-	// 		open={Boolean(anchorEl)}
-	// 		onClose={handleMouseLeave}
-	// 		sx={{ pointerEvents: 'none', margin: "2px" }}
-	// 		anchorOrigin={{ vertical: 'center', horizontal: 'right' }}
-	// 		transformOrigin={{ vertical: 'center', horizontal: 'left' }}
-	// 	>
-	// 		{suggestions.map((val: any, ndx: any) => <p key={ndx} style={{padding: 2}}>{val}</p>)}
-	// 	</Popover>
-	// );
 
 	const popover = (
 		<Popper open={Boolean(anchorEl)} anchorEl={anchorEl} placement="right">
@@ -88,5 +75,38 @@ export const ListItemBlockElement = (props: any) => {
 		<li {...props.attributes}>
 			{props.children}
 		</li>
+	);
+}
+
+export const H1BlockElement = (props: any) => {
+	return (
+		<h1 {...props.attributes}>
+			{props.children}
+		</h1>
+	);
+}
+
+export const H2BlockElement = (props: any) => {
+	return (
+		<h2 {...props.attributes}>
+			{props.children}
+		</h2>
+	);
+}
+
+export const H3BlockElement = (props: any) => {
+	return (
+		<h3 {...props.attributes}>
+			{props.children}
+		</h3>
+	);
+}
+
+export const LinkBlockElement = (props: any) => {
+	const url = getElemText(props.element);
+	return (
+		<a href={url} {...props.attributes}>
+			{props.children}
+		</a>
 	);
 }

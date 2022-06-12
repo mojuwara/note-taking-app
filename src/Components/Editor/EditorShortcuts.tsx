@@ -23,6 +23,21 @@ const editorShortcuts = (editor: any, event: React.KeyboardEvent<HTMLDivElement>
 		event.preventDefault();
 		EditorCommands.toggleBlock(editor, "code");
 	}
+
+	if (ctrlKey && event.key === '1') {
+		event.preventDefault();
+		EditorCommands.toggleBlock(editor, "h1");
+	}
+
+	if (ctrlKey && event.key === '2') {
+		event.preventDefault();
+		EditorCommands.toggleBlock(editor, "h2");
+	}
+
+	if (ctrlKey && event.key === '3') {
+		event.preventDefault();
+		EditorCommands.toggleBlock(editor, "h3");
+	}
 }
 
 export default editorShortcuts;
