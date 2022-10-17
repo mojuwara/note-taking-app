@@ -9,6 +9,7 @@ import { Slate, Editable, withReact, useSlate } from 'slate-react'
 
 import { withHistory } from 'slate-history'
 
+import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton'
@@ -22,6 +23,8 @@ import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered';
 
 import EditorCommands from "./EditorCommands";
 import editorShortcuts from "./EditorShortcuts";
+
+import { getTransitionElemClass } from '../../Utils';
 
 import {
 	H1BlockElement,
@@ -38,11 +41,16 @@ import {
 import axios from "axios";
 
 import "./editor.css";
+import '../../App.css';
 
 const DefaultContent = [
 	{ type: "paragraph", children: [{ text: "Let's take notes" }] }
 ];
 
+// TODO: Support tab button in editor focus
+// TODO: Display file name somewhere
+// TODO: Place divider between mark icons and block icons
+// TODO: Markdown features?
 function MyEditor(props: any) {
 	/*
 	Slate text-editor
@@ -158,6 +166,7 @@ function MyEditor(props: any) {
 	const renderLeaf = useCallback((props: any) => <Leaf {...props} />, []);
 
 	return (
+		<Box className={getTransitionElemClass(props.drawerOpen)}>
 			<Slate editor={editor} value={initialValue} onChange={handleEditorChange}>
 				<Toolbar variant="dense" sx={{justifyContent: "center"}}>
 					<MarkButton mark="bold" icon={<FormatBoldIcon />} label="bold" />
@@ -170,12 +179,13 @@ function MyEditor(props: any) {
 				<Divider />
 				<Editable
 					autoFocus
-					// spellCheck
+					spellCheck
 					className="textEditor"
 					renderLeaf={renderLeaf}
 					onKeyDown={handleKeyDown}
 					renderElement={renderElement} />
 			</Slate>
+		</Box>
 	);
 }
 

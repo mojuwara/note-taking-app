@@ -24,26 +24,32 @@ import axios from 'axios';
 
 import './App.css';
 
+// TODO: Support up-to 2 levels of folders (FolderA/FolderB/file)
 // Limitations: File structure is only top-level folder containing files, no sub-folders
 function App() {
 	const [filePath, setFilePath] = useState("");	// "folder.file" format
 	const [directory, setDirectory] = useState<Folder[]>([]);	// All the users files
 	const [creatingFile, setCreatingFile] = useState(false);	// Creating a file
 	const [creatingFolder, setCreatingFolder] = useState(false);	// Creating a folder
+	const [drawerOpen, setDrawerOpen] = useState(true);
 
-	// TODO: Store file names locally?
-	const fetchFiles = async () => {
-		try {
-			const headers = { Accept: 'application/json' };
-			const { data } = await axios.get<Folder[]>(`http://${host}/folders`, { headers: headers });
-			setDirectory(data);
-		} catch (error: any) {
-			console.error(error.message)
-		}
-	}
+	const handleDrawerOpen = () => setDrawerOpen(true);
+	const handleDrawerClose = () => setDrawerOpen(false);
 
+	// TODO: Display icon when no file is selected
 	// Load the folders and file names on initial render
+	// TODO: Store file names locally?
 	useEffect(() => {
+		const fetchFiles = async () => {
+			try {
+				const headers = { Accept: 'application/json' };
+				const { data } = await axios.get<Folder[]>(`http://${host}/folders`, { headers: headers });
+				setDirectory(data);
+			} catch (error: any) {
+				console.error(error.message)
+			}
+		}
+
 		fetchFiles();
 	}, []);
 
@@ -89,14 +95,19 @@ function App() {
 
 	return (
 		<ThemeProvider theme={AppTheme}>
-			<Box>
+			{/* <Box> */}
+			<Box sx={{display: 'flex', flexDirection: 'column'}}>
 				<MyToolbar
 					directory={directory}
+					drawerOpen={drawerOpen}
+					handleDrawerOpen={handleDrawerOpen}
+					handleDrawerClose={handleDrawerClose}
 					onFileClick={(newPath: string) => setFilePath(newPath) }
 					onNewFile={() => setCreatingFile(true)}
 					onNewFolder={() => setCreatingFolder(true)} />
 
-				{filePath && <MyEditor filePath={filePath} />}
+				{filePath && <MyEditor drawerOpen={drawerOpen} filePath={filePath} />}
+				{!filePath && <h3>Select or create a file</h3>}
 
 				{creatingFile && <CreateFileDialog
 														onFileCreate={handleFileCreate}
@@ -109,6 +120,7 @@ function App() {
   );
 }
 
+// TODO: Update colors for new file icon and new folder icon
 const CreateFileDialog = (props: any) => {
 	const [fileName, setFileName] = useState("");
 

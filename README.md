@@ -27,7 +27,14 @@
 	- Move popper to the top-center instead of right-center
 
 - Study Buddy(Server):
-	- Search for the answer/definition for some of the suggestions it has
+	- Search Google for the answer/definition for some of the suggestions it has
+	- Question generation:
+		- Questgen
+			- MCQ's, boolean questions, general FAQ
+			- Only has questions that can be answered from the text
+			- I want questions that have answers not found in the text
+		-
+
 
 - Stude Buddy(UI):
 	- Remove a suggestion that's not helpful(Ex: Explain "What")

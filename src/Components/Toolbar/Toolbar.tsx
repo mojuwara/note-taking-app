@@ -23,6 +23,10 @@ import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import ListItemButton from '@mui/material/ListItemButton';
 
+import { getTransitionElemClass } from '../../Utils';
+
+import '../../App.css';
+
 const DrawerHeader = styled('div')(({ theme }) => ({
 	display: 'flex',
 	alignItems: 'center',
@@ -32,14 +36,17 @@ const DrawerHeader = styled('div')(({ theme }) => ({
 	justifyContent: 'start',
 }));
 
+// TODO: Highlight the selected folder and the selected file
+// TODO: Auto close toolbar when you select a file
+// TODO: Choose a color that better contrasts grey when bold/italic/etc.
+// TODO: Put name of the application in toolbar center
+// TODO: Shrink the editor when Drawer is open, expand editor when drawer is closed
+// TODO: Keyboard shortcut to hide Drawer
+const DrawerWidth = 240;
 const MyToolbar = (props: any) => {
 	const theme = useTheme();
-	const [open, setOpen] = useState(false);
+	const transitionClass = getTransitionElemClass(props.drawerOpen);
 
-	const handleDrawerOpen = () => setOpen(true);
-	const handleDrawerClose = () => setOpen(false);
-
-	const DrawerWidth = 240;
 	const drawerStyle = {
 		width: DrawerWidth,
 		flexShrink: 0,
@@ -50,32 +57,32 @@ const MyToolbar = (props: any) => {
 	}
 
 	return (
-		// <Box sx={{display: 'flex'}}>
 		<>
-			<AppBar position="sticky">
+			<AppBar position="fixed" className={transitionClass}>
 				<Toolbar>
 					<IconButton
 						color="inherit"
 						aria-label="open drawer"
-						onClick={handleDrawerOpen}
+						onClick={props.handleDrawerOpen}
 						edge="start"
-					// sx={{ mr: 2, ...(open && { display: 'none' }) }}
+					sx={{ mr: 2, ...(props.drawerOpen && { display: 'none' }) }}
 					>
 						<MenuIcon />
 					</IconButton>
 				</Toolbar>
 			</AppBar>
+			<Toolbar />	 {/* To fix issue with Toolbar rendering over content when position=fixed, which is needed to transition nicely*/}
 
-			<Drawer sx={drawerStyle} variant="persistent" anchor="left" open={open}>
+			<Drawer sx={drawerStyle} variant="persistent" anchor="left" open={props.drawerOpen}>
 				<DrawerHeader>
+					<IconButton onClick={props.handleDrawerClose}>
+						{theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
+					</IconButton>
 					<IconButton onClick={props.onNewFolder}>
 						<CreateNewFolderIcon />
 					</IconButton>
 					<IconButton onClick={props.onNewFile}>
 						<NoteAddIcon />
-					</IconButton>
-					<IconButton onClick={handleDrawerClose}>
-						{theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
 					</IconButton>
 				</DrawerHeader>
 				<Divider />

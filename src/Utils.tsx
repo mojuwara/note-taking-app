@@ -76,3 +76,5 @@ export const getElemText = (element: CustomElement | CustomText): string => {
 
 	return element.children.map((child: any) => getElemText(child)).join("");
 }
+
+export const getTransitionElemClass = (open: boolean) => `${"transition-elem" + (open ? " drawer-open" : "")}`;
