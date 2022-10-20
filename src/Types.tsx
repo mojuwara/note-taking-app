@@ -3,7 +3,7 @@ import { BaseEditor } from 'slate'
 import { ReactEditor } from 'slate-react'
 import { HistoryEditor } from 'slate-history'
 
-// TODO: Is this the proper way? Or made a .d.ts file?
+// TODO: Is this the proper way? Or make a .d.ts file?
 // Custom types for Slate
 export type CustomText = { text: string; bold?: boolean, italic?: boolean, underline?: boolean }
 
@@ -37,7 +37,7 @@ declare module 'slate' {
 export type Folder = {
 	id: number;
 	name: string;
-	files: File[];
+	items: (File | Folder)[];
 }
 
 export type File = {

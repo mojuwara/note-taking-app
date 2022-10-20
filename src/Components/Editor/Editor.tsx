@@ -1,7 +1,15 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 
-import { host } from "../../Constants";
-import { saveFileContents, getElemText } from "../../Utils";
+import {
+	// host,
+	DefaultFileContent
+} from "../../Constants";
+import {
+	// saveFileContents,
+	getElemText,
+	getTransitionElemClass,
+} from "../../Utils";
+
 import { CustomElement } from "../../Types";
 
 import { createEditor } from 'slate'
@@ -24,8 +32,6 @@ import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered';
 import EditorCommands from "./EditorCommands";
 import editorShortcuts from "./EditorShortcuts";
 
-import { getTransitionElemClass } from '../../Utils';
-
 import {
 	H1BlockElement,
 	H2BlockElement,
@@ -38,14 +44,10 @@ import {
 	UnorderedListBlockElement,
 } from './BlockElements';
 
-import axios from "axios";
+// import axios from "axios";
 
 import "./editor.css";
 import '../../App.css';
-
-const DefaultContent = [
-	{ type: "paragraph", children: [{ text: "Let's take notes" }] }
-];
 
 // TODO: Support tab button in editor focus
 // TODO: Display file name somewhere
@@ -78,7 +80,7 @@ function MyEditor(props: any) {
 	// Object where each key is the plain text in a block and its value is an array of strings
 	const [suggestions, setSuggestions] = useState<any>({});
 
-	const initialValue = useMemo(() => DefaultContent, []);
+	const initialValue = useMemo(() => DefaultFileContent, []);
 
 	// Load file from localStorage if available, else fetch from server and cache
 	useEffect(() => {
@@ -91,7 +93,8 @@ function MyEditor(props: any) {
 			}
 
 			try {
-				const { data } = await axios.get<string>(`http://${host}/file_contents?filePath=${props.filePath}`);
+				// const { data } = await axios.get<string>(`http://${host}/file_contents?filePath=${props.filePath}`);
+				const data = JSON.stringify(DefaultFileContent);
 				localStorage.setItem(props.filePath, data);
 
 				editor.children = JSON.parse(data);
@@ -121,7 +124,7 @@ function MyEditor(props: any) {
 			// Clear old timeout and create a new timeout to save to server
 			clearTimeout(timeoutID);
 			setTimeoutID(setTimeout(() => {
-				saveFileContents(props.filePath, newContent).then(response => setSuggestions(response));
+				// saveFileContents(props.filePath, newContent).then(response => setSuggestions(response));
 			}, saveInterval));
 		}
 	}

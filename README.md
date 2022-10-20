@@ -1,16 +1,50 @@
 ### Roadmap
 - DONE - Add functionality to the text editor(Ex: bolding, underline, etc.)
 - DONE - Add a toolbar to the text editor
-- Add keyboard shortcuts to the text editor
+- DONE - Add keyboard shortcuts to the text editor
 - DONE - Refactor code, split component into different files and add type annotations
-- Add style so people would actually consider using this app
-- Figure out how to highlight text in the text editor and add questions on right-hand side
-- Add the nice-to-have's
-	- Should auto select a file/folder
-	- Cursor should auto be at the end of the note and apply marker/block change
+- DONE - Figure out how to highlight text in the text editor and add questions on right-hand side
+- TODO - Highlight the selected folder and the selected file
+- TODO - Auto close toolbar when you select a file
+- TODO - Choose a color that better contrasts grey when bold/italic/etc.
+- TODO - Put name of the application in toolbar center
+- TODO - Keyboard shortcut to hide Drawer
+- TODO - Store file names locally?
+- TODO - Display icon when no file is selected
+- TODO - Support up-to 2 levels of folders (FolderA/FolderB/file)
+- TODO - What happens when they click a folder? Select first file? What if none?
+- TODO - Sort files by last date modified?
+- TODO - Refactor keeping track of the current file
+- TODO - Ensure file DNE before creating
+- TODO - Folder IDs should be generated in backend
+- TODO - Add new file to cache on file create
+- TODO - Ensure folder DNE
+- TODO - Creating a file when there are no folder's yet("unfiled notes" folder)
+- TODO - Make isUniqueFile() and isUniqueFolder() into one function
+- TODO - Auto-set the selected folder to the first folder in the list if no selected path?
+- TOOD - Fix typing of File and Folder
+- TODO - Expand folder if selected
+- TODO - "CurrentFolder" state?
+
 - Files:
+	- selectedPath:
+		- Can be a file or folder
+		- Initially an "All files" folder is created and selected
+		- When "Add file" is clicked:
+			- If "All files" is selected: Creates a file in no folder
+			- If a user-created folder is selected: Creates file within
+			- If a file is selected: Creates file in containing folder or "All files"
+			- Focus on new file
+		- When "Add folder" is clicked:
+			- If "All files" is selected: Creates top-level directory
+			- If user-created folder is selected: Create child folder if not two levels down, create sibling folder otherwise
+			- If file is selected, create folder in containing folder or "All files"
+			- Focus on new folder and no selected file
+		- If user folder is clicked and file within, focus on first file
+		- If user file is clicked, focus on containing folder or "All files"
+	- Keyboard shortcut for new file and new folder?
 	- Delete files and folders
-	- Move files into different folders
+	- Drag/Drop to move files/folders
 	- Rename files/folders
 
 - Text editor:
@@ -18,8 +52,8 @@
 	- Links(Inline)
 	- Headers(h1, h2, h3)
 	- Cursor not visible at the beginning of a new line
-	- "* " becomes an unordered list
-	- "1 " becomes an ordered list
+	- "* " at start becomes an unordered list
+	- "1 " at start becomes an ordered list
 	- Tab should insert 4 spaces
 	- Find(and replace?)
 	- Add word to dictionary
