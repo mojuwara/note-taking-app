@@ -25,6 +25,7 @@
 - TOOD - Fix typing of File and Folder
 - TODO - Expand folder if selected
 - TODO - "CurrentFolder" state?
+- TODO - Autofocus on file/folder creation popup
 
 - Files:
 	- selectedPath:

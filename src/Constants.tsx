@@ -5,3 +5,5 @@ export const FileSep = "/"; // Single backslash
 export const DefaultFileContent = [
 	{ type: "paragraph", children: [{ text: "Let's take notes" }] }
 ];
+
+export const DrawerWidth = 240;

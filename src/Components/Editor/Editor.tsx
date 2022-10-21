@@ -5,7 +5,6 @@ import {
 	DefaultFileContent
 } from "../../Constants";
 import {
-	// saveFileContents,
 	getElemText,
 	getTransitionElemClass,
 } from "../../Utils";

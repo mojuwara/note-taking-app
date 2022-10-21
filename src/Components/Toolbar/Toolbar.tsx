@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 
-import { FileSep, host } from '../../Constants';
-import { Folder, File } from '../../Types';
+import { DrawerWidth, host } from '../../Constants';
+import { Folder, FileSelection } from '../../Types';
 
 import { styled, useTheme } from '@mui/material/styles';
 
@@ -16,28 +16,14 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
 
-import List from '@mui/material/List';
-import Collapse from '@mui/material/Collapse';
-import ListItemText from '@mui/material/ListItemText';
-import ExpandLess from '@mui/icons-material/ExpandLess';
-import ExpandMore from '@mui/icons-material/ExpandMore';
-import ListItemButton from '@mui/material/ListItemButton';
-
-
-import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogTitle from '@mui/material/DialogTitle';
-
-import { createNewFile, createNewFolder, getDirFromFilePath, getItemLevel, getTransitionElemClass, isSubDir } from '../../Utils';
+import { createNewFile, createNewFolder, getTransitionElemClass } from '../../Utils';
 
 import axios from 'axios';	// TODO: Do we NEED axios?
+import CreateItemDialog from './CreateItemDialog';
+import Directory from './Directory';
 
 import '../../App.css';
 
-const DrawerWidth = 240;
 const DrawerHeader = styled('div')(({ theme }) => ({
 	display: 'flex',
 	alignItems: 'center',
@@ -58,10 +44,10 @@ const drawerStyle = {
 
 type ToolbarProps = {
 	drawerOpen: boolean;
-	selectedFilePath: string;
 	onDrawerOpen: () => void;
 	onDrawerClose: () => void;
-	onFileClick: (s: string) => void;
+	fileSelection: FileSelection;
+	onSelectionChange: (s: FileSelection) => void;
 }
 
 const MyToolbar = (props: ToolbarProps) => {
@@ -85,21 +71,22 @@ const MyToolbar = (props: ToolbarProps) => {
 	}, []);
 
 	const createFile = (fileName: string) => {
-		const [success, newDir, selectedPath] = createNewFile(directory, props.selectedFilePath, fileName);
+		const [success, newDir, selection] = createNewFile(directory, props.fileSelection, fileName);
 		if (success) {
 			setDirectory(newDir);
-			props.onFileClick(selectedPath);
 			setCreatingFile(false);
+			props.onSelectionChange(selection);
 		} else {
 			alert("Ensure this file name is unique");
 		}
 	}
 
 	const createFolder = (folderName: string) => {
-		const [success, newDir] = createNewFolder(directory, props.selectedFilePath, folderName);
+		const [success, newDir] = createNewFolder(directory, props.fileSelection, folderName);
 		if (success) {
-			setCreatingFolder(false);
 			setDirectory(newDir);
+			setCreatingFolder(false);
+			props.onSelectionChange({folder: folderName, file: ""});
 		}
 		else
 			alert("Ensure this folder name is unique");
@@ -110,11 +97,16 @@ const MyToolbar = (props: ToolbarProps) => {
 
 	return (
 		<>
-			{creatingFile && <CreateFileDialog
-				onFileCreate={createFile}
+			{creatingFile && <CreateItemDialog
+				label="File Name"
+				onCreate={createFile}
 				onClose={() => setCreatingFile(false)}
-				dirName={getDirFromFilePath(props.selectedFilePath)} />}
-			{creatingFolder && <CreateFolderDialog onFolderCreate={createFolder} onClose={() => setCreatingFolder(false)} />}
+				title={"Create file" + (props.fileSelection.folder ? ` in '${props.fileSelection.folder}'` : "")} />}
+			{creatingFolder && <CreateItemDialog
+				label="Folder Name"
+				onCreate={createFolder}
+				title="Create new folder"
+				onClose={() => setCreatingFolder(false)} />}
 
 			<AppBar position="fixed" className={transitionClass}>
 				<Toolbar>
@@ -149,177 +141,6 @@ const MyToolbar = (props: ToolbarProps) => {
 			</Drawer>
 		</>
 	);
-}
-
-type DirectoryProps = {
-	directory: Folder[];
-	selectedFilePath: string;
-	onFileClick: (s: string) => void;
-}
-
-const Directory = (props: DirectoryProps) => {
-	console.log(props.directory);
-	const listItems = props.directory.map((folder: Folder, ndx: any) =>
-		<FolderListItem
-			key={ndx}
-			folder={folder}
-			folderPath={folder.name}
-			onFileClick={props.onFileClick}
-			selectedFilePath={props.selectedFilePath} />
-	)
-
-	const dirStyle = { width: '100%', maxWidth: DrawerWidth, bgcolor: 'background.paper' };
-	return (
-		<List sx={dirStyle} component="nav">
-			{listItems}
-		</List>
-	);
-}
-
-type FolderListItemProps = {
-	folder: Folder;
-	folderPath: string;
-	selectedFilePath : string;
-	onFileClick: (s: string) => void;
-}
-
-// TODO: fix isSelected - Foldres with only matching prefix will be selected
-const FolderListItem = (props: FolderListItemProps) => {
-	const [open, setOpen] = useState(false);
-
-	let isSelected: boolean;
-	if (props.selectedFilePath.length && isSubDir(props.selectedFilePath, props.folderPath))
-		isSelected = true;
-	else
-		isSelected = false;
-
-	return (
-		<>
-			<ListItemButton
-				selected={isSelected}
-				onClick={() => setOpen(!open)}
-				sx={{ pl: 4 * getItemLevel(props.folderPath) }}
-			>
-				<ListItemText primary={props.folder.name} />
-				{open ? <ExpandLess /> : <ExpandMore />}
-			</ListItemButton>
-
-			<Collapse in={open} timeout="auto" unmountOnExit>
-				<List component="div" disablePadding>
-					{props.folder.items.map((item: File | Folder, ndx: number) =>
-						("items" in item)
-							?	<FolderListItem
-								key={ndx}
-								folder={item}
-								onFileClick={props.onFileClick}
-								folderPath={FileSep + props.folderPath}
-								selectedFilePath={props.selectedFilePath} />
-							: <FileListItem
-								key={ndx}
-								file={item}
-								onFileClick={props.onFileClick}
-								selectedFilePath={props.selectedFilePath}
-								filePath={props.folderPath + FileSep + item.name} />
-					)}
-				</List>
-			</Collapse>
-		</>
-	)
-}
-
-type FileListItemProps = {
-	file: File;
-	filePath: string;
-	selectedFilePath: string;
-	onFileClick: (s: string) => void;
-}
-
-const FileListItem = (props: FileListItemProps) => {
-	let isSelected: boolean;
-	if (props.selectedFilePath && isSubDir(props.selectedFilePath, props.filePath))
-		isSelected = true;
-	else
-		isSelected = false;
-
-	return (
-		<ListItemButton
-			selected={isSelected}
-			sx={{ pl: 4 * getItemLevel(props.filePath) }}
-			onClick={() => props.onFileClick(props.filePath)}
-		>
-			<ListItemText primary={props.file.name} />
-		</ListItemButton>
-	)
-}
-
-// TODO: Update colors for new file icon and new folder icon
-// TODO: Use composition on CreateFileDialog and CreateFolderDialog
-type CreateFileProps = {
-	dirName: string;
-	onClose: () => void;
-	onFileCreate: (s: string) => void;
-}
-
-const CreateFileDialog = (props: CreateFileProps) => {
-	const [fileName, setFileName] = useState("");
-
-	const title = (props.dirName) ? `Create a new file in '${props.dirName}'` : "Create a new file"
-	return (
-		<div>
-			<Dialog open={true} onClose={props.onClose}>
-				<DialogTitle>{title}</DialogTitle>
-				<DialogContent>
-					<TextField
-						id="name"
-						autoFocus
-						fullWidth
-						margin="dense"
-						value={fileName}
-						label="File Name"
-						variant="standard"
-						onChange={(event: any) => setFileName(event.target.value)}
-					/>
-				</DialogContent>
-				<DialogActions>
-					<Button onClick={props.onClose}>Cancel</Button>
-					<Button onClick={() => props.onFileCreate(fileName)}>Create</Button>
-				</DialogActions>
-			</Dialog>
-		</div>
-	)
-}
-
-type CreateFolderProps = {
-	onClose: () => void;
-	onFolderCreate: (s: string) => void;
-}
-
-const CreateFolderDialog = (props: CreateFolderProps) => {
-	const [folderName, setFolderName] = useState("");
-
-	return (
-		<div>
-			<Dialog open={true} onClose={props.onClose}>
-				<DialogTitle>Create New Folder</DialogTitle>
-				<DialogContent>
-					<TextField
-						id="name"
-						autoFocus
-						fullWidth
-						margin="dense"
-						variant="standard"
-						value={folderName}
-						label="Folder Name"
-						onChange={(event: any) => setFolderName(event.target.value)}
-					/>
-				</DialogContent>
-				<DialogActions>
-					<Button onClick={props.onClose}>Cancel</Button>
-					<Button onClick={() => props.onFolderCreate(folderName)}>Create</Button>
-				</DialogActions>
-			</Dialog>
-		</div>
-	)
 }
 
 export default MyToolbar;

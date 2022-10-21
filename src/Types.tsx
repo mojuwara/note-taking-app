@@ -37,11 +37,16 @@ declare module 'slate' {
 export type Folder = {
 	id: number;
 	name: string;
-	items: (File | Folder)[];
+	items: File[];
 }
 
 export type File = {
 	id: number;
 	name: string;
 	contents: CustomElement[]
+}
+
+export type FileSelection = {
+	file: string;
+	folder: string;
 }
