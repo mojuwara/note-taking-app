@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react'
 
-import { DrawerWidth, host } from '../../Constants';
+import { DrawerWidth, host, StorageKeys } from '../../Constants';
 import { Folder, FileSelection } from '../../Types';
 
 import { styled, useTheme } from '@mui/material/styles';
 
+import Box from '@mui/material/Box';
 import AppBar from '@mui/material/AppBar';
 import Drawer from '@mui/material/Drawer';
 import Toolbar from '@mui/material/Toolbar';
@@ -14,9 +15,10 @@ import IconButton from '@mui/material/IconButton';
 import NoteAddIcon from '@mui/icons-material/NoteAdd';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
 
-import { createNewFile, createNewFolder, getTransitionElemClass } from '../../Utils';
+import { createNewFile, createNewFolder, getStorageItem, getTransitionElemClass } from '../../Utils';
 
 import axios from 'axios';	// TODO: Do we NEED axios?
 import CreateItemDialog from './CreateItemDialog';
@@ -51,29 +53,34 @@ type ToolbarProps = {
 }
 
 const MyToolbar = (props: ToolbarProps) => {
-	const [directory, setDirectory] = useState<Folder[]>([]);	// All the users files
 	const [creatingFile, setCreatingFile] = useState(false);	// Creating a file
 	const [creatingFolder, setCreatingFolder] = useState(false);	// Creating a folder
+	const [directory, setDirectory] = useState<Folder[]>(getStorageItem<Folder[]>(StorageKeys.Dir, []));	// All the users files
 
+	const updateDir = (newDir: Folder[]) => {
+		setDirectory(newDir);
+		localStorage.setItem(StorageKeys.Dir, JSON.stringify(newDir));
+	}
 	// Load the folders and file names on initial render
-	useEffect(() => {
-		const fetchFiles = async () => {
-			try {
-				const headers = { Accept: 'application/json' };
-				const { data } = await axios.get<Folder[]>(`http://${host}/folders`, { headers: headers });
-				setDirectory(data);
-			} catch (error: any) {
-				console.error(error.message)
-			}
-		}
+	// useEffect(() => {
+	// 	const fetchFiles = async () => {
+	// 		try {
+	// 			const headers = { Accept: 'application/json' };
+	// 			const { data } = await axios.get<Folder[]>(`http://${host}/folders`, { headers: headers });
+	// 			setDirectory(data);
+	// 			localStorage.setItem(StorageKeys.Dir, JSON.stringify(data));
+	// 		} catch (error: any) {
+	// 			console.error(error.message)
+	// 		}
+	// 	}
 
-		fetchFiles();
-	}, []);
+	// 	fetchFiles();
+	// }, []);
 
 	const createFile = (fileName: string) => {
 		const [success, newDir, selection] = createNewFile(directory, props.fileSelection, fileName);
 		if (success) {
-			setDirectory(newDir);
+			updateDir(newDir);
 			setCreatingFile(false);
 			props.onSelectionChange(selection);
 		} else {
@@ -84,9 +91,10 @@ const MyToolbar = (props: ToolbarProps) => {
 	const createFolder = (folderName: string) => {
 		const [success, newDir] = createNewFolder(directory, props.fileSelection, folderName);
 		if (success) {
-			setDirectory(newDir);
+			updateDir(newDir);
 			setCreatingFolder(false);
-			props.onSelectionChange({folder: folderName, file: ""});
+			const selection: FileSelection = { folder: folderName, file: "" };
+			props.onSelectionChange(selection);
 		}
 		else
 			alert("Ensure this folder name is unique");
@@ -108,17 +116,22 @@ const MyToolbar = (props: ToolbarProps) => {
 				title="Create new folder"
 				onClose={() => setCreatingFolder(false)} />}
 
-			<AppBar position="fixed" className={transitionClass}>
-				<Toolbar>
-					<IconButton
-						color="inherit"
-						aria-label="open drawer"
-						onClick={props.onDrawerOpen}
-						edge="start"
-					sx={{ mr: 2, ...(props.drawerOpen && { display: 'none' }) }}
-					>
-						<MenuIcon />
-					</IconButton>
+			<AppBar position="fixed">
+				<Toolbar className={transitionClass}>
+					<Box sx={{width: '100%', display: 'flex', justifyContent: 'space-between'}}>
+						<IconButton
+							color="inherit"
+							aria-label="open drawer"
+							onClick={props.onDrawerOpen}
+							disabled={props.drawerOpen}
+							edge="start"
+							sx={{ mr: 2, ...(props.drawerOpen && { visibility: 'hidden' }) }}
+						>
+							<MenuIcon />
+						</IconButton>
+						<h1 style={{padding: 0, margin: 0, fontSize: 24}}>Study Buddy</h1>
+						<AccountCircleIcon />
+					</Box>
 				</Toolbar>
 			</AppBar>
 			<Toolbar />	 {/* To fix issue with Toolbar rendering over content when position=fixed, which is needed to transition nicely*/}

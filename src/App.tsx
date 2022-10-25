@@ -1,7 +1,7 @@
 import { useState } from 'react'
 
 import AppTheme from './Themes';
-import { getFullPath, getTransitionElemClass } from './Utils';
+import { getFullPath, getStorageItem, getTransitionElemClass } from './Utils';
 
 import MyEditor from './Components/Editor/Editor';
 import MyToolbar from './Components/Toolbar/Toolbar';
@@ -11,12 +11,16 @@ import { ThemeProvider } from '@mui/material/styles';
 
 import './App.css';
 import { FileSelection } from './Types';
+import { StorageKeys } from './Constants';
 
 function App() {
 	const [drawerOpen, setDrawerOpen] = useState(true);
-	const [fileSelection, setFileSelection] = useState<FileSelection>({file: "", folder: ""});
-	console.log(fileSelection)
+	const [fileSelection, setFileSelection] = useState<FileSelection>(getStorageItem(StorageKeys.Selection, {file: "", folder: ""}));
 
+	const updateSelection = (sel: FileSelection) => {
+		setFileSelection(sel);
+		localStorage.setItem(StorageKeys.Selection, JSON.stringify(sel));
+	}
 	const handleDrawerOpen = () => setDrawerOpen(true);
 	const handleDrawerClose = () => setDrawerOpen(false);
 
@@ -28,7 +32,7 @@ function App() {
 					fileSelection={fileSelection}
 					onDrawerOpen={handleDrawerOpen}
 					onDrawerClose={handleDrawerClose}
-					onSelectionChange={(selection: FileSelection) => setFileSelection(selection) } />
+					onSelectionChange={updateSelection} />
 
 				{fileSelection.file && <MyEditor drawerOpen={drawerOpen} filePath={getFullPath(fileSelection)} />}
 				{!fileSelection.file && <h3 className={getTransitionElemClass(drawerOpen)}>Select or create a file</h3>}

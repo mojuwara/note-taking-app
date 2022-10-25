@@ -5,6 +5,7 @@ import Popper from '@mui/material/Popper';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import { getElemText } from '../../Utils';
+import { useSelected,	useFocused } from 'slate-react';
 
 // Contains the actual block elements
 export const BlockElementContainer = ({ element, suggestions }: any) => {
@@ -40,7 +41,7 @@ export const BlockElementContainer = ({ element, suggestions }: any) => {
 // Element renderers
 export const DefaultBlockElement = (props: any) => {
 	return (
-		<p {...props.attributes} style={{margin: 4}}>{props.children}</p>
+		<p {...props.attributes} style={{margin: 4, display: 'inline-block'}}>{props.children}</p>
 	);
 }
 
@@ -102,7 +103,27 @@ export const H3BlockElement = (props: any) => {
 	);
 }
 
-export const LinkBlockElement = (props: any) => {
+export const ImageBlockElement = (props: any) => {
+	const selected = useSelected();
+	const focused = useFocused();
+	return (
+		<div {...props.attributes}>
+			{props.children}
+			<div contentEditable={false}>
+				<img style={{
+					display: 'block',
+					maxWidth: '100%',
+					maxHeight: '20em',
+					marginTop: 1,
+					marginBottom: 1,
+					boxShadow: selected && focused ? '0 0 0 3px #B4D5FF' : 'none',
+				}} alt={props.url} src={props.element.url} />
+			</div>
+		</div>
+	)
+}
+
+export const AnchorBlockElement = (props: any) => {
 	const url = getElemText(props.element);
 	return (
 		<a href={url} {...props.attributes}>

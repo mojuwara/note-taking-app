@@ -14,14 +14,16 @@ export type LinkElement = { type: 'link'; children: CustomText[] }
 export type H1Element = { type: 'h1'; children: CustomText[] }
 export type H2Element = { type: 'h2'; children: CustomText[] }
 export type H3Element = { type: 'h3'; children: CustomText[] }
+export type ImageElement = { type: 'image', url: string, children: CustomText[] }
 
 export type CustomElement = GenericElement
-| ParagraphElement
-| CodeElement
-| LinkElement
-| H1Element
-| H2Element
-| H3Element;
+	| ParagraphElement
+	| ImageElement
+	| CodeElement
+	| LinkElement
+	| H1Element
+	| H2Element
+	| H3Element;
 
 export type CustomEditor = BaseEditor & ReactEditor & HistoryEditor;
 

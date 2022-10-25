@@ -1,3 +1,4 @@
+import { CustomEditor } from '../../Types';
 import { Editor, Transforms, Element as SlateElement } from 'slate'
 
 // Truen if the element exists just to wrap other elements(Ex with <ul>: <ul><li>...</li></ul>)
@@ -6,13 +7,13 @@ export const isWrappedType = (blk: string) => ["unorderedList", "orderedList"].i
 // Helper functions we can reuse
 const EditorCommands = {
 	// Returns true if the given mark is active on the selected text
-	isMarkActive(editor: any, mark: string) {
+	isMarkActive(editor: CustomEditor, mark: string) {
 		const marks: any = Editor.marks(editor);
 		return marks ? marks[mark] === true : false;
 	},
 
 	// Toggles the given mark on/off
-	toggleMark(editor: any, mark: string) {
+	toggleMark(editor: CustomEditor, mark: string) {
 		const isActive = EditorCommands.isMarkActive(editor, mark);
 
 		if (isActive)
@@ -22,7 +23,7 @@ const EditorCommands = {
 	},
 
 	// Returns true if the block type is active
-	isBlockActive(editor: any, block: string) {
+	isBlockActive(editor: CustomEditor, block: string) {
 		const match = Array.from(Editor.nodes(editor, {
 			match: (n: any) => n.type === block,
 		}));
@@ -32,7 +33,7 @@ const EditorCommands = {
 
 	// Toggle the block on/off, 'paragraph' is the default block type
 	// Elements are a type of Node that contian more Elements or Text Nodes
-	toggleBlock(editor: any, block: string) {
+	toggleBlock(editor: CustomEditor, block: string) {
 		// Unwrap list elements, set them to 'list-item' type, then wrap them inside the list item type
 		const isActive = EditorCommands.isBlockActive(editor, block);
 		if (isWrappedType(block)) {
@@ -65,7 +66,7 @@ const EditorCommands = {
 		);
 	},
 
-	unwrapNodes(editor: any) {
+	unwrapNodes(editor: CustomEditor) {
 		// Unwraps lists
 		Transforms.unwrapNodes(editor, {
 			match: n => (!Editor.isEditor(n) && SlateElement.isElement(n) && isWrappedType(n.type)),

@@ -5,7 +5,8 @@ import {
 	DefaultFileContent
 } from "../../Constants";
 import {
-	getElemText,
+	getStorageItem,
+	// getElemText,
 	getTransitionElemClass,
 } from "../../Utils";
 
@@ -27,15 +28,20 @@ import FormatItalicIcon from '@mui/icons-material/FormatItalic';
 import FormatUnderlinedIcon from '@mui/icons-material/FormatUnderlined';
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered';
+import TableRowsOutlinedIcon from '@mui/icons-material/TableRowsOutlined';
+import ImageOutlinedIcon from '@mui/icons-material/ImageOutlined';
+import InsertLinkOutlinedIcon from '@mui/icons-material/InsertLinkOutlined';
 
 import EditorCommands from "./EditorCommands";
 import editorShortcuts from "./EditorShortcuts";
+import { withImages } from "./EditorPlugins";
 
 import {
 	H1BlockElement,
 	H2BlockElement,
 	H3BlockElement,
 	CodeBlockElement,
+	ImageBlockElement,
 	DefaultBlockElement,
 	ListItemBlockElement,
 	BlockElementContainer,
@@ -48,11 +54,12 @@ import {
 import "./editor.css";
 import '../../App.css';
 
-// TODO: Support tab button in editor focus
-// TODO: Display file name somewhere
-// TODO: Place divider between mark icons and block icons
-// TODO: Markdown features?
-function MyEditor(props: any) {
+type EditorProps = {
+	filePath: string;
+	drawerOpen: boolean;
+}
+
+function MyEditor(props: EditorProps) {
 	/*
 	Slate text-editor
 		Context provider: Keeps track of editor, plugins, values, selection and changes
@@ -74,13 +81,15 @@ function MyEditor(props: any) {
 	const [timeoutID, setTimeoutID] = useState<NodeJS.Timer>();
 
 	// Editor object
-	const editor = useMemo(() => withHistory(withReact(createEditor())), []);
+	const editor = useMemo(() => withImages(withHistory(withReact(createEditor()))), []);
 
 	// Object where each key is the plain text in a block and its value is an array of strings
-	const [suggestions, setSuggestions] = useState<any>({});
+	// const [suggestions, setSuggestions] = useState<any>({});
 
-	const initialValue = useMemo(() => DefaultFileContent, []);
+	const initialValue = useMemo(() => getStorageItem(props.filePath, DefaultFileContent)
+	,	[props.filePath]);
 
+	// TODO: Simplify logic
 	// Load file from localStorage if available, else fetch from server and cache
 	useEffect(() => {
 		const initFileContents = async () => {
@@ -104,6 +113,11 @@ function MyEditor(props: any) {
 		}
 
 		initFileContents();
+
+		// TODO: Save file on file change
+		return () => {
+
+		}
 	}, [editor, props.filePath]);
 
 	const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
@@ -115,6 +129,7 @@ function MyEditor(props: any) {
 		const isAstChange = editor.operations.some(
 			op => 'set_selection' !== op.type
 		)
+
 
 		if (isAstChange) {
 			const newContent = JSON.stringify(value);
@@ -129,10 +144,11 @@ function MyEditor(props: any) {
 	}
 
 	// Find suggestions, if any, for the given block element
+	// TODO: Still doing suggestions?
 	const getElemSuggestions = (element: CustomElement): string[] => {
-		const text = getElemText(element);
-		if (text in suggestions)
-			return suggestions[text];
+		// const text = getElemText(element);
+		// if (text in suggestions)
+		// 	return suggestions[text];
 
 		return [];
 	}
@@ -153,6 +169,8 @@ function MyEditor(props: any) {
 				return <H2BlockElement {...props} />;
 			case 'h3':
 				return <H3BlockElement {...props} />;
+			case 'image':
+				return <ImageBlockElement {...props} />;
 			default:
 				return <DefaultBlockElement {...props} />;
 		}
@@ -160,7 +178,6 @@ function MyEditor(props: any) {
 
 	const renderElement = (props: any) => {
 		let element = getBlockElement(props);
-
 		const elemSuggestions = getElemSuggestions(props.element);
 		return <BlockElementContainer element={element} suggestions={elemSuggestions} />
 	};
@@ -175,8 +192,12 @@ function MyEditor(props: any) {
 					<MarkButton mark="italic" icon={<FormatItalicIcon />} label="italic" />
 					<MarkButton mark="underline" icon={<FormatUnderlinedIcon />} label="underline" />
 					<BlockButton block="code" icon={<CodeIcon />} label="code" />
+					<BlockButton block="table" icon={<InsertLinkOutlinedIcon />} label="table" />	{/* Popup, not block element */}
+					{/* <Divider orientation="vertical" flexItem /> */}
 					<BlockButton block="orderedList" icon={<FormatListNumberedIcon />} label="orderedList" />
 					<BlockButton block="unorderedList" icon={<FormatListBulletedIcon />} label="unorderedList" />
+					<BlockButton block="table" icon={<TableRowsOutlinedIcon /> } label="table" />
+					<BlockButton block="table" icon={<ImageOutlinedIcon />} label="table" />
 				</Toolbar>
 				<Divider />
 				<Editable

@@ -18,7 +18,6 @@ type DirectoryProps = {
 }
 
 const Directory = (props: DirectoryProps) => {
-	console.log(props.directory);
 	const listItems = props.directory.map((folder: Folder, ndx: any) =>
 		<FolderListItem
 			key={ndx}
@@ -43,12 +42,9 @@ type FolderListItemProps = {
 	onSelectionChange: (s: FileSelection) => void;
 }
 
-// TODO: fix isSelected - Foldres with only matching prefix will be selected
 const FolderListItem = (props: FolderListItemProps) => {
 	const isSelected = props.folder.name === props.fileSelection.folder;
 	const [open, setOpen] = useState(isSelected);
-
-	// const isSelected = isSubDir(getFullPath(props.fileSelection), props.folderPath);
 
 	const handleItemClick = () => {
 		setOpen(!open);
@@ -71,8 +67,8 @@ const FolderListItem = (props: FolderListItemProps) => {
 						<FileListItem
 							key={ndx}
 							file={item}
-							onFileClick={props.onSelectionChange}
 							fileSelection={props.fileSelection}
+							onSelectionChange={props.onSelectionChange}
 							filePath={props.folderPath + FileSep + item.name} />
 					)}
 				</List>
@@ -85,11 +81,10 @@ type FileListItemProps = {
 	file: File;
 	filePath: string;
 	fileSelection: FileSelection;
-	onFileClick: (s: FileSelection) => void;
+	onSelectionChange: (s: FileSelection) => void;
 }
 
 const FileListItem = (props: FileListItemProps) => {
-	console.log(props);
 	const isSelected = getFullPath(props.fileSelection) === props.filePath;
 
 	const getContainingFolder = (): string => {
@@ -107,7 +102,7 @@ const FileListItem = (props: FileListItemProps) => {
 		<ListItemButton
 			selected={isSelected}
 			sx={{ pl: 4 }}
-			onClick={() => props.onFileClick(getUpdatedSelection())}
+			onClick={() => props.onSelectionChange(getUpdatedSelection())}
 		>
 			<ListItemText primary={props.file.name} />
 		</ListItemButton>

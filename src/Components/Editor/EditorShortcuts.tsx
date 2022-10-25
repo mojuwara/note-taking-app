@@ -1,6 +1,7 @@
+import { CustomEditor } from '../../Types';
 import EditorCommands from './EditorCommands';
 
-const editorShortcuts = (editor: any, event: React.KeyboardEvent<HTMLDivElement>) => {
+const editorShortcuts = (editor: CustomEditor, event: React.KeyboardEvent<HTMLDivElement>) => {
 	// metaKey is Cmd on Mac
 	const ctrlKey = event.ctrlKey || event.metaKey;
 

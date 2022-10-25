@@ -17,7 +17,10 @@ export const getElemText = (element: CustomElement | CustomText): string => {
 	if ("text" in element)
 		return element["text"];
 
-	return element.children.map((child: any) => getElemText(child)).join("");
+	if ("children" in element)
+		return element.children.map((child: any) => getElemText(child)).join("");
+
+	return "";
 }
 
 export const getTransitionElemClass = (open: boolean) => `${"transition-elem" + (open ? " drawer-open" : "")}`;
@@ -43,7 +46,7 @@ export const createNewFile = (dir: Folder[], selection: FileSelection, newFileNa
 		return [false, dir, selection];
 
 	dirToModify.items.push({
-		id: getMaxId(dirToModify.items) + 1,	// TODO: getMaxID of subfolder
+		id: getMaxId(dirToModify.items) + 1,
 		name: newFileName,
 		contents: DefaultFileContent,
 	});
@@ -59,4 +62,9 @@ export const createNewFolder = (dir: Folder[], selection: FileSelection, newFold
 
 	dir.push({ id: 0, name: newFolderName, items: [] });
 	return [true, dir];
+}
+
+export function getStorageItem<Type>(key: string, defaultVal: Type): Type {
+	const val = localStorage.getItem(key);
+	return (val !== null) ? JSON.parse(val) : defaultVal;
 }
