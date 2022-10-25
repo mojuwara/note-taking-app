@@ -1,11 +1,18 @@
-import { CustomEditor } from '../../Types';
+import { CustomEditor, ImageElement } from '../../Types';
 import { Editor, Transforms, Element as SlateElement } from 'slate'
+
 
 // Truen if the element exists just to wrap other elements(Ex with <ul>: <ul><li>...</li></ul>)
 export const isWrappedType = (blk: string) => ["unorderedList", "orderedList"].includes(blk);
 
 // Helper functions we can reuse
 const EditorCommands = {
+	insertImage(editor: CustomEditor, url: string) {
+		const image: ImageElement = { type: 'image', url, children: [{ text: '' }] };
+		Transforms.insertNodes(editor, image);
+		Transforms.insertNodes(editor, { type: 'paragraph', children: [{ text: '' }] });
+	},
+
 	// Returns true if the given mark is active on the selected text
 	isMarkActive(editor: CustomEditor, mark: string) {
 		const marks: any = Editor.marks(editor);

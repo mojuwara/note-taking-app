@@ -20,6 +20,8 @@
 - DONE - Creating a file when there are no folder's yet("unfiled notes" folder)
 - DONE - Expand folder if selected
 - TODO - Support images/videos/links/tables in notes
+- TODO - Enter while image is selected creates new block
+- TODO - Fix image getting deleted when backspace on empty line below
 - TODO - Support copy/paste
 - TODO - Store directory in localStorage
 - TODO - Keep track of last opened file in localStorage

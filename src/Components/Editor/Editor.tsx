@@ -197,7 +197,7 @@ function MyEditor(props: EditorProps) {
 					<BlockButton block="orderedList" icon={<FormatListNumberedIcon />} label="orderedList" />
 					<BlockButton block="unorderedList" icon={<FormatListBulletedIcon />} label="unorderedList" />
 					<BlockButton block="table" icon={<TableRowsOutlinedIcon /> } label="table" />
-					<BlockButton block="table" icon={<ImageOutlinedIcon />} label="table" />
+					<ImageUploadButton />
 				</Toolbar>
 				<Divider />
 				<Editable
@@ -230,6 +230,40 @@ const MarkButton = (props: any) => {
 		>
 			{icon}
 		</IconButton>
+	)
+}
+
+const ImageUploadButton = (props: any) => {
+	const editor = useSlate();
+	const handleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+		console.log(e)
+		if (!e.target.files || !e.target.files.length)
+			return;
+
+		const transferObj = new DataTransfer();
+		for (let i = 0; i < e.target.files.length; i++) {
+			const file = e.target.files.item(i);
+			if (file) {
+				const reader = new FileReader()
+				reader.addEventListener('load', () => {
+					const url = reader.result as string;
+					EditorCommands.insertImage(editor, url);
+				})
+				reader.readAsDataURL(file);
+			}
+
+		}
+		console.log(transferObj);
+		editor.insertData(transferObj);
+	}
+
+	return (
+		<span>
+			<IconButton aria-label={"Upload files"} component="label">
+				<input hidden type="file" multiple accept="image/*" onChange={handleChange} />
+				<ImageOutlinedIcon />
+			</IconButton>
+		</span>
 	)
 }
 
