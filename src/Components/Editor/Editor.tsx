@@ -10,16 +10,18 @@ import {
 	getTransitionElemClass,
 } from "../../Utils";
 
-import { CustomElement } from "../../Types";
+import { CustomElement, LinkElement } from "../../Types";
 
-import { createEditor } from 'slate'
+import { createEditor, Transforms } from 'slate'
 import { Slate, Editable, withReact, useSlate } from 'slate-react'
 
 import { withHistory } from 'slate-history'
 
 import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 import Toolbar from '@mui/material/Toolbar';
 import Divider from '@mui/material/Divider';
+import TextField from '@mui/material/TextField';
 import IconButton from '@mui/material/IconButton'
 
 import CodeIcon from '@mui/icons-material/Code';
@@ -31,6 +33,7 @@ import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered';
 import TableRowsOutlinedIcon from '@mui/icons-material/TableRowsOutlined';
 import ImageOutlinedIcon from '@mui/icons-material/ImageOutlined';
 import InsertLinkOutlinedIcon from '@mui/icons-material/InsertLinkOutlined';
+import Popper from '@mui/material/Popper';
 
 import EditorCommands from "./EditorCommands";
 import editorShortcuts from "./EditorShortcuts";
@@ -47,6 +50,7 @@ import {
 	BlockElementContainer,
 	OrderedListBlockElement,
 	UnorderedListBlockElement,
+	LinkBlockElement,
 } from './BlockElements';
 
 // import axios from "axios";
@@ -171,6 +175,8 @@ function MyEditor(props: EditorProps) {
 				return <H3BlockElement {...props} />;
 			case 'image':
 				return <ImageBlockElement {...props} />;
+			case 'link':
+				return <LinkBlockElement {...props} />;
 			default:
 				return <DefaultBlockElement {...props} />;
 		}
@@ -192,7 +198,7 @@ function MyEditor(props: EditorProps) {
 					<MarkButton mark="italic" icon={<FormatItalicIcon />} label="italic" />
 					<MarkButton mark="underline" icon={<FormatUnderlinedIcon />} label="underline" />
 					<BlockButton block="code" icon={<CodeIcon />} label="code" />
-					<BlockButton block="table" icon={<InsertLinkOutlinedIcon />} label="table" />	{/* Popup, not block element */}
+					<LinkInsertButton />	{/* Popup, not block element */}
 					{/* <Divider orientation="vertical" flexItem /> */}
 					<BlockButton block="orderedList" icon={<FormatListNumberedIcon />} label="orderedList" />
 					<BlockButton block="unorderedList" icon={<FormatListBulletedIcon />} label="unorderedList" />
@@ -265,6 +271,50 @@ const ImageUploadButton = (props: any) => {
 			</IconButton>
 		</span>
 	)
+}
+
+const LinkInsertButton = (props: any) => {
+	const editor = useSlate();
+
+	const [href, setHref] = useState('');
+	const [open, setOpen] = useState(false);
+	const [displayText, setDisplayText] = useState('');
+	const [anchorEl, setAnochorEl] = useState<null | HTMLElement>(null);
+
+	const handleClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+		setOpen(!open);
+		e.stopPropagation();
+		setAnochorEl(e.currentTarget);
+	};
+
+	const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, setter: React.Dispatch<React.SetStateAction<string>>) => {
+		e.stopPropagation();
+		setter(e.target.value);
+	};
+
+	const createLink = () => {
+		Transforms.insertNodes(editor, { type: 'link', href, displayText, children: [{ text: '' }] });
+		Transforms.insertNodes(editor, { type: 'paragraph', children: [{ text: '' }] });
+	}
+
+	// TODO: Close on outside click or change to dialogue
+	// TODO: Cmd + click should open link if link is selected
+	// TODO: Links should be inline-block
+	// TODO: Pressing enter at link-end creates a new link
+	return (
+		<IconButton aria-label={"Insert link"} onClick={(e) => handleClick(e)}>
+			<InsertLinkOutlinedIcon />
+			<Popper open={open} anchorEl={anchorEl}>
+				<Box sx={{ border: 1, p: 1, bgcolor: 'background.paper' }}>
+					<TextField onClick={(e) => e.stopPropagation()} label="Link" variant="outlined" size="small" onChange={e => handleChange(e, setHref)} />
+					<TextField onClick={(e) => e.stopPropagation()} label="Display" variant="outlined" size="small" onChange={e => handleChange(e, setDisplayText)} />
+					<Button variant="contained" onClick={createLink}>
+						Create
+					</Button>
+				</Box>
+			</Popper>
+		</IconButton>
+	);
 }
 
 const BlockButton = (props: any) => {

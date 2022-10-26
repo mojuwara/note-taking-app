@@ -9,6 +9,7 @@ export const isWrappedType = (blk: string) => ["unorderedList", "orderedList"].i
 const EditorCommands = {
 	insertImage(editor: CustomEditor, url: string) {
 		const image: ImageElement = { type: 'image', url, children: [{ text: '' }] };
+		// Transforms.insertNodes(editor, { type: 'paragraph', children: [{ text: '' }] });
 		Transforms.insertNodes(editor, image);
 		Transforms.insertNodes(editor, { type: 'paragraph', children: [{ text: '' }] });
 	},

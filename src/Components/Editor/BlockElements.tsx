@@ -4,7 +4,7 @@ import Popper from '@mui/material/Popper';
 
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
-import { getElemText } from '../../Utils';
+// import { getElemText } from '../../Utils';
 import { useSelected,	useFocused } from 'slate-react';
 
 // Contains the actual block elements
@@ -108,7 +108,9 @@ export const ImageBlockElement = (props: any) => {
 	const focused = useFocused();
 	return (
 		<div {...props.attributes}>
-			{props.children}
+			<div style={{width: 0, height: 0}}>
+				{props.children}
+			</div>
 			<div contentEditable={false}>
 				<img style={{
 					display: 'block',
@@ -123,10 +125,12 @@ export const ImageBlockElement = (props: any) => {
 	)
 }
 
-export const AnchorBlockElement = (props: any) => {
-	const url = getElemText(props.element);
+export const LinkBlockElement = (props: any) => {
 	return (
-		<a href={url} {...props.attributes}>
+		<a href={props.element.href} {...props.attributes}>
+			{/* <span> */}
+				{props.element.displayText}
+			{/* </span> */}
 			{props.children}
 		</a>
 	);
