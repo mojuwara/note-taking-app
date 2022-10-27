@@ -104,7 +104,7 @@ const MyToolbar = (props: ToolbarProps) => {
 	const transitionClass = getTransitionElemClass(props.drawerOpen);
 
 	return (
-		<>
+		<Box>
 			{creatingFile && <CreateItemDialog
 				label="File Name"
 				onCreate={createFile}
@@ -152,7 +152,7 @@ const MyToolbar = (props: ToolbarProps) => {
 
 				<Directory {...props} directory={directory} />
 			</Drawer>
-		</>
+		</Box>
 	);
 }
 

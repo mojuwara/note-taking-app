@@ -1,7 +1,7 @@
 // import isUrl from 'is-url'
 
 // import { ImageExtensions } from '../../Constants';
-import { CustomEditor } from '../../Types';
+import { CustomEditor, CustomElement } from '../../Types';
 import EditorCommands from './EditorCommands';
 
 // Support drag-and-drop and copy-paste images
@@ -14,10 +14,14 @@ export const withImages = (e: CustomEditor): CustomEditor => {
 	// 	return parts[parts.length - 1] in ImageExtensions;
 	// }
 
-	const { isVoid, insertData } = e;
+	const { isVoid, insertData, isInline } = e;
 
 	e.isVoid = element => {
 		return element.type === 'image' ? true : isVoid(element);
+	}
+
+	e.isInline = (elem: CustomElement) => {
+		return elem.type === 'image' ? true : isInline(elem);
 	}
 
 	e.insertData = (data: DataTransfer) => {
@@ -41,5 +45,17 @@ export const withImages = (e: CustomEditor): CustomEditor => {
 		}
 	}
 
+	return e;
+};
+
+export const withEnhance = (e: CustomEditor): CustomEditor => {
+	// const { isInline } = e;
+	// e.isInline = (elem: CustomElement) => {
+	// 	const inlineElems = ['link'];
+	// 	if (inlineElems.includes(elem.type))
+	// 		return true;
+
+	// 	return isInline(elem);
+	// }
 	return e;
 }

@@ -26,7 +26,7 @@ function App() {
 
 	return (
 		<ThemeProvider theme={AppTheme}>
-			<Box sx={{display: 'flex', flexDirection: 'column'}}>
+			<Box sx={{display: 'flex', flexDirection: 'column', width: '100%', height: '100%'}}>
 				<MyToolbar
 					drawerOpen={drawerOpen}
 					fileSelection={fileSelection}

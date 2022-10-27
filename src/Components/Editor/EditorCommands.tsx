@@ -1,4 +1,4 @@
-import { CustomEditor, ImageElement } from '../../Types';
+import { ContainerElement, CustomEditor, ImageElement } from '../../Types';
 import { Editor, Transforms, Element as SlateElement } from 'slate'
 
 
@@ -8,10 +8,33 @@ export const isWrappedType = (blk: string) => ["unorderedList", "orderedList"].i
 // Helper functions we can reuse
 const EditorCommands = {
 	insertImage(editor: CustomEditor, url: string) {
+		// Delete currently selected node if it's empty
+		Transforms.removeNodes(editor, {
+			match: (n) => !Editor.isEditor(n) && SlateElement.isElement(n) && Editor.isEmpty(editor, n),
+		});
+
 		const image: ImageElement = { type: 'image', url, children: [{ text: '' }] };
-		// Transforms.insertNodes(editor, { type: 'paragraph', children: [{ text: '' }] });
-		Transforms.insertNodes(editor, image);
-		Transforms.insertNodes(editor, { type: 'paragraph', children: [{ text: '' }] });
+		const imageContainer: ContainerElement = { type: 'container', children: [image]};
+		Transforms.insertNodes(editor, imageContainer);
+
+		if (editor.selection?.focus) {
+			Transforms.select(editor, {path: editor.selection?.focus.path, offset: 1} );
+		}
+		console.log(editor.selection);
+	},
+
+	onElemType(editor: CustomEditor, type: string) {
+		const matches = Array.from(Editor.nodes(editor, {
+			match: (n) => !Editor.isEditor(n) && SlateElement.isElement(n) && n.type === type,
+		}));
+		return !!matches.length;
+	},
+
+	getElemType(editor: CustomEditor, type: string) {
+		const matches = Array.from(Editor.nodes(editor, {
+			match: (n) => !Editor.isEditor(n) && SlateElement.isElement(n) && n.type === type,
+		}));
+		return matches;
 	},
 
 	// Returns true if the given mark is active on the selected text

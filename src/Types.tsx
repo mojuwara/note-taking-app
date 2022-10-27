@@ -10,14 +10,19 @@ export type CustomText = { text: string; bold?: boolean, italic?: boolean, under
 export type GenericElement = { type: string, children: CustomText[] }
 export type CodeElement = { type: 'code'; children: CustomText[] }
 export type ParagraphElement = { type: 'paragraph'; children: CustomText[] }
-export type LinkElement = { type: 'link'; href: string, displayText: string, children: CustomText[] }
+export type LinkElement = { type: 'link'; href: string, children: CustomText[] }
 export type H1Element = { type: 'h1'; children: CustomText[] }
 export type H2Element = { type: 'h2'; children: CustomText[] }
 export type H3Element = { type: 'h3'; children: CustomText[] }
 export type ImageElement = { type: 'image', url: string, children: CustomText[] }
+export type CursorElement = { type: 'cursor', children: CustomText[] };
+
+export type ContainerElement = {type: 'container', children: (CustomElement | CustomText)[] }
 
 export type CustomElement = GenericElement
 	| ParagraphElement
+	| ContainerElement
+	| CursorElement
 	| ImageElement
 	| CodeElement
 	| LinkElement

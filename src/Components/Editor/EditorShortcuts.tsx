@@ -1,3 +1,4 @@
+import { Transforms } from 'slate';
 import { CustomEditor } from '../../Types';
 import EditorCommands from './EditorCommands';
 
@@ -38,6 +39,17 @@ const editorShortcuts = (editor: CustomEditor, event: React.KeyboardEvent<HTMLDi
 	if (ctrlKey && event.key === '3') {
 		event.preventDefault();
 		EditorCommands.toggleBlock(editor, "h3");
+	}
+
+	if (event.key === 'Enter' && EditorCommands.onElemType(editor, 'image')) {
+		event.preventDefault();
+		// const [node] = EditorCommands.getElemType(editor, 'image');
+		Transforms.insertNodes(editor, {type: 'paragraph', children: [{text: ''}]});
+	}
+
+	if (event.key === "Backspace") {
+		// event.preventDefault();
+
 	}
 }
 

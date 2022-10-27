@@ -40,9 +40,11 @@ export const BlockElementContainer = ({ element, suggestions }: any) => {
 
 // Element renderers
 export const DefaultBlockElement = (props: any) => {
-	return (
-		<p {...props.attributes} style={{margin: 4, display: 'inline-block'}}>{props.children}</p>
-	);
+	return <span {...props.attributes}>{props.children}</span>;
+}
+
+export const ParagraphBlockElement = (props: any) => {
+	return <p {...props.attributes}>{props.children}</p>;
 }
 
 export const CodeBlockElement = (props: any) => {
@@ -103,34 +105,38 @@ export const H3BlockElement = (props: any) => {
 	);
 }
 
+export const ContainerBlockElement = (props: any) => {
+	return <div {...props.attributes}>{props.children}</div>;
+}
+
 export const ImageBlockElement = (props: any) => {
 	const selected = useSelected();
 	const focused = useFocused();
 	return (
-		<div {...props.attributes}>
-			<div style={{width: 0, height: 0}}>
+		<span {...props.attributes}>
+			<span style={{width: 0, height: 0}}>
 				{props.children}
-			</div>
-			<div contentEditable={false}>
+			</span>
+			<span contentEditable={false}>
 				<img style={{
-					display: 'block',
 					maxWidth: '100%',
 					maxHeight: '20em',
 					marginTop: 1,
 					marginBottom: 1,
 					boxShadow: selected && focused ? '0 0 0 3px #B4D5FF' : 'none',
 				}} alt={props.url} src={props.element.url} />
-			</div>
-		</div>
+			</span>
+		</span>
 	)
 }
 
 export const LinkBlockElement = (props: any) => {
 	return (
-		<a href={props.element.href} {...props.attributes}>
-			{/* <span> */}
-				{props.element.displayText}
-			{/* </span> */}
+		<a
+			{...props.attributes}
+			href={props.element.href}
+			onClick={(e) => { if (e.metaKey) { window.open(props.element.href, '_blank') } }}
+		>
 			{props.children}
 		</a>
 	);

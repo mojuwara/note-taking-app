@@ -10,7 +10,7 @@ import {
 	getTransitionElemClass,
 } from "../../Utils";
 
-import { CustomElement, LinkElement } from "../../Types";
+import { CustomElement } from "../../Types";
 
 import { createEditor, Transforms } from 'slate'
 import { Slate, Editable, withReact, useSlate } from 'slate-react'
@@ -37,7 +37,7 @@ import Popper from '@mui/material/Popper';
 
 import EditorCommands from "./EditorCommands";
 import editorShortcuts from "./EditorShortcuts";
-import { withImages } from "./EditorPlugins";
+import { withEnhance, withImages } from "./EditorPlugins";
 
 import {
 	H1BlockElement,
@@ -51,6 +51,8 @@ import {
 	OrderedListBlockElement,
 	UnorderedListBlockElement,
 	LinkBlockElement,
+	ContainerBlockElement,
+	ParagraphBlockElement,
 } from './BlockElements';
 
 // import axios from "axios";
@@ -85,7 +87,7 @@ function MyEditor(props: EditorProps) {
 	const [timeoutID, setTimeoutID] = useState<NodeJS.Timer>();
 
 	// Editor object
-	const editor = useMemo(() => withImages(withHistory(withReact(createEditor()))), []);
+	const editor = useMemo(() => withEnhance(withImages(withHistory(withReact(createEditor())))), []);
 
 	// Object where each key is the plain text in a block and its value is an array of strings
 	// const [suggestions, setSuggestions] = useState<any>({});
@@ -177,6 +179,10 @@ function MyEditor(props: EditorProps) {
 				return <ImageBlockElement {...props} />;
 			case 'link':
 				return <LinkBlockElement {...props} />;
+			case 'container':
+				return <ContainerBlockElement {...props} />;
+			case 'paragraph':
+				return <ParagraphBlockElement {...props} />;
 			default:
 				return <DefaultBlockElement {...props} />;
 		}
@@ -184,14 +190,18 @@ function MyEditor(props: EditorProps) {
 
 	const renderElement = (props: any) => {
 		let element = getBlockElement(props);
-		const elemSuggestions = getElemSuggestions(props.element);
-		return <BlockElementContainer element={element} suggestions={elemSuggestions} />
+		return element;
+		// const elemSuggestions = getElemSuggestions(props.element);
+		// return <BlockElementContainer element={element} suggestions={elemSuggestions} />
 	};
 
 	const renderLeaf = useCallback((props: any) => <Leaf {...props} />, []);
 
+	console.log(editor.children);
+	console.log(editor.selection);
+
 	return (
-		<Box className={getTransitionElemClass(props.drawerOpen)}>
+		<Box className={getTransitionElemClass(props.drawerOpen)} sx={{ flex: '1' }}>
 			<Slate editor={editor} value={initialValue} onChange={handleEditorChange}>
 				<Toolbar variant="dense" sx={{justifyContent: "center"}}>
 					<MarkButton mark="bold" icon={<FormatBoldIcon />} label="bold" />
@@ -202,8 +212,8 @@ function MyEditor(props: EditorProps) {
 					{/* <Divider orientation="vertical" flexItem /> */}
 					<BlockButton block="orderedList" icon={<FormatListNumberedIcon />} label="orderedList" />
 					<BlockButton block="unorderedList" icon={<FormatListBulletedIcon />} label="unorderedList" />
-					<BlockButton block="table" icon={<TableRowsOutlinedIcon /> } label="table" />
-					<ImageUploadButton />
+					<InsertTableButton />
+					<UploadImageButton />
 				</Toolbar>
 				<Divider />
 				<Editable
@@ -239,10 +249,9 @@ const MarkButton = (props: any) => {
 	)
 }
 
-const ImageUploadButton = (props: any) => {
+const UploadImageButton = (props: any) => {
 	const editor = useSlate();
 	const handleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-		console.log(e)
 		if (!e.target.files || !e.target.files.length)
 			return;
 
@@ -259,7 +268,6 @@ const ImageUploadButton = (props: any) => {
 			}
 
 		}
-		console.log(transferObj);
 		editor.insertData(transferObj);
 	}
 
@@ -293,12 +301,11 @@ const LinkInsertButton = (props: any) => {
 	};
 
 	const createLink = () => {
-		Transforms.insertNodes(editor, { type: 'link', href, displayText, children: [{ text: '' }] });
-		Transforms.insertNodes(editor, { type: 'paragraph', children: [{ text: '' }] });
+		Transforms.insertNodes(editor, { type: 'link', href, children: [{ text: displayText }] });
 	}
 
 	// TODO: Close on outside click or change to dialogue
-	// TODO: Cmd + click should open link if link is selected
+	// TODO: Cmd + click should open link if link is selected, override editor.insertText
 	// TODO: Links should be inline-block
 	// TODO: Pressing enter at link-end creates a new link
 	return (
@@ -315,6 +322,17 @@ const LinkInsertButton = (props: any) => {
 			</Popper>
 		</IconButton>
 	);
+}
+
+const InsertTableButton = (props: any) => {
+	const handleClick = () => {
+
+	}
+	return (
+		<IconButton aria-label={"Insert link"} onClick={(e) => handleClick()}>
+			<TableRowsOutlinedIcon />
+		</IconButton>
+	)
 }
 
 const BlockButton = (props: any) => {
