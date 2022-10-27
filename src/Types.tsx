@@ -17,6 +17,13 @@ export type H3Element = { type: 'h3'; children: CustomText[] }
 export type ImageElement = { type: 'image', url: string, children: CustomText[] }
 export type CursorElement = { type: 'cursor', children: CustomText[] };
 
+export type TableDataElement = { type: 'table-data', children: CustomText[] };
+export type TableHeaderElement = { type: 'table-header', children: CustomText[] };
+export type TableRowElement = { type: 'table-row', children: TableHeaderElement[] | TableDataElement[]  };
+export type TableBodyElement = { type: 'table-body', children: TableRowElement[] };
+export type TableHeadElement = { type: 'table-head', children: TableRowElement[] };
+export type TableElement = { type: 'table', children: (TableHeadElement | TableBodyElement)[] };
+
 export type ContainerElement = {type: 'container', children: (CustomElement | CustomText)[] }
 
 export type CustomElement = GenericElement
@@ -24,6 +31,7 @@ export type CustomElement = GenericElement
 	| ContainerElement
 	| CursorElement
 	| ImageElement
+	| TableElement
 	| CodeElement
 	| LinkElement
 	| H1Element

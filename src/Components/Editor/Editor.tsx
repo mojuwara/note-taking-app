@@ -10,7 +10,7 @@ import {
 	getTransitionElemClass,
 } from "../../Utils";
 
-import { CustomElement } from "../../Types";
+import { TableBodyElement, TableDataElement, TableElement, TableHeadElement, TableHeaderElement, TableRowElement } from "../../Types";
 
 import { createEditor, Transforms } from 'slate'
 import { Slate, Editable, withReact, useSlate } from 'slate-react'
@@ -47,12 +47,17 @@ import {
 	ImageBlockElement,
 	DefaultBlockElement,
 	ListItemBlockElement,
-	BlockElementContainer,
 	OrderedListBlockElement,
 	UnorderedListBlockElement,
 	LinkBlockElement,
 	ContainerBlockElement,
 	ParagraphBlockElement,
+	TableBlockElement,
+	TableHeadBlockElement,
+	TableRowBlockElement,
+	TableHeaderBlockElement,
+	TableBodyBlockElement,
+	TableDataBlockElement,
 } from './BlockElements';
 
 // import axios from "axios";
@@ -132,6 +137,7 @@ function MyEditor(props: EditorProps) {
 
 	// Save editor contents if there were any text changes
 	const handleEditorChange = (value: any) => {
+		console.log("Change", value);
 		const isAstChange = editor.operations.some(
 			op => 'set_selection' !== op.type
 		)
@@ -151,13 +157,13 @@ function MyEditor(props: EditorProps) {
 
 	// Find suggestions, if any, for the given block element
 	// TODO: Still doing suggestions?
-	const getElemSuggestions = (element: CustomElement): string[] => {
+	// const getElemSuggestions = (element: CustomElement): string[] => {
 		// const text = getElemText(element);
 		// if (text in suggestions)
 		// 	return suggestions[text];
 
-		return [];
-	}
+		// return [];
+	// }
 
 	const getBlockElement = (props: any) => {
 		switch (props.element.type) {
@@ -183,6 +189,18 @@ function MyEditor(props: EditorProps) {
 				return <ContainerBlockElement {...props} />;
 			case 'paragraph':
 				return <ParagraphBlockElement {...props} />;
+			case 'table':
+				return <TableBlockElement {...props} />;
+			case 'table-head':
+				return <TableHeadBlockElement {...props} />;
+			case 'table-row':
+				return <TableRowBlockElement {...props} />;
+			case 'table-header':
+				return <TableHeaderBlockElement {...props} />;
+			case 'table-body':
+				return <TableBodyBlockElement {...props} />;
+			case 'table-data':
+				return <TableDataBlockElement {...props} />;
 			default:
 				return <DefaultBlockElement {...props} />;
 		}
@@ -325,9 +343,35 @@ const LinkInsertButton = (props: any) => {
 }
 
 const InsertTableButton = (props: any) => {
+	const editor = useSlate();
+	/**
+	 * <table>
+	 * 	<thead>
+	 * 		<tr>
+	 * 			<th>Col Name</th>
+	 * 		<tr>
+	 * 	</thead>
+	 * 	<tbody>
+	 * 		<tr>
+	 * 			<td>Row data</td>
+	 * 		</tr>
+	 * 	</tbody>
+	 * </table>
+	 */
 	const handleClick = () => {
+		const headCell: TableHeaderElement = { type: 'table-header', children: [{text: ''}]};
+		const headerRow: TableRowElement = {type: 'table-row', children: [headCell]};
+		const tableHead: TableHeadElement = {type: 'table-head', children: [headerRow]};
 
+		const bodyCell: TableDataElement = {type: 'table-data', children: [{text: ''}]};
+		const bodyRow: TableRowElement = {type: 'table-row', children: [bodyCell] };
+		const tableBody: TableBodyElement = {type: 'table-body', children: [bodyRow]};
+
+		const table: TableElement = {type: 'table', children: [tableHead, tableBody]};
+
+		Transforms.insertNodes(editor, table);
 	}
+
 	return (
 		<IconButton aria-label={"Insert link"} onClick={(e) => handleClick()}>
 			<TableRowsOutlinedIcon />

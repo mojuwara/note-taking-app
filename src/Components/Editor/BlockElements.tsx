@@ -141,3 +141,34 @@ export const LinkBlockElement = (props: any) => {
 		</a>
 	);
 }
+
+export const TableBlockElement = (props: any) => {
+	return (
+		<table
+			border={1}
+			{...props.attributes}
+			style={{borderCollapse: "collapse"}}
+		>
+			{props.children}
+		</table>);
+}
+
+export const TableHeadBlockElement = (props: any) => {
+	return <thead {...props.attributes}>{props.children}</thead>;
+}
+
+export const TableRowBlockElement = (props: any) => {
+	return <tr {...props.attributes}>{props.children}</tr>;
+}
+
+export const TableHeaderBlockElement = (props: any) => {
+	return <th style={{minHeight: 24, minWidth: 64}} {...props.attributes}>{props.children}</th>;
+}
+
+export const TableBodyBlockElement = (props: any) => {
+	return <tbody {...props.attributes}>{props.children}</tbody>;
+}
+
+export const TableDataBlockElement = (props: any) => {
+	return <td style={{ minHeight: 24, minWidth: 64 }} {...props.attributes}>{props.children}</td>;
+}
