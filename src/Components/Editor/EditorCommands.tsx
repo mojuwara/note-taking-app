@@ -1,40 +1,240 @@
-import { ContainerElement, CustomEditor, ImageElement } from '../../Types';
-import { Editor, Transforms, Element as SlateElement } from 'slate'
+import {
+	TableBodyElement,
+	TableDataElement,
+	TableElement,
+	TableHeadElement,
+	TableHeaderElement,
+	TableRowElement,
+	CustomEditor,
+	ImageElement,
+	// TableContainerElement,
+} from "../../Types";
+
+import { Editor, Transforms, Element as SlateElement, Location, Node, NodeEntry, Path } from 'slate'
 
 
 // Truen if the element exists just to wrap other elements(Ex with <ul>: <ul><li>...</li></ul>)
 export const isWrappedType = (blk: string) => ["unorderedList", "orderedList"].includes(blk);
 
 // Helper functions we can reuse
+// TODO: Split TableCommands?
 const EditorCommands = {
 	insertImage(editor: CustomEditor, url: string) {
-		// Delete currently selected node if it's empty
-		Transforms.removeNodes(editor, {
-			match: (n) => !Editor.isEditor(n) && SlateElement.isElement(n) && Editor.isEmpty(editor, n),
-		});
-
 		const image: ImageElement = { type: 'image', url, children: [{ text: '' }] };
-		const imageContainer: ContainerElement = { type: 'container', children: [image]};
-		Transforms.insertNodes(editor, imageContainer);
-
-		if (editor.selection?.focus) {
-			Transforms.select(editor, {path: editor.selection?.focus.path, offset: 1} );
-		}
-		console.log(editor.selection);
+		Transforms.insertNodes(editor, image);
 	},
 
+	insertTable(editor: CustomEditor) {
+		/**
+		 * // Each table has at least one column and at least two rows(header + data)
+		 * <div>
+		* 	<table>
+		* 		<thead>
+		* 			<tr>
+		* 				<th>Col Name</th>
+		*					<th>Col Name</th>
+		*	 			<tr>
+		* 		</thead>
+		* 		<tbody>
+		* 			<tr>
+		* 				<td>Row data</td>
+		* 				<td>Row data</td>
+		* 			</tr>
+		* 		</tbody>
+		* 	</table>
+		*  </dvi>
+		 */
+		const headCell1: TableHeaderElement = { type: 'table-header', pos: [0, 0], children: [{ text: '' }] };
+		const headCell2: TableHeaderElement = { type: 'table-header', pos: [0, 1], children: [{ text: '' }] };
+
+		const headerRow: TableRowElement = { type: 'table-row', children: [headCell1, headCell2] };
+		const tableHead: TableHeadElement = { type: 'table-head', children: [headerRow] };
+
+		const bodyCell1: TableDataElement = { type: 'table-data', pos: [1, 0], children: [{ text: '' }] };
+		const bodyCell2: TableDataElement = { type: 'table-data', pos: [1, 1], children: [{ text: '' }] };
+
+		const bodyRow: TableRowElement = { type: 'table-row', children: [bodyCell1, bodyCell2] };
+		const tableBody: TableBodyElement = { type: 'table-body', children: [bodyRow] };
+
+		const table: TableElement = { type: 'table', children: [tableHead, tableBody] };
+		// const container: TableContainerElement = { type: 'table-container', children: [table]};
+		Transforms.insertNodes(editor, table);
+	},
+
+	addTableCol(editor: CustomEditor, colNum: number, dir: 'left' | 'right') {
+		const [, path] = EditorCommands.getElemType(editor, "table");
+
+		const rowGenerator = Editor.nodes(editor, {
+			at: path,
+			match: n => !Editor.isEditor(n) && SlateElement.isElement(n) && n.type === 'table-row'
+		});
+
+		let rowNum = 0;
+		while (true) {
+			const val = rowGenerator.next();
+			if (!val?.value)
+				break;
+
+			const [, loc] = val.value;
+			Transforms.insertNodes(editor,
+				{
+					type: (rowNum === 0) ? 'table-header' : 'table-data',
+					pos: [-1, -1],
+					children: [{text: ''}]
+				},
+				{at: [...loc, (dir === 'left') ? colNum : colNum + 1]}
+			);
+			rowNum++;
+		}
+
+		EditorCommands.updateTableCellsPos(editor);
+	},
+
+	onLastCell(editor: CustomEditor) {
+		if (!EditorCommands.onElemType(editor, "table"))
+			return false;
+
+		const [tableNode, path] = EditorCommands.getElemType(editor, "table");
+		if (!SlateElement.isElement(tableNode) || !(tableNode.type === "table") || !tableNode.selectedPos)
+			return;
+
+		const cells = Array.from(Editor.nodes(editor, {
+			at: path,
+			match: n => !Editor.isEditor(n) && SlateElement.isElement(n) && n.type === 'table-data'
+		}));
+
+		const lastCell = cells.pop();
+
+		return lastCell
+			&& SlateElement.isElement(lastCell[0])
+			&& lastCell[0].type === 'table-data' && lastCell[0].pos
+			&& lastCell[0].pos.toString() === tableNode.selectedPos.toString();
+	},
+
+	addTableRow(editor: CustomEditor, rowNum: number, dir: 'above' | 'below') {
+		rowNum -= 1;	// To account for header row
+		const [tableBody, loc] = EditorCommands.getElemType(editor, "table-body");
+		if (!SlateElement.isElement(tableBody) || !SlateElement.isElement(tableBody.children[0]))	// For typescript
+			return;
+
+		const nCols = tableBody.children[0].children.length;
+		const rowChildren: TableDataElement[] = [];
+		for (let i = 0; i < nCols; i++)
+			rowChildren.push({type: 'table-data', pos: [-1, -1], children: [{text: ''}]});
+
+		Transforms.insertNodes(editor,
+			{type: 'table-row', children: rowChildren},
+			{ at: [...loc, (dir === 'above') ? rowNum : rowNum + 1] }
+		);
+
+		EditorCommands.updateTableCellsPos(editor);
+	},
+
+	updateTableCellsPos(editor: CustomEditor) {
+		if (!EditorCommands.onElemType(editor, "table"))
+			return;
+
+		const [, loc] = EditorCommands.getElemType(editor, "table");
+
+		const rowGenerator = Editor.nodes(editor, {
+			at: loc,
+			match: n => !Editor.isEditor(n) && SlateElement.isElement(n) && n.type === 'table-row'
+		});
+
+		let rowNum = 0;
+		while (true) {
+			const rowNode = rowGenerator.next();
+			if (!rowNode?.value)
+				break;
+
+			const [, rowLoc] = rowNode.value;
+			const cellGenerator = Editor.nodes(editor, {
+				at: rowLoc,
+				match: n => !Editor.isEditor(n) && SlateElement.isElement(n) && (n.type === 'table-data' || n.type === 'table-header')
+			});
+
+			let colNum = 0;
+			while (true) {
+				const cellNode = cellGenerator.next();
+				if (!cellNode?.value)
+					break;
+
+				const [, cellLoc] = rowNode.value;
+				Transforms.setNodes(editor, {pos: [rowNum, colNum]}, {at: [...cellLoc, colNum]});
+				colNum++;
+			}
+			rowNum++;
+		}
+	},
+
+	// TODO: Remove selectedCell when selection moves outside of table
+	updateTableSelection(editor: CustomEditor) {
+		if (!EditorCommands.onElemType(editor, "table") || !editor.selection?.anchor?.path)
+			return;
+
+		// Parent table
+		const tableNode = Editor.nodes(editor, {
+			at: editor.selection?.anchor?.path,
+			match: (n) => !Editor.isEditor(n) && SlateElement.isElement(n)
+		}).next().value;
+		if (!tableNode)
+			return;
+
+		// Currently selected cell in table
+		const selectedCellNode = Editor.nodes(editor, {
+			at: editor.selection?.anchor?.path,
+			match: (n) => !Editor.isEditor(n) && SlateElement.isElement(n) && (n.type === 'table-header' || n.type === 'table-data')
+		}).next().value;
+		if (!selectedCellNode)
+			return;
+
+		// Recursively update all child nodes to store current selected cell
+		if (SlateElement.isElement(tableNode[0]) && SlateElement.isElement(selectedCellNode[0]) && (selectedCellNode[0].type === 'table-header' || selectedCellNode[0].type === 'table-data')) {
+			const value = selectedCellNode[0].pos;
+
+			Transforms.setNodes(editor, {'selectedPos': value}, { at: tableNode[1] });
+			EditorCommands.recursivelySet(editor, tableNode, 'selectedPos', value);
+		}
+	},
+
+	recursivelySet(editor: CustomEditor, root: NodeEntry<Node>, field: string, val: any) {
+		const descendantsGen = Node.descendants(root[0]);
+		while (true) {
+			const nodeEntry = descendantsGen.next();
+			if (!nodeEntry?.value)
+				return
+
+			const newProp: any = {};
+			newProp[field] = val;
+
+			const [node, subPath] = nodeEntry.value;	// Just the path from current 'root' node
+			let fullPath = root[1].concat(subPath);
+			Transforms.setNodes(editor, newProp, {at: fullPath});
+
+			EditorCommands.recursivelySet(editor, [node, fullPath], field, val);
+		}
+	},
+
+	// Check if the last element is an element of given type
 	onElemType(editor: CustomEditor, type: string) {
 		const matches = Array.from(Editor.nodes(editor, {
 			match: (n) => !Editor.isEditor(n) && SlateElement.isElement(n) && n.type === type,
 		}));
-		return !!matches.length;
+		if (!matches.length)
+			return false
+
+		const node = matches[matches.length-1][0];
+		return SlateElement.isElement(node) && node.type === type;
 	},
 
+	// Assumes you've already checked if onElemType
 	getElemType(editor: CustomEditor, type: string) {
 		const matches = Array.from(Editor.nodes(editor, {
 			match: (n) => !Editor.isEditor(n) && SlateElement.isElement(n) && n.type === type,
 		}));
-		return matches;
+
+		const node = matches[matches.length - 1];
+		return node;
 	},
 
 	// Returns true if the given mark is active on the selected text

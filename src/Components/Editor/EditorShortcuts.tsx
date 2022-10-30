@@ -1,7 +1,8 @@
-import { Transforms } from 'slate';
 import { CustomEditor } from '../../Types';
 import EditorCommands from './EditorCommands';
+import { Element as SlateElement } from 'slate';
 
+// Triggers before any change to the editor, selection will be one step behind if arrow pressed
 const editorShortcuts = (editor: CustomEditor, event: React.KeyboardEvent<HTMLDivElement>) => {
 	// metaKey is Cmd on Mac
 	const ctrlKey = event.ctrlKey || event.metaKey;
@@ -41,16 +42,19 @@ const editorShortcuts = (editor: CustomEditor, event: React.KeyboardEvent<HTMLDi
 		EditorCommands.toggleBlock(editor, "h3");
 	}
 
-	if (event.key === 'Enter' && EditorCommands.onElemType(editor, 'image')) {
+	if (event.key === 'Enter' && EditorCommands.onElemType(editor, "table")) {
 		event.preventDefault();
-		// const [node] = EditorCommands.getElemType(editor, 'image');
-		Transforms.insertNodes(editor, {type: 'paragraph', children: [{text: ''}]});
+
+		// Add new row below if 'Enter' is pressed on the last cell
+		const [tableNode] = EditorCommands.getElemType(editor, "table");
+		if (!tableNode || !SlateElement.isElement(tableNode) || tableNode.type !== 'table')
+			return;
+
+			// TODO: Update selection to first cell in new row
+		if (tableNode.selectedPos && EditorCommands.onLastCell(editor))
+			EditorCommands.addTableRow(editor, tableNode.selectedPos[0], 'below');
 	}
 
-	if (event.key === "Backspace") {
-		// event.preventDefault();
-
-	}
 }
 
 export default editorShortcuts;

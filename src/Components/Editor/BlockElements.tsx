@@ -1,11 +1,19 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 
 import Popper from '@mui/material/Popper';
 
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
-// import { getElemText } from '../../Utils';
-import { useSelected,	useFocused } from 'slate-react';
+import { useSelected,	useFocused, useSlate } from 'slate-react';
+import { Tuple } from '../../Types';
+
+import IconButton from '@mui/material/IconButton';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import EditorCommands from './EditorCommands';
+import { Node, NodeEntry } from 'slate';
 
 // Contains the actual block elements
 export const BlockElementContainer = ({ element, suggestions }: any) => {
@@ -142,27 +150,103 @@ export const LinkBlockElement = (props: any) => {
 	);
 }
 
+// export const TableContainerBlockElement = (props: any) => {
+// 	const table: TableElement = props.children[0];
+// 	const tableBody: TableBodyElement = table.children[1] as TableBodyElement;	// Child is always a table
+
+// 	const nRows = tableBody.children.length + 1;					// +1 for the table header row
+// 	const nCols = tableBody.children[0].children.length;	// Number of data cells in first data row
+
+// 	// Augment table children with contendEditable=false cells  +2 rows and borders
+// 	const tableElems = [];
+// 	for (let i = 0; i < nRows + 2; i++) {
+// 		for (let j = 0; j < nCols + 2; j++) {
+
+// 		}
+// 	}
+
+// 	return (
+// 		<table border={0}>
+// 			<tbody>
+
+// 			</tbody>
+// 		</table>
+// 	)
+// }
+
 export const TableBlockElement = (props: any) => {
+	// const selected = useSelected();
+	// const focused = useFocused();
+
 	return (
 		<table
 			border={1}
 			{...props.attributes}
-			style={{borderCollapse: "collapse"}}
+			style={{
+				marginTop: 40,
+				marginLeft: 40,
+				borderCollapse: "collapse",
+				// boxShadow: selected && focused ? '0 0 0 3px #B4D5FF' : 'none',
+			}}
 		>
 			{props.children}
 		</table>);
 }
 
 export const TableHeadBlockElement = (props: any) => {
-	return <thead {...props.attributes}>{props.children}</thead>;
+	return <thead style={{backgroundColor: 'lightsteelblue'}} {...props.attributes}>{props.children}</thead>;
 }
 
 export const TableRowBlockElement = (props: any) => {
 	return <tr {...props.attributes}>{props.children}</tr>;
 }
 
+// TODO - Center the horizontal button
 export const TableHeaderBlockElement = (props: any) => {
-	return <th style={{minHeight: 24, minWidth: 64}} {...props.attributes}>{props.children}</th>;
+	const editor = useSlate();
+	const [menuOpen, setMenuOpen] = useState(false);
+	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>();
+
+	const pos: Tuple<number> = props.element?.pos;
+	const selectedPos: Tuple<number> = props.element?.selectedPos;
+	const onCol = selectedPos && selectedPos[1] === pos[1];
+
+	const handleClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+		e.preventDefault();
+		e.stopPropagation();
+
+		setMenuOpen(!menuOpen);
+		setAnchorEl(e.currentTarget);
+	}
+
+	const handleDoubleClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+		e.preventDefault();
+		e.stopPropagation();
+	}
+
+	// const getParentTable = (): NodeEntry<Node> | null => {
+	// 	EditorNo
+	// 	const ancestGen = Node.descendants()
+	// }
+
+	const addCol = (dir: 'left' | 'right') => {
+		setMenuOpen(false);
+		EditorCommands.addTableCol(editor, pos[1], dir);
+	}
+
+	return (
+		<th style={{ position: 'relative', minHeight: 34, minWidth: 64 }} {...props.attributes}>
+			{onCol && <IconButton contentEditable={false} onDoubleClick={e => handleDoubleClick(e)} onClick={e => handleClick(e)} size='small' aria-label='table column options' sx={{position: 'absolute', bottom: 22, zIndex: 1}}>
+				<MoreHorizIcon />
+			</IconButton>}
+			<Menu anchorEl={anchorEl} open={menuOpen} onClose={() => setMenuOpen(false)}>
+				<MenuItem onClick={() => addCol('left')}>Insert col to left</MenuItem>
+				<MenuItem onClick={() => addCol('right')}>Insert col to right</MenuItem>
+			</Menu>
+			{/* {props.element?.pos?.toString()} */}
+			{props.children}
+		</th>
+	);
 }
 
 export const TableBodyBlockElement = (props: any) => {
@@ -170,5 +254,51 @@ export const TableBodyBlockElement = (props: any) => {
 }
 
 export const TableDataBlockElement = (props: any) => {
-	return <td style={{ minHeight: 24, minWidth: 64 }} {...props.attributes}>{props.children}</td>;
+	const editor = useSlate();
+	const [menuOpen, setMenuOpen] = useState(false);
+	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>();
+
+	const pos: Tuple<number> = props.element?.pos;
+	const selectedPos: Tuple<number> = props.element?.selectedPos;
+	const onRow = selectedPos // Some cell is selected
+		&& selectedPos[0] > 0 	// On a data row, not header row
+		// && pos[1] === 0 			//
+		&& selectedPos[0] === pos[0];	// This cells row matches row of selected cell;
+
+	const handleClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+		e.preventDefault();
+		e.stopPropagation();
+
+		setMenuOpen(!menuOpen);
+		setAnchorEl(e.currentTarget);
+	}
+
+	const handleDoubleClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+		e.preventDefault();
+		e.stopPropagation();
+	}
+
+	const handleSelect = (e: React.SyntheticEvent<HTMLButtonElement, Event>) => {
+		e.preventDefault();
+		e.stopPropagation();
+	}
+
+	const addRow = (dir: 'above' | 'below') => {
+		setMenuOpen(false);
+		EditorCommands.addTableRow(editor, pos[0], dir);
+	}
+
+	return (
+		<td style={{ minHeight: 34, minWidth: 64 }} {...props.attributes}>
+			{onRow && <IconButton contentEditable={false} onSelect={e => handleSelect(e)} onDoubleClick={e => handleDoubleClick(e)} onClick={e => handleClick(e)} size='small' aria-label='table row options' sx={{ position: 'absolute', left: 22, zIndex: 1 }}>
+				<MoreVertIcon />
+			</IconButton>}
+			{/* {props.element?.pos?.toString()} */}
+			<Menu anchorEl={anchorEl} open={menuOpen} onClose={() => setMenuOpen(false)}>
+				<MenuItem onClick={() => addRow('above')}>Insert row above</MenuItem>
+				<MenuItem onClick={() => addRow('below')}>Insert row below</MenuItem>
+			</Menu>
+			{props.children}
+		</td>
+	);
 }

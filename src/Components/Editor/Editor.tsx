@@ -10,8 +10,6 @@ import {
 	getTransitionElemClass,
 } from "../../Utils";
 
-import { TableBodyElement, TableDataElement, TableElement, TableHeadElement, TableHeaderElement, TableRowElement } from "../../Types";
-
 import { createEditor, Transforms } from 'slate'
 import { Slate, Editable, withReact, useSlate } from 'slate-react'
 
@@ -58,6 +56,7 @@ import {
 	TableHeaderBlockElement,
 	TableBodyBlockElement,
 	TableDataBlockElement,
+	// TableContainerBlockElement,
 } from './BlockElements';
 
 // import axios from "axios";
@@ -136,12 +135,18 @@ function MyEditor(props: EditorProps) {
 	}
 
 	// Save editor contents if there were any text changes
+	// TODO: If table selected, overlay options to insert new row or column
+	// TODO: Ability to inspect entire table
 	const handleEditorChange = (value: any) => {
-		console.log("Change", value);
+		// console.log("Change", value);
+
+		// Add/Remove col/row that anchor is on if table is selected
+		EditorCommands.updateTableSelection(editor);
+
+		// console.log("Selection on change", , editor.selection?.anchor?.offset)
 		const isAstChange = editor.operations.some(
 			op => 'set_selection' !== op.type
 		)
-
 
 		if (isAstChange) {
 			const newContent = JSON.stringify(value);
@@ -189,6 +194,8 @@ function MyEditor(props: EditorProps) {
 				return <ContainerBlockElement {...props} />;
 			case 'paragraph':
 				return <ParagraphBlockElement {...props} />;
+			// case 'table-container':
+			// 	return <TableContainerBlockElement {...props} />;
 			case 'table':
 				return <TableBlockElement {...props} />;
 			case 'table-head':
@@ -216,7 +223,7 @@ function MyEditor(props: EditorProps) {
 	const renderLeaf = useCallback((props: any) => <Leaf {...props} />, []);
 
 	console.log(editor.children);
-	console.log(editor.selection);
+	console.log(editor.selection?.anchor);
 
 	return (
 		<Box className={getTransitionElemClass(props.drawerOpen)} sx={{ flex: '1' }}>
@@ -235,6 +242,7 @@ function MyEditor(props: EditorProps) {
 				</Toolbar>
 				<Divider />
 				<Editable
+					onLoad={e => Transforms.select(editor, {path: [0], offset: 0})}
 					autoFocus
 					spellCheck
 					className="textEditor"
@@ -342,38 +350,11 @@ const LinkInsertButton = (props: any) => {
 	);
 }
 
+// TODO: Space outside table to allow for adding new
 const InsertTableButton = (props: any) => {
 	const editor = useSlate();
-	/**
-	 * <table>
-	 * 	<thead>
-	 * 		<tr>
-	 * 			<th>Col Name</th>
-	 * 		<tr>
-	 * 	</thead>
-	 * 	<tbody>
-	 * 		<tr>
-	 * 			<td>Row data</td>
-	 * 		</tr>
-	 * 	</tbody>
-	 * </table>
-	 */
-	const handleClick = () => {
-		const headCell: TableHeaderElement = { type: 'table-header', children: [{text: ''}]};
-		const headerRow: TableRowElement = {type: 'table-row', children: [headCell]};
-		const tableHead: TableHeadElement = {type: 'table-head', children: [headerRow]};
-
-		const bodyCell: TableDataElement = {type: 'table-data', children: [{text: ''}]};
-		const bodyRow: TableRowElement = {type: 'table-row', children: [bodyCell] };
-		const tableBody: TableBodyElement = {type: 'table-body', children: [bodyRow]};
-
-		const table: TableElement = {type: 'table', children: [tableHead, tableBody]};
-
-		Transforms.insertNodes(editor, table);
-	}
-
 	return (
-		<IconButton aria-label={"Insert link"} onClick={(e) => handleClick()}>
+		<IconButton aria-label={"Insert link"} onClick={(e) => EditorCommands.insertTable(editor)}>
 			<TableRowsOutlinedIcon />
 		</IconButton>
 	)

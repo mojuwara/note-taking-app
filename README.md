@@ -4,6 +4,9 @@
 - Make text **bold**, *italic* and/or underlined
 - Insert ordered and unordered lists
 - Copy/Paste images
+- Insert images from computer
+- Insert hyperlinks
+- Insert tables
 
 # Slatejs Concepts
 #### Nodes
@@ -71,6 +74,7 @@
 - DONE - Ensure folder DNE
 - DONE - Creating a file when there are no folder's yet("unfiled notes" folder)
 - DONE - Expand folder if selected
+- TODO - Insert TODO lists
 - TODO - Support images/videos/links/tables in notes
 - TODO - Enter while image is selected should create new block
 - TODO - Fix image getting deleted when backspace on empty line below
@@ -89,9 +93,14 @@
 - TODO - Support 'tab' button in editor focus
 - TODO - Place divider between mark icons and block icons
 - TODO -  Keyboard shortcut for new file and new folder?
-- TODO -  Delete files and folders
+- TODO -  Delete files and folders, place files in a "Recently deleted" folder
+- TODO - Keep track of time created, modified and opened for files
 - TODO -  Drag/Drop to move files/folders
 - TODO -  Rename files/folders
+- TODO - Enter in mid-container first splits the container, normalize to make new container a paragraph?
+- TODO - Allow other users to read/write a file
+- TODO - Backspace on first cell in an empty row that's not the first data row deletes that row
+- TOD - Rate limiting
 
 - Files:
 	- selectedPath:
