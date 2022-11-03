@@ -1,0 +1,20 @@
+{
+  "staging": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-amplify0517da779d034-staging-203457-authRole",
+      "UnauthRoleArn": "arn:aws:iam::387170159430:role/amplify-amplify0517da779d034-staging-203457-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::387170159430:role/amplify-amplify0517da779d034-staging-203457-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-amplify0517da779d034-staging-203457-deployment",
+      "UnauthRoleName": "amplify-amplify0517da779d034-staging-203457-unauthRole",
+      "StackName": "amplify-amplify0517da779d034-staging-203457",
+      "StackId": "arn:aws:cloudformation:us-east-1:387170159430:stack/amplify-amplify0517da779d034-staging-203457/7c179650-595b-11ed-8312-12e18627eeef",
+      "AmplifyAppId": "d218gi8x3jnvbl"
+    },
+    "categories": {
+      "auth": {
+        "notetakingappb1f80783": {}
+      }
+    }
+  }
+}

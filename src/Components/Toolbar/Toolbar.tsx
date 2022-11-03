@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 
-import { DrawerWidth, host, StorageKeys } from '../../Constants';
+import { DrawerWidth, StorageKeys } from '../../Constants';
 import { Folder, FileSelection } from '../../Types';
 
 import { styled, useTheme } from '@mui/material/styles';
@@ -46,6 +46,7 @@ const drawerStyle = {
 
 type ToolbarProps = {
 	drawerOpen: boolean;
+	signoutBtn: JSX.Element;
 	onDrawerOpen: () => void;
 	onDrawerClose: () => void;
 	fileSelection: FileSelection;
@@ -130,7 +131,10 @@ const MyToolbar = (props: ToolbarProps) => {
 							<MenuIcon />
 						</IconButton>
 						<h1 style={{padding: 0, margin: 0, fontSize: 24}}>Study Buddy</h1>
-						<AccountCircleIcon />
+						<div>
+							<AccountCircleIcon />
+							{props.signoutBtn}
+						</div>
 					</Box>
 				</Toolbar>
 			</AppBar>

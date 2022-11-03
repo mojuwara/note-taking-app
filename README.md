@@ -102,6 +102,11 @@
 - TODO - Backspace on first cell in an empty row that's not the first data row deletes that row
 - TOD - Rate limiting
 
+### AWS
+- Authentication(Where is this stored? How to link data to logged-in user?)
+- Storage (S3 for notes + metadata, DynamoDB for file struction)
+- Function (Lambda backend to update S3 and DynamoDB)
+
 - Files:
 	- selectedPath:
 		- Can be a file or folder

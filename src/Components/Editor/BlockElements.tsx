@@ -7,13 +7,9 @@ import CardContent from '@mui/material/CardContent';
 import { useSelected,	useFocused, useSlate } from 'slate-react';
 import { Tuple } from '../../Types';
 
-import IconButton from '@mui/material/IconButton';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
-import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import EditorCommands from './EditorCommands';
-import { Node, NodeEntry } from 'slate';
 
 // Contains the actual block elements
 export const BlockElementContainer = ({ element, suggestions }: any) => {
@@ -175,18 +171,14 @@ export const LinkBlockElement = (props: any) => {
 // }
 
 export const TableBlockElement = (props: any) => {
-	// const selected = useSelected();
-	// const focused = useFocused();
-
 	return (
 		<table
 			border={1}
 			{...props.attributes}
 			style={{
-				marginTop: 40,
-				marginLeft: 40,
+				marginTop: 10,
+				marginLeft: 10,
 				borderCollapse: "collapse",
-				// boxShadow: selected && focused ? '0 0 0 3px #B4D5FF' : 'none',
 			}}
 		>
 			{props.children}
@@ -211,23 +203,13 @@ export const TableHeaderBlockElement = (props: any) => {
 	const selectedPos: Tuple<number> = props.element?.selectedPos;
 	const onCol = selectedPos && selectedPos[1] === pos[1];
 
-	const handleClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+	const handleClick = (e: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
 		e.preventDefault();
 		e.stopPropagation();
 
 		setMenuOpen(!menuOpen);
 		setAnchorEl(e.currentTarget);
 	}
-
-	const handleDoubleClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-		e.preventDefault();
-		e.stopPropagation();
-	}
-
-	// const getParentTable = (): NodeEntry<Node> | null => {
-	// 	EditorNo
-	// 	const ancestGen = Node.descendants()
-	// }
 
 	const addCol = (dir: 'left' | 'right') => {
 		setMenuOpen(false);
@@ -236,9 +218,14 @@ export const TableHeaderBlockElement = (props: any) => {
 
 	return (
 		<th style={{ position: 'relative', minHeight: 34, minWidth: 64 }} {...props.attributes}>
-			{onCol && <IconButton contentEditable={false} onDoubleClick={e => handleDoubleClick(e)} onClick={e => handleClick(e)} size='small' aria-label='table column options' sx={{position: 'absolute', bottom: 22, zIndex: 1}}>
-				<MoreHorizIcon />
-			</IconButton>}
+			{onCol && <span
+				contentEditable={false}
+				onClick={e => handleClick(e)}
+				style={{ position: 'relative', bottom: 23, cursor: 'pointer', fontWeight: 'bold' }}
+				>
+					...
+				</span>
+			}
 			<Menu anchorEl={anchorEl} open={menuOpen} onClose={() => setMenuOpen(false)}>
 				<MenuItem onClick={() => addCol('left')}>Insert col to left</MenuItem>
 				<MenuItem onClick={() => addCol('right')}>Insert col to right</MenuItem>
@@ -260,27 +247,18 @@ export const TableDataBlockElement = (props: any) => {
 
 	const pos: Tuple<number> = props.element?.pos;
 	const selectedPos: Tuple<number> = props.element?.selectedPos;
+	console.log(selectedPos)
 	const onRow = selectedPos // Some cell is selected
 		&& selectedPos[0] > 0 	// On a data row, not header row
-		// && pos[1] === 0 			//
+		&& pos[1] === 0 			//
 		&& selectedPos[0] === pos[0];	// This cells row matches row of selected cell;
 
-	const handleClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+	const handleClick = (e: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
 		e.preventDefault();
 		e.stopPropagation();
 
 		setMenuOpen(!menuOpen);
 		setAnchorEl(e.currentTarget);
-	}
-
-	const handleDoubleClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-		e.preventDefault();
-		e.stopPropagation();
-	}
-
-	const handleSelect = (e: React.SyntheticEvent<HTMLButtonElement, Event>) => {
-		e.preventDefault();
-		e.stopPropagation();
 	}
 
 	const addRow = (dir: 'above' | 'below') => {
@@ -290,9 +268,14 @@ export const TableDataBlockElement = (props: any) => {
 
 	return (
 		<td style={{ minHeight: 34, minWidth: 64 }} {...props.attributes}>
-			{onRow && <IconButton contentEditable={false} onSelect={e => handleSelect(e)} onDoubleClick={e => handleDoubleClick(e)} onClick={e => handleClick(e)} size='small' aria-label='table row options' sx={{ position: 'absolute', left: 22, zIndex: 1 }}>
-				<MoreVertIcon />
-			</IconButton>}
+			{onRow && <span
+				contentEditable={false}
+				onClick={e => handleClick(e)}
+				style={{ position: 'relative', display: 'inline-block', right: 12, cursor: 'pointer', transform: 'rotate(90deg)', fontWeight: 'bold' }}
+				>
+					...
+				</span>
+			}
 			{/* {props.element?.pos?.toString()} */}
 			<Menu anchorEl={anchorEl} open={menuOpen} onClose={() => setMenuOpen(false)}>
 				<MenuItem onClick={() => addRow('above')}>Insert row above</MenuItem>
