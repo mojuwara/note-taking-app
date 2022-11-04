@@ -68,13 +68,13 @@ declare module 'slate' {
 }
 
 export type Folder = {
-	id: number;
+	id: string;
 	name: string;
 	items: File[];
 }
 
 export type File = {
-	id: number;
+	id: string;
 	name: string;
 	createTime: Date;
 	openedTime: Date;

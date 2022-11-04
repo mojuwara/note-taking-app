@@ -79,13 +79,14 @@
 - DONE - Fix image getting deleted when backspace on empty line below
 - DONE - Store directory in localStorage
 - DONE - Keep track of last opened file in localStorage
+- DONE - Backspace on empty node while block is active toggles the block off
 - TODO - Support copy/paste
 - TODO - Support TODO lists in notes
 - TODO - Sort files by last date modified?
 - TODO - Keyboard shortcut to hide Drawer
 - TODO - Display placeholder image when no file is selected
 - TODO - Support 2 levels of folders (FolderA/FolderB/file)
-- TODO - Folder IDs should be generated in backend
+- TODO - Folder IDs should be generated in frontend
 - TODO - Autofocus on file creation popup(Works on Safari, not Firefox?)
 - TODO - Align toolbar items vertically
 - TODO - Lint config for styling(double-quotes, semi-colons, etc.)
@@ -101,7 +102,6 @@
 - TODO - Allow other users to read/write a file
 - TODO - Backspace on first cell in an empty row that's not the first data row deletes that row
 - TODO - Rate limiting
-- TODO - Backspace on empty node while block is active toggles the block off
 
 ### AWS
 - Authentication(Where is this stored? How to link data to logged-in user?)
