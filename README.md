@@ -74,13 +74,13 @@
 - DONE - Ensure folder DNE
 - DONE - Creating a file when there are no folder's yet("unfiled notes" folder)
 - DONE - Expand folder if selected
-- TODO - Insert TODO lists
-- TODO - Support images/videos/links/tables in notes
-- TODO - Enter while image is selected should create new block
-- TODO - Fix image getting deleted when backspace on empty line below
+- DONE - Support images/videos/links/tables in notes
+- DONE - Enter while image is selected should create new block
+- DONE - Fix image getting deleted when backspace on empty line below
+- DONE - Store directory in localStorage
+- DONE - Keep track of last opened file in localStorage
 - TODO - Support copy/paste
-- TODO - Store directory in localStorage
-- TODO - Keep track of last opened file in localStorage
+- TODO - Support TODO lists in notes
 - TODO - Sort files by last date modified?
 - TODO - Keyboard shortcut to hide Drawer
 - TODO - Display placeholder image when no file is selected
@@ -109,6 +109,10 @@
 - Function (Lambda backend to update S3 and DynamoDB)
 
 - Files:
+	- created, opened and modified fields:
+		- created time is set when file is created, never after
+		- opened time is updated whenever the file is opened in the editor
+		- modified time is updated whenever a change is made to a files contents
 	- selectedPath:
 		- Can be a file or folder
 		- Initially an "All files" folder is created and selected

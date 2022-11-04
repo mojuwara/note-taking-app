@@ -76,6 +76,9 @@ export type Folder = {
 export type File = {
 	id: number;
 	name: string;
+	createTime: Date;
+	openedTime: Date;
+	modifiedTime: Date;
 	contents: CustomElement[]
 }
 

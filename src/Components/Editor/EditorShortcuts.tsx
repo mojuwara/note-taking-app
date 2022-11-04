@@ -1,6 +1,6 @@
 import { CustomEditor } from '../../Types';
 import EditorCommands from './EditorCommands';
-import { Element as SlateElement, Transforms } from 'slate';
+import { Editor, Element as SlateElement, Transforms } from 'slate';
 
 // Triggers before any change to the editor, selection will be one step behind if arrow pressed
 const editorShortcuts = (editor: CustomEditor, event: React.KeyboardEvent<HTMLDivElement>) => {
@@ -86,6 +86,13 @@ const editorShortcuts = (editor: CustomEditor, event: React.KeyboardEvent<HTMLDi
 			Transforms.delete(editor, { reverse: true, distance: 2, unit: 'character' });
 			EditorCommands.toggleBlock(editor, "orderedList");
 		}
+	}
+
+	// Backspace on empty ordered/unordered list turns it into a paragraph
+	if (event.key === 'Backspace' && EditorCommands.onElemType(editor, "listItem")) {
+		const [node] = EditorCommands.getElemType(editor, "listItem");
+		if (node && SlateElement.isElement(node) && Editor.isEmpty(editor, node))
+			EditorCommands.toggleBlock(editor, EditorCommands.onElemType(editor, "orderedList") ? "orderedList" : "unorderedList");
 	}
 }
 

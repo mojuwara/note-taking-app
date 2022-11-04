@@ -35,9 +35,17 @@ export const getFullPath = (fs: FileSelection): string => fs.folder + FileSep + 
 // Have server create new file, make local changes for user
 export const createNewFile = (dir: Folder[], selection: FileSelection, newFileName: string): [boolean, Folder[], FileSelection] => {
 	if (!dir.length) {
+		const time = new Date();
 		const newPath = "Unfiled Notes";
 		const [success, newDir] = createNewFolder(dir, selection, newPath);
-		newDir[0].items.push({id: 0, name: newFileName, contents: DefaultFileContent});
+		newDir[0].items.push({
+			id: 0,
+			name: newFileName,
+			contents: DefaultFileContent,
+			createTime: time,
+			openedTime: time,
+			modifiedTime: time,
+		});
 		return (success) ? [true, newDir, {folder: newPath, file: newFileName}] : [false, dir, selection];
 	}
 
@@ -45,10 +53,14 @@ export const createNewFile = (dir: Folder[], selection: FileSelection, newFileNa
 	if ((!dirToModify) || (!isUniqueName(dirToModify.items, newFileName)))
 		return [false, dir, selection];
 
+	const time = new Date();
 	dirToModify.items.push({
 		id: getMaxId(dirToModify.items) + 1,
 		name: newFileName,
 		contents: DefaultFileContent,
+		createTime: time,
+		openedTime: time,
+		modifiedTime: time,
 	});
 
 	const newPath = `${selection.folder}${FileSep}${newFileName}`;

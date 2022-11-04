@@ -32,6 +32,7 @@ function App({signOut, user}: any) {
 		setFileSelection(sel);
 		localStorage.setItem(StorageKeys.Selection, JSON.stringify(sel));
 	}
+
 	const handleDrawerOpen = () => setDrawerOpen(true);
 	const handleDrawerClose = () => setDrawerOpen(false);
 
