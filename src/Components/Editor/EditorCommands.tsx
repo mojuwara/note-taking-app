@@ -10,7 +10,7 @@ import {
 	// TableContainerElement,
 } from "../../Types";
 
-import { Editor, Transforms, Element as SlateElement, Location, Node, NodeEntry, Path } from 'slate'
+import { Editor, Transforms, Element as SlateElement, Node, NodeEntry } from 'slate'
 
 
 // Truen if the element exists just to wrap other elements(Ex with <ul>: <ul><li>...</li></ul>)
@@ -96,7 +96,7 @@ const EditorCommands = {
 
 		const [tableNode, path] = EditorCommands.getElemType(editor, "table");
 		if (!SlateElement.isElement(tableNode) || !(tableNode.type === "table") || !tableNode.selectedPos)
-			return;
+			return false;
 
 		const cells = Array.from(Editor.nodes(editor, {
 			at: path,
@@ -109,6 +109,17 @@ const EditorCommands = {
 			&& SlateElement.isElement(lastCell[0])
 			&& lastCell[0].type === 'table-data' && lastCell[0].pos
 			&& lastCell[0].pos.toString() === tableNode.selectedPos.toString();
+	},
+
+	atTableStart(editor: CustomEditor) {
+		if (!EditorCommands.onElemType(editor, "table"))
+			return false;
+
+		const [tableNode] = EditorCommands.getElemType(editor, "table");
+		if (!SlateElement.isElement(tableNode) || !(tableNode.type === "table") || !tableNode.selectedPos)
+			return false;
+
+		return (tableNode.selectedPos.toString() === '0,0' && editor.selection?.focus.offset === 0);
 	},
 
 	addTableRow(editor: CustomEditor, rowNum: number, dir: 'above' | 'below') {
@@ -212,6 +223,16 @@ const EditorCommands = {
 			Transforms.setNodes(editor, newProp, {at: fullPath});
 
 			EditorCommands.recursivelySet(editor, [node, fullPath], field, val);
+		}
+	},
+
+	insertParagraph(editor: CustomEditor) {
+		const loc = editor.selection?.focus.path;
+		if (loc) {
+			Transforms.insertNodes(editor,
+				{type: 'paragraph', children: [{text: ''}]},
+				{at: [loc[0]]}
+			);
 		}
 	},
 

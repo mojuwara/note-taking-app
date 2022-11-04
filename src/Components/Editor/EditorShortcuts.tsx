@@ -50,9 +50,14 @@ const editorShortcuts = (editor: CustomEditor, event: React.KeyboardEvent<HTMLDi
 		if (!tableNode || !SlateElement.isElement(tableNode) || tableNode.type !== 'table')
 			return;
 
-			// TODO: Update selection to first cell in new row
+		// TODO: Update selection to first cell in new row
 		if (tableNode.selectedPos && EditorCommands.onLastCell(editor))
 			EditorCommands.addTableRow(editor, tableNode.selectedPos[0], 'below');
+
+		// Add paragraph above - TODO: Move selection to new paragraph
+		if (tableNode.selectedPos && EditorCommands.atTableStart(editor))
+			EditorCommands.insertParagraph(editor);
+
 	}
 
 }

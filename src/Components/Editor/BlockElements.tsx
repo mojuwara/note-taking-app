@@ -221,7 +221,7 @@ export const TableHeaderBlockElement = (props: any) => {
 			{onCol && <span
 				contentEditable={false}
 				onClick={e => handleClick(e)}
-				style={{ position: 'relative', bottom: 23, cursor: 'pointer', fontWeight: 'bold' }}
+				style={{ position: 'absolute', bottom: 23, cursor: 'pointer', fontWeight: 'bold' }}
 				>
 					...
 				</span>
@@ -247,7 +247,7 @@ export const TableDataBlockElement = (props: any) => {
 
 	const pos: Tuple<number> = props.element?.pos;
 	const selectedPos: Tuple<number> = props.element?.selectedPos;
-	console.log(selectedPos)
+
 	const onRow = selectedPos // Some cell is selected
 		&& selectedPos[0] > 0 	// On a data row, not header row
 		&& pos[1] === 0 			//
@@ -271,7 +271,7 @@ export const TableDataBlockElement = (props: any) => {
 			{onRow && <span
 				contentEditable={false}
 				onClick={e => handleClick(e)}
-				style={{ position: 'relative', display: 'inline-block', right: 12, cursor: 'pointer', transform: 'rotate(90deg)', fontWeight: 'bold' }}
+				style={{ position: 'absolute', display: 'inline-block', left: 5, cursor: 'pointer', transform: 'rotate(90deg)', fontWeight: 'bold' }}
 				>
 					...
 				</span>
