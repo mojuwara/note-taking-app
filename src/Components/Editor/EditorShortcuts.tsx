@@ -65,6 +65,16 @@ const editorShortcuts = (editor: CustomEditor, event: React.KeyboardEvent<HTMLDi
 		const [para] = EditorCommands.getElemType(editor, "paragraph");
 		if (!("children" in para && para.children.length))
 			return;
+
+		console.log("Text", para)
+		if (editor.selection?.focus.offset === 1
+			&& "text" in para.children[0]
+			&& para.children[0].text.startsWith("*")
+			&& !EditorCommands.isBlockActive(editor, "unorderedList")) {
+				event.preventDefault();
+				Transforms.delete(editor, {reverse: true, distance: 1, unit: 'character'});
+				EditorCommands.toggleBlock(editor, "unorderedList");
+		}
 	}
 }
 
