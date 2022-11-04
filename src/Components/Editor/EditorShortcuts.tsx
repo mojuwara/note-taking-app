@@ -66,6 +66,7 @@ const editorShortcuts = (editor: CustomEditor, event: React.KeyboardEvent<HTMLDi
 		if (!("children" in para && para.children.length))
 			return;
 
+		// '* ' => Unordered list
 		console.log("Text", para)
 		if (editor.selection?.focus.offset === 1
 			&& "text" in para.children[0]
@@ -74,6 +75,16 @@ const editorShortcuts = (editor: CustomEditor, event: React.KeyboardEvent<HTMLDi
 				event.preventDefault();
 				Transforms.delete(editor, {reverse: true, distance: 1, unit: 'character'});
 				EditorCommands.toggleBlock(editor, "unorderedList");
+		}
+
+		// '1. ' => Ordered list
+		if (editor.selection?.focus.offset === 2
+			&& "text" in para.children[0]
+			&& new RegExp(/[0-9]\.(.*)/).test(para.children[0].text)
+			&& !EditorCommands.isBlockActive(editor, "orderedList")) {
+			event.preventDefault();
+			Transforms.delete(editor, { reverse: true, distance: 2, unit: 'character' });
+			EditorCommands.toggleBlock(editor, "orderedList");
 		}
 	}
 }
