@@ -160,16 +160,6 @@ function MyEditor(props: EditorProps) {
 		}
 	}
 
-	// Find suggestions, if any, for the given block element
-	// TODO: Still doing suggestions?
-	// const getElemSuggestions = (element: CustomElement): string[] => {
-		// const text = getElemText(element);
-		// if (text in suggestions)
-		// 	return suggestions[text];
-
-		// return [];
-	// }
-
 	const getBlockElement = (props: any) => {
 		switch (props.element.type) {
 			case 'code':

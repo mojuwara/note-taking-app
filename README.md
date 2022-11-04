@@ -100,7 +100,8 @@
 - TODO - Enter in mid-container first splits the container, normalize to make new container a paragraph?
 - TODO - Allow other users to read/write a file
 - TODO - Backspace on first cell in an empty row that's not the first data row deletes that row
-- TOD - Rate limiting
+- TODO - Rate limiting
+- TODO - Backspace on empty node while block is active toggles the block off
 
 ### AWS
 - Authentication(Where is this stored? How to link data to logged-in user?)

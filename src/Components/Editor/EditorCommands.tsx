@@ -19,6 +19,7 @@ export const isWrappedType = (blk: string) => ["unorderedList", "orderedList"].i
 // Helper functions we can reuse
 // TODO: Split TableCommands?
 const EditorCommands = {
+	// BUG: Crashes when image is the first value in a block
 	insertImage(editor: CustomEditor, url: string) {
 		const image: ImageElement = { type: 'image', url, children: [{ text: '' }] };
 		Transforms.insertNodes(editor, image);

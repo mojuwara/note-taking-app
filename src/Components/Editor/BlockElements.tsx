@@ -48,7 +48,7 @@ export const DefaultBlockElement = (props: any) => {
 }
 
 export const ParagraphBlockElement = (props: any) => {
-	return <p {...props.attributes}>{props.children}</p>;
+	return <p {...props.attributes} style={{ margin: 1 }}>{props.children}</p>;
 }
 
 export const CodeBlockElement = (props: any) => {

@@ -1,6 +1,6 @@
 import { CustomEditor } from '../../Types';
 import EditorCommands from './EditorCommands';
-import { Element as SlateElement } from 'slate';
+import { Element as SlateElement, Transforms } from 'slate';
 
 // Triggers before any change to the editor, selection will be one step behind if arrow pressed
 const editorShortcuts = (editor: CustomEditor, event: React.KeyboardEvent<HTMLDivElement>) => {
@@ -50,16 +50,22 @@ const editorShortcuts = (editor: CustomEditor, event: React.KeyboardEvent<HTMLDi
 		if (!tableNode || !SlateElement.isElement(tableNode) || tableNode.type !== 'table')
 			return;
 
-		// TODO: Update selection to first cell in new row
+		// Add row below if last cell is selected. TODO: Update selection to first cell in new row
 		if (tableNode.selectedPos && EditorCommands.onLastCell(editor))
 			EditorCommands.addTableRow(editor, tableNode.selectedPos[0], 'below');
 
-		// Add paragraph above - TODO: Move selection to new paragraph
+		// Add new para. if beginning of table is selected. TODO: Move selection to new paragraph
 		if (tableNode.selectedPos && EditorCommands.atTableStart(editor))
 			EditorCommands.insertParagraph(editor);
-
 	}
 
+	// convert paragraph to ordered or unordered list
+	if (event.key === ' ' && EditorCommands.onElemType(editor, "paragraph")) {
+		// Right before need space is added
+		const [para] = EditorCommands.getElemType(editor, "paragraph");
+		if (!("children" in para && para.children.length))
+			return;
+	}
 }
 
 export default editorShortcuts;
