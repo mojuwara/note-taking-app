@@ -80,25 +80,25 @@
 - DONE - Store directory in localStorage
 - DONE - Keep track of last opened file in localStorage
 - DONE - Backspace on empty node while block is active toggles the block off
+- DONE - Folder IDs should be generated in frontend
+- DONE - Support 'tab' button in editor focus
+- TODO - 'Tab' on ordered/unordered list should indent list
 - TODO - Support copy/paste
 - TODO - Support TODO lists in notes
 - TODO - Sort files by last date modified?
 - TODO - Keyboard shortcut to hide Drawer
 - TODO - Display placeholder image when no file is selected
 - TODO - Support 2 levels of folders (FolderA/FolderB/file)
-- TODO - Folder IDs should be generated in frontend
 - TODO - Autofocus on file creation popup(Works on Safari, not Firefox?)
 - TODO - Align toolbar items vertically
-- TODO - Lint config for styling(double-quotes, semi-colons, etc.)
-- TODO - Display selected file name somewhere
-- TODO - Support 'tab' button in editor focus
-- TODO - Place divider between mark icons and block icons
-- TODO -  Keyboard shortcut for new file and new folder?
+- TODO - Lint config for code-style(double-quotes, semi-colons, etc.)
+- TODO - Display selected file name somewhere?
+- TODO - Place divider between mark icons and block icons?
+- TODO -  Keyboard shortcut for new file and new folder
 - TODO -  Delete files and folders, place files in a "Recently deleted" folder
 - TODO - Keep track of time created, modified and opened for files
 - TODO -  Drag/Drop to move files/folders
 - TODO -  Rename files/folders
-- TODO - Enter in mid-container first splits the container, normalize to make new container a paragraph?
 - TODO - Allow other users to read/write a file
 - TODO - Backspace on first cell in an empty row that's not the first data row deletes that row
 - TODO - Rate limiting

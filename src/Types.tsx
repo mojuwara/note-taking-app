@@ -16,9 +16,17 @@ export type CustomText = {
 // Better way than adding 'pos' to Generic Element?
 export type GenericElement = { type: string, children: CustomText[], pos?: Tuple<number>, selectedPos?: Tuple<number> }
 export type ListElement = {type: 'listItem', children: CustomText[]}
+export type OrderedListElement = {
+	type: 'orderedList',
+	children: (OrderedListElement | UnorderedListElement | ListElement)[],
+};
+export type UnorderedListElement = {
+	type: 'unorderedList',
+	children: (OrderedListElement | UnorderedListElement | ListElement)[],
+};
 export type CodeElement = { type: 'code', children: CustomText[] }
 export type ParagraphElement = { type: 'paragraph', children: CustomText[] }
-export type LinkElement = { type: 'link'; href: string, children: CustomText[] }
+export type LinkElement = { type: 'link', href: string, children: CustomText[] }
 export type H1Element = { type: 'h1', children: CustomText[] }
 export type H2Element = { type: 'h2', children: CustomText[] }
 export type H3Element = { type: 'h3', children: CustomText[] }
@@ -39,22 +47,24 @@ export type TableElement = { type: 'table', children: (TableHeadElement | TableB
 export type ContainerElement = {type: 'container', children: (CustomElement | CustomText)[] }
 
 export type CustomElement = GenericElement
-	| TableElement
-	| TableDataElement
-	| TableHeaderElement
-	| TableRowElement
-	| TableBodyElement
-	| TableHeadElement
-	| ParagraphElement
-	| ContainerElement
-	| CursorElement
-	| ImageElement
-	| CodeElement
-	| LinkElement
-	| ListElement
-	| H1Element
-	| H2Element
-	| H3Element;
+| OrderedListElement
+| UnorderedListElement
+| TableElement
+| TableDataElement
+| TableHeaderElement
+| TableRowElement
+| TableBodyElement
+| TableHeadElement
+| ParagraphElement
+| ContainerElement
+| CursorElement
+| ImageElement
+| CodeElement
+| LinkElement
+| ListElement
+| H1Element
+| H2Element
+| H3Element;
 
 export type CustomEditor = BaseEditor & ReactEditor & HistoryEditor;
 

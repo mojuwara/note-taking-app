@@ -62,15 +62,14 @@ const editorShortcuts = (editor: CustomEditor, event: React.KeyboardEvent<HTMLDi
 	// convert paragraph to ordered or unordered list
 	if (event.key === ' ' && EditorCommands.onElemType(editor, "paragraph")) {
 		// Right before need space is added
-		const [para] = EditorCommands.getElemType(editor, "paragraph");
-		if (!("children" in para && para.children.length))
+		const [paraNode] = EditorCommands.getElemType(editor, "paragraph");
+		if (!("children" in paraNode && paraNode.children.length))
 			return;
 
 		// '* ' => Unordered list
-		console.log("Text", para)
 		if (editor.selection?.focus.offset === 1
-			&& "text" in para.children[0]
-			&& para.children[0].text.startsWith("*")
+			&& "text" in paraNode.children[0]
+			&& paraNode.children[0].text.startsWith("*")
 			&& !EditorCommands.isBlockActive(editor, "unorderedList")) {
 				event.preventDefault();
 				Transforms.delete(editor, {reverse: true, distance: 1, unit: 'character'});
@@ -79,8 +78,8 @@ const editorShortcuts = (editor: CustomEditor, event: React.KeyboardEvent<HTMLDi
 
 		// '1. ' => Ordered list
 		if (editor.selection?.focus.offset === 2
-			&& "text" in para.children[0]
-			&& new RegExp(/[0-9]\.(.*)/).test(para.children[0].text)
+			&& "text" in paraNode.children[0]
+			&& new RegExp(/[0-9]\.(.*)/).test(paraNode.children[0].text)
 			&& !EditorCommands.isBlockActive(editor, "orderedList")) {
 			event.preventDefault();
 			Transforms.delete(editor, { reverse: true, distance: 2, unit: 'character' });
@@ -94,6 +93,25 @@ const editorShortcuts = (editor: CustomEditor, event: React.KeyboardEvent<HTMLDi
 		if (node && SlateElement.isElement(node) && Editor.isEmpty(editor, node))
 			EditorCommands.toggleBlock(editor, EditorCommands.onElemType(editor, "orderedList") ? "orderedList" : "unorderedList");
 	}
+
+	if (event.key === 'Tab') {
+		event.preventDefault();
+		// If on a list, indent
+		if (EditorCommands.onElemType(editor, "listItem") && editor.selection?.focus.offset === 0) {
+			const listType = (EditorCommands.onElemType(editor, "orderedList")) ? "orderedList" : "unorderedList";
+			const [, listItemNodePath] = EditorCommands.getElemType(editor, "listItem");
+			console.log("tab at listitem start");
+			Transforms.wrapNodes(editor,
+				{type: listType, children: []},
+				{at: listItemNodePath}
+			);
+			return;
+		}
+
+		Transforms.insertText(editor, '    ');
+	}
+
+	console.log(event.key)
 }
 
 export default editorShortcuts;
