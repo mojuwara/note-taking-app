@@ -85,7 +85,7 @@ function MyEditor(props: EditorProps) {
 	*/
 
 	// How long to wait after the user stops making changes to save to server
-	const saveInterval = 1000 * 3;
+	const saveInterval = 1000 * 2;
 
 	// Timeout ID that triggers save to server
 	const [timeoutID, setTimeoutID] = useState<NodeJS.Timer>();

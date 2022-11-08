@@ -31,7 +31,6 @@ export type H1Element = { type: 'h1', children: CustomText[] }
 export type H2Element = { type: 'h2', children: CustomText[] }
 export type H3Element = { type: 'h3', children: CustomText[] }
 export type ImageElement = { type: 'image', url: string, children: CustomText[] }
-export type CursorElement = { type: 'cursor', children: CustomText[] };
 
 // Used as [rowNum, colNum] - zero indexed
 export type Tuple<T> = [T, T];
@@ -47,17 +46,16 @@ export type TableElement = { type: 'table', children: (TableHeadElement | TableB
 export type ContainerElement = {type: 'container', children: (CustomElement | CustomText)[] }
 
 export type CustomElement = GenericElement
-| OrderedListElement
 | UnorderedListElement
+| OrderedListElement
 | TableElement
-| TableDataElement
 | TableHeaderElement
+| TableDataElement
 | TableRowElement
 | TableBodyElement
 | TableHeadElement
 | ParagraphElement
 | ContainerElement
-| CursorElement
 | ImageElement
 | CodeElement
 | LinkElement

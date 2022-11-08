@@ -249,6 +249,7 @@ const EditorCommands = {
 		return SlateElement.isElement(node) && node.type === type;
 	},
 
+	// Gets the last element of that type
 	// Assumes you've already checked if onElemType
 	getElemType(editor: CustomEditor, type: string) {
 		const matches = Array.from(Editor.nodes(editor, {
