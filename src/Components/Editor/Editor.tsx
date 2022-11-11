@@ -35,7 +35,7 @@ import Popper from '@mui/material/Popper';
 
 import EditorCommands from "./EditorCommands";
 import editorShortcuts from "./EditorShortcuts";
-import { withImages } from "./EditorPlugins";
+import { withImages, withInlineLinks } from "./EditorPlugins";
 
 import {
 	H1BlockElement,
@@ -91,7 +91,7 @@ function MyEditor(props: EditorProps) {
 	const [timeoutID, setTimeoutID] = useState<NodeJS.Timer>();
 
 	// Editor object
-	const editor = useMemo(() => withImages(withHistory(withReact(createEditor()))), []);
+	const editor = useMemo(() => withInlineLinks(withImages(withHistory(withReact(createEditor())))), []);
 
 	// Object where each key is the plain text in a block and its value is an array of strings
 	// const [suggestions, setSuggestions] = useState<any>({});
@@ -230,10 +230,10 @@ function MyEditor(props: EditorProps) {
 				</Toolbar>
 				<Divider />
 				<Editable
-					onLoad={e => Transforms.select(editor, {path: [0], offset: 0})}
+					id="editorComponent"
+					onLoad={e => Transforms.select(editor, {path: [0], offset: 0})}	// TODO: Not working
 					autoFocus
 					spellCheck
-					// onPaste={}
 					className="textEditor"
 					renderLeaf={renderLeaf}
 					onKeyDown={handleKeyDown}
@@ -241,6 +241,13 @@ function MyEditor(props: EditorProps) {
 			</Slate>
 		</Box>
 	);
+}
+
+const focusOnEditor = () => {
+	const elem: HTMLElement | null = document.querySelector("#editorComponent");
+	if (!elem)
+		return;
+	elem.focus();
 }
 
 const MarkButton = (props: any) => {
@@ -315,8 +322,9 @@ const LinkInsertButton = (props: any) => {
 		setter(e.target.value);
 	};
 
-	const createLink = () => {
-		Transforms.insertNodes(editor, { type: 'link', href, children: [{ text: displayText }] });
+	const handleCreateClick = () => {
+		EditorCommands.insertLink(editor, href, displayText)
+		focusOnEditor();
 	}
 
 	// TODO: Close on outside click or change to dialogue
@@ -330,7 +338,7 @@ const LinkInsertButton = (props: any) => {
 				<Box sx={{ border: 1, p: 1, bgcolor: 'background.paper' }}>
 					<TextField onClick={(e) => e.stopPropagation()} label="Link" variant="outlined" size="small" onChange={e => handleChange(e, setHref)} />
 					<TextField onClick={(e) => e.stopPropagation()} label="Display" variant="outlined" size="small" onChange={e => handleChange(e, setDisplayText)} />
-					<Button variant="contained" onClick={createLink}>
+					<Button variant="contained" onClick={handleCreateClick}>
 						Create
 					</Button>
 				</Box>

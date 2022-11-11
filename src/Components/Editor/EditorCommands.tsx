@@ -17,8 +17,21 @@ import { Editor, Transforms, Element as SlateElement, Node, NodeEntry } from 'sl
 export const isWrappedType = (blk: string) => ["unorderedList", "orderedList"].includes(blk);
 
 // Helper functions we can reuse
-// TODO: Split TableCommands?
+// TODO: Split TableCommands into a separate object?
 const EditorCommands = {
+	insertLink(editor: CustomEditor, href: string, displayText: string) {
+		Transforms.insertNodes(editor, { type: 'link', href, children: [{ text: displayText }] });
+
+		const selectionPath = editor.selection?.focus.path.slice();
+		if (!selectionPath || !selectionPath.length)
+			return;
+
+		// Move selection to the next element in this paragraph
+		selectionPath.pop();
+		selectionPath[selectionPath.length-1]++;
+		Transforms.select(editor, {path: selectionPath, offset: 0})
+	},
+
 	// BUG: Crashes when image is the first value in a block
 	insertImage(editor: CustomEditor, url: string) {
 		const image: ImageElement = { type: 'image', url, children: [{ text: '' }] };
