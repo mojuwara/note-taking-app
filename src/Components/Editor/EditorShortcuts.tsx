@@ -1,4 +1,4 @@
-import { CustomEditor, ParagraphElement } from '../../Types';
+import { CustomEditor } from '../../Types';
 import EditorCommands from './EditorCommands';
 import { Editor, Element as SlateElement, Node, Transforms } from 'slate';
 

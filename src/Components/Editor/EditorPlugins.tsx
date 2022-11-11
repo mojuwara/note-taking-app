@@ -21,16 +21,10 @@ export const withImages = (e: CustomEditor): CustomEditor => {
 		for (let i = 0; i < data.files.length; i++) {
 			const file = data.files[i];
 
-			if (file.type.split('/')[0] === "image") {
-				const reader = new FileReader()
-				reader.addEventListener('load', () => {
-					const url = reader.result as string;
-					EditorCommands.insertImage(e, url);
-				})
-				reader.readAsDataURL(file);
-			} else {
-				insertData(data)
-			}
+			if (file.type.split('/')[0] === "image")
+				EditorCommands.insertImage(e, file);
+			else
+				insertData(data);
 		}
 	}
 

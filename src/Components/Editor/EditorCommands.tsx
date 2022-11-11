@@ -12,30 +12,43 @@ import {
 
 import { Editor, Transforms, Element as SlateElement, Node, NodeEntry } from 'slate'
 
-
 // Truen if the element exists just to wrap other elements(Ex with <ul>: <ul><li>...</li></ul>)
 export const isWrappedType = (blk: string) => ["unorderedList", "orderedList"].includes(blk);
 
 // Helper functions we can reuse
 // TODO: Split TableCommands into a separate object?
 const EditorCommands = {
-	insertLink(editor: CustomEditor, href: string, displayText: string) {
-		Transforms.insertNodes(editor, { type: 'link', href, children: [{ text: displayText }] });
-
+	selectElemAfterParent(editor: CustomEditor) {
 		const selectionPath = editor.selection?.focus.path.slice();
 		if (!selectionPath || !selectionPath.length)
 			return;
 
 		// Move selection to the next element in this paragraph
 		selectionPath.pop();
-		selectionPath[selectionPath.length-1]++;
-		Transforms.select(editor, {path: selectionPath, offset: 0})
+		selectionPath[selectionPath.length - 1]++;
+		Transforms.select(editor, { path: selectionPath, offset: 0 });
 	},
 
-	// BUG: Crashes when image is the first value in a block
-	insertImage(editor: CustomEditor, url: string) {
-		const image: ImageElement = { type: 'image', url, children: [{ text: '' }] };
-		Transforms.insertNodes(editor, image);
+	insertLink(editor: CustomEditor, href: string, displayText: string) {
+		Transforms.insertNodes(editor, { type: 'link', href, children: [{ text: displayText }] });
+		EditorCommands.selectElemAfterParent(editor);
+	},
+
+	// Read up: https://developer.mozilla.org/en-US/docs/Web/API/File_API/Using_files_from_web_applications
+	insertImage(editor: CustomEditor, file: File, callback?: (url: string) => void) {
+		const loadImageInEditor = () => {
+			const url = reader.result as string;
+			const image: ImageElement = { type: 'image', url, children: [{ text: '' }] };
+			Transforms.insertNodes(editor, image);
+			EditorCommands.selectElemAfterParent(editor);
+
+			if (callback)
+				callback(url);
+		};
+
+		const reader = new FileReader();
+		reader.addEventListener('load', loadImageInEditor);
+		reader.readAsDataURL(file);
 	},
 
 	insertTable(editor: CustomEditor) {

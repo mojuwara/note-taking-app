@@ -25,7 +25,7 @@ export type UnorderedListElement = {
 	children: (OrderedListElement | UnorderedListElement | ListElement)[],
 };
 export type CodeElement = { type: 'code', children: CustomText[] }
-export type ParagraphElement = { type: 'paragraph', children: (CustomText | LinkElement)[] }
+export type ParagraphElement = { type: 'paragraph', children: (CustomText | LinkElement | ImageElement)[] }
 export type LinkElement = { type: 'link', href: string, children: CustomText[] }
 export type H1Element = { type: 'h1', children: CustomText[] }
 export type H2Element = { type: 'h2', children: CustomText[] }

@@ -122,13 +122,16 @@ export const ImageBlockElement = (props: any) => {
 				{props.children}
 			</span>
 			<span contentEditable={false}>
-				<img style={{
-					maxWidth: '100%',
-					maxHeight: '20em',
-					marginTop: 1,
-					marginBottom: 1,
-					boxShadow: selected && focused ? '0 0 0 3px #B4D5FF' : 'none',
-				}} alt={props.url} src={props.element.url} />
+				<img
+					alt={props.url}
+					src={props.element.url}
+					style={{
+						maxWidth: '100%',
+						maxHeight: '20em',
+						marginTop: 1,
+						marginBottom: 1,
+						boxShadow: selected && focused ? '0 0 0 3px #B4D5FF' : 'none',
+					}} />
 			</span>
 		</span>
 	)
@@ -141,34 +144,10 @@ export const LinkBlockElement = (props: any) => {
 			href={props.element.href}
 			onClick={(e) => { if (e.metaKey) { window.open(props.element.href, '_blank') } }}
 		>
-			{props.children}
+			<span contentEditable={false}>{props.children}</span>
 		</a>
 	);
 }
-
-// export const TableContainerBlockElement = (props: any) => {
-// 	const table: TableElement = props.children[0];
-// 	const tableBody: TableBodyElement = table.children[1] as TableBodyElement;	// Child is always a table
-
-// 	const nRows = tableBody.children.length + 1;					// +1 for the table header row
-// 	const nCols = tableBody.children[0].children.length;	// Number of data cells in first data row
-
-// 	// Augment table children with contendEditable=false cells  +2 rows and borders
-// 	const tableElems = [];
-// 	for (let i = 0; i < nRows + 2; i++) {
-// 		for (let j = 0; j < nCols + 2; j++) {
-
-// 		}
-// 	}
-
-// 	return (
-// 		<table border={0}>
-// 			<tbody>
-
-// 			</tbody>
-// 		</table>
-// 	)
-// }
 
 export const TableBlockElement = (props: any) => {
 	return (

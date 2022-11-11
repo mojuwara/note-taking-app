@@ -231,7 +231,6 @@ function MyEditor(props: EditorProps) {
 				<Divider />
 				<Editable
 					id="editorComponent"
-					onLoad={e => Transforms.select(editor, {path: [0], offset: 0})}	// TODO: Not working
 					autoFocus
 					spellCheck
 					className="textEditor"
@@ -271,26 +270,18 @@ const MarkButton = (props: any) => {
 	)
 }
 
-const UploadImageButton = (props: any) => {
+const UploadImageButton = () => {
 	const editor = useSlate();
 	const handleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
 		if (!e.target.files || !e.target.files.length)
 			return;
 
-		const transferObj = new DataTransfer();
 		for (let i = 0; i < e.target.files.length; i++) {
 			const file = e.target.files.item(i);
-			if (file) {
-				const reader = new FileReader()
-				reader.addEventListener('load', () => {
-					const url = reader.result as string;
-					EditorCommands.insertImage(editor, url);
-				})
-				reader.readAsDataURL(file);
-			}
-
+			if (file)
+				EditorCommands.insertImage(editor, file);
 		}
-		editor.insertData(transferObj);
+		focusOnEditor();
 	}
 
 	return (
