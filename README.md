@@ -84,6 +84,7 @@
 - DONE - Support 'tab' button in editor focus
 - DONE - 'Tab' on ordered/unordered list should indent list
 - TODO - Support copy/paste
+- TODO - Make blocks and marks enums
 - TODO - Support TODO lists in notes
 - TODO - Sort files by last date modified?
 - TODO - Keyboard shortcut to hide Drawer

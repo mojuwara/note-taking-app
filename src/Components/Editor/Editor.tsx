@@ -220,8 +220,8 @@ function MyEditor(props: EditorProps) {
 					<MarkButton mark="bold" icon={<FormatBoldIcon />} label="bold" />
 					<MarkButton mark="italic" icon={<FormatItalicIcon />} label="italic" />
 					<MarkButton mark="underline" icon={<FormatUnderlinedIcon />} label="underline" />
-					<BlockButton block="code" icon={<CodeIcon />} label="code" />
 					<LinkInsertButton />	{/* Popup, not block element */}
+					<BlockButton block="code" icon={<CodeIcon />} label="code" />
 					{/* <Divider orientation="vertical" flexItem /> */}
 					<BlockButton block="orderedList" icon={<FormatListNumberedIcon />} label="orderedList" />
 					<BlockButton block="unorderedList" icon={<FormatListBulletedIcon />} label="unorderedList" />
