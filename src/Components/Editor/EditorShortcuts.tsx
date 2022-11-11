@@ -157,6 +157,10 @@ const editorShortcuts = (editor: CustomEditor, event: React.KeyboardEvent<HTMLDi
 		}
 	}
 
+	if (ctrlKey && event.key === 'v') {
+
+	}
+
 	// Shift + Tab should unwrap list
 	console.log(event.key)
 }

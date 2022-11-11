@@ -35,7 +35,7 @@ import Popper from '@mui/material/Popper';
 
 import EditorCommands from "./EditorCommands";
 import editorShortcuts from "./EditorShortcuts";
-import { withEnhance, withImages } from "./EditorPlugins";
+import { withImages } from "./EditorPlugins";
 
 import {
 	H1BlockElement,
@@ -91,7 +91,7 @@ function MyEditor(props: EditorProps) {
 	const [timeoutID, setTimeoutID] = useState<NodeJS.Timer>();
 
 	// Editor object
-	const editor = useMemo(() => withEnhance(withImages(withHistory(withReact(createEditor())))), []);
+	const editor = useMemo(() => withImages(withHistory(withReact(createEditor()))), []);
 
 	// Object where each key is the plain text in a block and its value is an array of strings
 	// const [suggestions, setSuggestions] = useState<any>({});
@@ -184,8 +184,6 @@ function MyEditor(props: EditorProps) {
 				return <ContainerBlockElement {...props} />;
 			case 'paragraph':
 				return <ParagraphBlockElement {...props} />;
-			// case 'table-container':
-			// 	return <TableContainerBlockElement {...props} />;
 			case 'table':
 				return <TableBlockElement {...props} />;
 			case 'table-head':
@@ -213,7 +211,7 @@ function MyEditor(props: EditorProps) {
 	const renderLeaf = useCallback((props: any) => <Leaf {...props} />, []);
 
 	console.log(editor.children);
-	console.log(editor.selection?.anchor);
+	console.log(editor.selection);
 
 	return (
 		<Box className={getTransitionElemClass(props.drawerOpen)} sx={{ flex: '1' }}>
@@ -235,6 +233,7 @@ function MyEditor(props: EditorProps) {
 					onLoad={e => Transforms.select(editor, {path: [0], offset: 0})}
 					autoFocus
 					spellCheck
+					// onPaste={}
 					className="textEditor"
 					renderLeaf={renderLeaf}
 					onKeyDown={handleKeyDown}

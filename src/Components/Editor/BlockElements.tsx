@@ -63,7 +63,7 @@ export const CodeBlockElement = (props: any) => {
 
 export const OrderedListBlockElement = (props: any) => {
 	return (
-		<ol {...props.attributes}>
+		<ol style={{margin: 8 }} {...props.attributes}>
 			{props.children}
 		</ol>
 	);
@@ -71,7 +71,7 @@ export const OrderedListBlockElement = (props: any) => {
 
 export const UnorderedListBlockElement = (props: any) => {
 	return (
-		<ul {...props.attributes}>
+		<ul style={{ margin: 8 }} {...props.attributes}>
 			{props.children}
 		</ul>
 	);

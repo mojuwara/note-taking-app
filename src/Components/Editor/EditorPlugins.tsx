@@ -47,15 +47,3 @@ export const withImages = (e: CustomEditor): CustomEditor => {
 
 	return e;
 };
-
-export const withEnhance = (e: CustomEditor): CustomEditor => {
-	// const { isInline } = e;
-	// e.isInline = (elem: CustomElement) => {
-	// 	const inlineElems = ['link'];
-	// 	if (inlineElems.includes(elem.type))
-	// 		return true;
-
-	// 	return isInline(elem);
-	// }
-	return e;
-}

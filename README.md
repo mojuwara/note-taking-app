@@ -82,7 +82,7 @@
 - DONE - Backspace on empty node while block is active toggles the block off
 - DONE - Folder IDs should be generated in frontend
 - DONE - Support 'tab' button in editor focus
-- TODO - 'Tab' on ordered/unordered list should indent list
+- DONE - 'Tab' on ordered/unordered list should indent list
 - TODO - Support copy/paste
 - TODO - Support TODO lists in notes
 - TODO - Sort files by last date modified?
