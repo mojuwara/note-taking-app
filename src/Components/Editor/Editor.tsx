@@ -5,12 +5,13 @@ import {
 	DefaultFileContent
 } from "../../Constants";
 import {
+	focusOnEditor,
 	getStorageItem,
 	// getElemText,
 	getTransitionElemClass,
 } from "../../Utils";
 
-import { createEditor, Transforms } from 'slate'
+import { createEditor } from 'slate'
 import { Slate, Editable, withReact, useSlate } from 'slate-react'
 
 import { withHistory } from 'slate-history'
@@ -34,7 +35,7 @@ import InsertLinkOutlinedIcon from '@mui/icons-material/InsertLinkOutlined';
 import Popper from '@mui/material/Popper';
 
 import EditorCommands from "./EditorCommands";
-import editorShortcuts from "./EditorShortcuts";
+import EditorShortcuts from "./EditorShortcuts";
 import { withImages, withInlineLinks } from "./EditorPlugins";
 
 import {
@@ -131,7 +132,7 @@ function MyEditor(props: EditorProps) {
 	}, [editor, props.filePath]);
 
 	const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
-		editorShortcuts(editor, event);
+		EditorShortcuts(editor, event);
 	}
 
 	// Save editor contents if there were any text changes
@@ -242,13 +243,6 @@ function MyEditor(props: EditorProps) {
 	);
 }
 
-const focusOnEditor = () => {
-	const elem: HTMLElement | null = document.querySelector("#editorComponent");
-	if (!elem)
-		return;
-	elem.focus();
-}
-
 const MarkButton = (props: any) => {
 	const editor = useSlate();
 	const { mark, label, icon } = props;
@@ -256,6 +250,7 @@ const MarkButton = (props: any) => {
 	const handleClick = (e: any) => {
 		e.preventDefault();
 		EditorCommands.toggleMark(editor, mark);
+		focusOnEditor();
 	}
 
 	const markActive = EditorCommands.isMarkActive(editor, mark);
@@ -355,6 +350,7 @@ const BlockButton = (props: any) => {
 	const handleClick = (e: any) => {
 		e.preventDefault();
 		EditorCommands.toggleBlock(editor, block);
+		focusOnEditor();
 	}
 
 	const blockActive = EditorCommands.isBlockActive(editor, block);

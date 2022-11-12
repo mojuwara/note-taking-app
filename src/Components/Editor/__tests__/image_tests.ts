@@ -1,6 +1,5 @@
 import assert from 'assert';
 import { Range, createEditor, Descendant } from 'slate';
-import { ImageElement } from '../../../Types';
 import EditorCommands from '../EditorCommands';
 import { withImages } from '../EditorPlugins';
 

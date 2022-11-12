@@ -73,3 +73,10 @@ export function getStorageItem<Type>(key: string, defaultVal: Type): Type {
 	const val = localStorage.getItem(key);
 	return (val !== null) ? JSON.parse(val) : defaultVal;
 }
+
+export const focusOnEditor = () => {
+	const elem: HTMLElement | null = document.querySelector("#editorComponent");
+	if (!elem)
+		return;
+	elem.focus();
+}

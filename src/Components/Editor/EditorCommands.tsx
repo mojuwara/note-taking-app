@@ -13,7 +13,7 @@ import {
 import { Editor, Transforms, Element as SlateElement, Node, NodeEntry } from 'slate'
 
 // Truen if the element exists just to wrap other elements(Ex with <ul>: <ul><li>...</li></ul>)
-export const isWrappedType = (blk: string) => ["unorderedList", "orderedList"].includes(blk);
+export const isListType = (blk: string) => ["unorderedList", "orderedList"].includes(blk);
 
 // Helper functions we can reuse
 // TODO: Split TableCommands into a separate object?
@@ -316,43 +316,73 @@ const EditorCommands = {
 	toggleBlock(editor: CustomEditor, block: string) {
 		// Unwrap list elements, set them to 'list-item' type, then wrap them inside the list item type
 		const isActive = EditorCommands.isBlockActive(editor, block);
-		if (isWrappedType(block)) {
-			if (!isActive) {
-				// Remove the current block type the nodes are in, if its a listItem
-				EditorCommands.unwrapNodes(editor);
 
-				// Set their type to listItem
-				Transforms.setNodes<SlateElement>(editor, { type: 'listItem' });
+		if (!isListType(block)) {
+			// In case the nodes are already wrapped in a <ul> or <ol> or <code>
+			EditorCommands.unwrapNodes(editor)
 
-				// Wrap them inside the given list type
-				Transforms.wrapNodes(editor, { type: block, children: [] });
-			} else {
-				// Set their type back to paragraph
-				Transforms.setNodes<SlateElement>(editor, { type: 'paragraph' });
-
-				// Remove the <ol> or <ul> type that was wrapping them
-				EditorCommands.unwrapNodes(editor);
-			}
+			Transforms.setNodes(
+				editor,
+				{ type: isActive ? 'paragraph' : block },
+				{ match: n => Editor.isBlock(editor, n) }
+			);
 			return;
-		};
+		}
 
-		// In case the nodes are already wrapped in a <ul> or <ol>
-		EditorCommands.unwrapNodes(editor)
+		if (!isActive) {
+			// Remove the current block type(Ex: paragraph) the nodes are in, if its a listItem
+			EditorCommands.unwrapNodes(editor);
 
-		Transforms.setNodes(
-			editor,
-			{ type: isActive ? 'paragraph' : block },
-			{ match: n => Editor.isBlock(editor, n) }
-		);
+			// Set their type to listItem
+			Transforms.setNodes<SlateElement>(editor, { type: 'listItem' });
+
+			// Wrap them inside the given list type
+			Transforms.wrapNodes(editor, { type: block, children: [] });
+		} else {
+			// Set their type back to paragraph
+			Transforms.setNodes<SlateElement>(editor, { type: 'paragraph' });
+
+			// Remove the <ol> or <ul> type that was wrapping them
+			EditorCommands.unwrapNodes(editor);
+		}
 	},
 
 	unwrapNodes(editor: CustomEditor) {
 		// Unwraps lists
 		Transforms.unwrapNodes(editor, {
-			match: n => (!Editor.isEditor(n) && SlateElement.isElement(n) && isWrappedType(n.type)),
+			match: n => (!Editor.isEditor(n) && SlateElement.isElement(n) && isListType(n.type)),
 			split: true,
 		});
-	}
+	},
+
+	// If nested list, will be unnested by 1 level
+	// If not a nested list, will become a paragraph
+	unindentList(editor: CustomEditor) {
+		const nodeEntry = EditorCommands.getElemType(editor, "listItem");
+		if (nodeEntry) {
+			const [editorNode] = Editor.node(editor, []);
+			const [, listItemNodePath] = nodeEntry;
+
+			// nestedLevel=1 is an unindented listItem
+			let nestedLevel = 0;
+			const ancestors = Array.from(Node.ancestors(editorNode, listItemNodePath));
+			ancestors.forEach(nodeEntry => {
+				const node = nodeEntry[0];
+				if (SlateElement.isElement(node) && ["orderedList", "unorderedList"].includes(node.type))
+					nestedLevel++;
+			});
+
+			if (nestedLevel > 1) {
+				Transforms.unwrapNodes(editor, {at: listItemNodePath.slice(0, -1)});
+			} else {
+				// Move listItem outside of this list and make it a paragraph
+				listItemNodePath.pop();
+				listItemNodePath[listItemNodePath.length-1]++;
+				Transforms.moveNodes(editor, { to: listItemNodePath });
+				Transforms.setNodes(editor, {type: 'paragraph'});
+			}
+		}
+	},
 };
 
 export default EditorCommands;

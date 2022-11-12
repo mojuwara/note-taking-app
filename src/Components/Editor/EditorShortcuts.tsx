@@ -1,9 +1,11 @@
 import { CustomEditor } from '../../Types';
 import EditorCommands from './EditorCommands';
 import { Editor, Element as SlateElement, Node, Transforms } from 'slate';
+import { focusOnEditor } from '../../Utils';
 
+// TODO: Create 'EditorCommands.currElemType' to get the current element type, use that once instead of multiple 'EditorCommands.onElemType' calls
 // Triggers before any change to the editor, selection will be one step behind if arrow pressed
-const editorShortcuts = (editor: CustomEditor, event: React.KeyboardEvent<HTMLDivElement>) => {
+const EditorShortcuts = (editor: CustomEditor, event: React.KeyboardEvent<HTMLDivElement>) => {
 	const shiftKey = event.shiftKey;
 	const ctrlKey = event.ctrlKey || event.metaKey;	// metaKey is Cmd key on Mac
 
@@ -62,14 +64,14 @@ const editorShortcuts = (editor: CustomEditor, event: React.KeyboardEvent<HTMLDi
 	// convert paragraph to ordered or unordered list
 	if (event.key === ' ' && EditorCommands.onElemType(editor, "paragraph")) {
 		// Right before need space is added
-		const [paraNode] = EditorCommands.getElemType(editor, "paragraph");
-		if (!("children" in paraNode && paraNode.children.length))
+		const [paragraphNode] = EditorCommands.getElemType(editor, "paragraph");
+		if (!("children" in paragraphNode && paragraphNode.children.length))
 			return;
 
 		// '* ' => Unordered list
 		if (editor.selection?.focus.offset === 1
-			&& "text" in paraNode.children[0]
-			&& paraNode.children[0].text.startsWith("*")
+			&& "text" in paragraphNode.children[0]
+			&& paragraphNode.children[0].text.startsWith("*")
 			&& !EditorCommands.isBlockActive(editor, "unorderedList")) {
 				event.preventDefault();
 				Transforms.delete(editor, {reverse: true, distance: 1, unit: 'character'});
@@ -78,8 +80,8 @@ const editorShortcuts = (editor: CustomEditor, event: React.KeyboardEvent<HTMLDi
 
 		// '1. ' => Ordered list
 		if (editor.selection?.focus.offset === 2
-			&& "text" in paraNode.children[0]
-			&& new RegExp(/[0-9]\.(.*)/).test(paraNode.children[0].text)
+			&& "text" in paragraphNode.children[0]
+			&& new RegExp(/[0-9]\.(.*)/).test(paragraphNode.children[0].text)
 			&& !EditorCommands.isBlockActive(editor, "orderedList")) {
 			event.preventDefault();
 			Transforms.delete(editor, { reverse: true, distance: 2, unit: 'character' });
@@ -101,60 +103,28 @@ const editorShortcuts = (editor: CustomEditor, event: React.KeyboardEvent<HTMLDi
 		if (EditorCommands.onElemType(editor, "listItem") && editor.selection?.focus.offset === 0) {
 			const listType = (EditorCommands.onElemType(editor, "orderedList")) ? "orderedList" : "unorderedList";
 			const [, listItemNodePath] = EditorCommands.getElemType(editor, "listItem");
-			console.log("tab at listitem start");
-			Transforms.wrapNodes(editor,
-				{type: listType, children: []},
-				{at: listItemNodePath}
-			);
+			Transforms.wrapNodes(editor, {type: listType, children: []}, {at: listItemNodePath});
 			return;
 		}
 
 		Transforms.insertText(editor, '    ');
 	}
 
+	// TODO:
+	// if (event.key === 'Tab' && !shiftKey) {
+
 	// If offset=0 and in nested list, unwrap
 	// If offset=0 and not in nested list, toggle list off
-	if (((event.key === 'Enter') || (shiftKey && event.key === 'Tab'))
-		&& (editor.selection?.focus.offset === 0 && EditorCommands.onElemType(editor, "listItem")))
-		{
-
+	if ((event.key === 'Enter') && editor.selection?.focus.offset === 0 && EditorCommands.onElemType(editor, "listItem")) {
 		event.preventDefault();
+		EditorCommands.unindentList(editor);
+		focusOnEditor();
+	}
 
-		const nodeEntry = EditorCommands.getElemType(editor, "listItem");
-		if (nodeEntry) {
-			const [editorNode] =  Editor.node(editor, []);
-			const [listItemNode, listItemNodePath] = nodeEntry;
-
-			// All ancestors, including the editor
-			const ancestorGen = Node.ancestors(editorNode, listItemNodePath);
-
-			let nestedListCount = 0;
-			while (true) {
-				const ancestor = ancestorGen.next();
-				if (!ancestor.value)
-					break;
-
-				if (SlateElement.isElement(ancestor.value[0]) && ["orderedList", "unorderedList"].includes(ancestor.value[0].type))
-					nestedListCount++;
-			}
-
-			const listType = (EditorCommands.onElemType(editor, "orderedList")) ? "orderedList" : "unorderedList";
-			if (nestedListCount > 1) {
-				// Move node out of it's current list and move it up one level
-				const [, parentListPath] = EditorCommands.getElemType(editor, listType);
-				parentListPath[parentListPath.length-1]++;
-
-				Transforms.removeNodes(editor, {at: listItemNodePath});
-				Transforms.insertNodes(editor, listItemNode, { at: parentListPath });
-			} else {
-				Transforms.removeNodes(editor, {at: listItemNodePath});
-
-				listItemNodePath.pop()
-				listItemNodePath[listItemNodePath.length-1]++;
-				Transforms.insertNodes(editor, listItemNode, {at: listItemNodePath});
-				Transforms.setNodes(editor, {type: 'paragraph'}, {at: listItemNodePath});
-			}
-		}
+	if (shiftKey && event.key === 'Tab' && EditorCommands.onElemType(editor, "listItem")) {
+		event.preventDefault();
+		EditorCommands.unindentList(editor);
+		focusOnEditor();
 	}
 
 	if (ctrlKey && event.key === 'v') {
@@ -162,7 +132,7 @@ const editorShortcuts = (editor: CustomEditor, event: React.KeyboardEvent<HTMLDi
 	}
 
 	// Shift + Tab should unwrap list
-	console.log(event.key)
+	// console.log(event.key)
 }
 
-export default editorShortcuts;
+export default EditorShortcuts;
