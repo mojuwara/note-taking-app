@@ -203,8 +203,8 @@ test('tab at beginning of listItem creates nested unorderedlists', () => {
 	];
 
 	editor.selection = {
-		anchor: { path: [0, 1], offset: 0 },
-		focus: { path: [0, 1], offset: 0 }
+		anchor: { path: [0, 1, 0], offset: 0 },
+		focus: { path: [0, 1, 0], offset: 0 }
 	}
 
 	/**
@@ -230,8 +230,8 @@ test('tab at beginning of listItem creates nested unorderedlists', () => {
 	];
 
 	const expectedSel = {
-		anchor: { path: [0, 1, 0], offset: 0 },
-		focus: { path: [0, 1, 0], offset: 0 }
+		anchor: { path: [0, 1, 0, 0], offset: 0 },
+		focus: { path: [0, 1, 0, 0], offset: 0 }
 	};
 
 	assert.deepEqual(editor.selection, expectedSel);

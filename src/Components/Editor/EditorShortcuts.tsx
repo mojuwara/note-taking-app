@@ -1,6 +1,6 @@
 import { CustomEditor } from '../../Types';
 import EditorCommands from './EditorCommands';
-import { Editor, Element as SlateElement, Node, Transforms } from 'slate';
+import { Editor, Element as SlateElement, Transforms, Node, NodeEntry, Ancestor } from 'slate';
 import { focusOnEditor } from '../../Utils';
 
 // TODO: Create 'EditorCommands.currElemType' to get the current element type, use that once instead of multiple 'EditorCommands.onElemType' calls
@@ -8,6 +8,19 @@ import { focusOnEditor } from '../../Utils';
 const EditorShortcuts = (editor: CustomEditor, event: React.KeyboardEvent<HTMLDivElement>) => {
 	const shiftKey = event.shiftKey;
 	const ctrlKey = event.ctrlKey || event.metaKey;	// metaKey is Cmd key on Mac
+
+	let ancestorTypes: Set<string> = new Set<string>();
+	let ancestors: NodeEntry<Ancestor>[] = [];
+
+	const currPath = editor.selection?.focus.path;
+	if (currPath) {
+		const [editorNode] = Editor.node(editor, []);
+		ancestors = Array.from(Node.ancestors(editorNode, currPath));
+		for (const nodeEntry of ancestors) {
+			if (SlateElement.isElement(nodeEntry[0]))
+				ancestorTypes.add(nodeEntry[0].type);
+		}
+	}
 
 	if (ctrlKey && event.key === 'b') {
 		event.preventDefault();
@@ -44,7 +57,7 @@ const EditorShortcuts = (editor: CustomEditor, event: React.KeyboardEvent<HTMLDi
 		EditorCommands.toggleBlock(editor, "h3");
 	}
 
-	if (event.key === 'Enter' && EditorCommands.onElemType(editor, "table")) {
+	if (event.key === 'Enter' && ancestorTypes.has("table")) {
 		event.preventDefault();
 
 		// Add new row below if 'Enter' is pressed on the last cell
@@ -62,7 +75,7 @@ const EditorShortcuts = (editor: CustomEditor, event: React.KeyboardEvent<HTMLDi
 	}
 
 	// convert paragraph to ordered or unordered list
-	if (event.key === ' ' && EditorCommands.onElemType(editor, "paragraph")) {
+	if (event.key === ' ' && ancestorTypes.has("paragraph")) {
 		// Right before need space is added
 		const [paragraphNode] = EditorCommands.getElemType(editor, "paragraph");
 		if (!("children" in paragraphNode && paragraphNode.children.length))
@@ -90,18 +103,18 @@ const EditorShortcuts = (editor: CustomEditor, event: React.KeyboardEvent<HTMLDi
 	}
 
 	// Backspace on empty ordered/unordered list turns it into a paragraph
-	if (event.key === 'Backspace' && EditorCommands.onElemType(editor, "listItem")) {
+	if (event.key === 'Backspace' && ancestorTypes.has("listItem")) {
 		const [node] = EditorCommands.getElemType(editor, "listItem");
 		if (node && SlateElement.isElement(node) && Editor.isEmpty(editor, node))
-			EditorCommands.toggleBlock(editor, EditorCommands.onElemType(editor, "orderedList") ? "orderedList" : "unorderedList");
+			EditorCommands.toggleBlock(editor, ancestorTypes.has("orderedList") ? "orderedList" : "unorderedList");
 	}
 
 	if (event.key === 'Tab' && !shiftKey) {
 		event.preventDefault();
 
 		// If on a list, indent
-		if (EditorCommands.onElemType(editor, "listItem") && editor.selection?.focus.offset === 0) {
-			const listType = (EditorCommands.onElemType(editor, "orderedList")) ? "orderedList" : "unorderedList";
+		if (ancestorTypes.has("listItem") && editor.selection?.focus.offset === 0) {
+			const listType = (ancestorTypes.has("orderedList")) ? "orderedList" : "unorderedList";
 			const [, listItemNodePath] = EditorCommands.getElemType(editor, "listItem");
 			Transforms.wrapNodes(editor, {type: listType, children: []}, {at: listItemNodePath});
 			return;
@@ -115,13 +128,13 @@ const EditorShortcuts = (editor: CustomEditor, event: React.KeyboardEvent<HTMLDi
 
 	// If offset=0 and in nested list, unwrap
 	// If offset=0 and not in nested list, toggle list off
-	if ((event.key === 'Enter') && editor.selection?.focus.offset === 0 && EditorCommands.onElemType(editor, "listItem")) {
+	if ((event.key === 'Enter') && editor.selection?.focus.offset === 0 && ancestorTypes.has("listItem")) {
 		event.preventDefault();
 		EditorCommands.unindentList(editor);
 		focusOnEditor();
 	}
 
-	if (shiftKey && event.key === 'Tab' && EditorCommands.onElemType(editor, "listItem")) {
+	if (shiftKey && event.key === 'Tab' && ancestorTypes.has("listItem")) {
 		event.preventDefault();
 		EditorCommands.unindentList(editor);
 		focusOnEditor();
