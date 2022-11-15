@@ -133,7 +133,7 @@ const MyToolbar = (props: ToolbarProps) => {
 						<h1 style={{padding: 0, margin: 0, fontSize: 24}}>Study Buddy</h1>
 						<div>
 							<AccountCircleIcon />
-							{props.signoutBtn}
+							{/* {props.signoutBtn} */}
 						</div>
 					</Box>
 				</Toolbar>

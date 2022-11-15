@@ -87,6 +87,10 @@
 - TODO - Make blocks and marks enums
 - TODO - Make 'code' blocks an inline type?
 - TODO - Remove 'any' for TypeScript
+- TODO - Use downLevelIteration to take advantage of generators instead of Array.from()
+- TODO - Stop using toString() to check array equality to stringify() for object equality
+- TODO - Keep track of editor.selection in localStorage?
+- TODO - Tab pressed while on table cell moves to the next cell
 - TODO - Support TODO lists in notes
 - TODO - Sort files by last date modified?
 - TODO - Keyboard shortcut to hide Drawer

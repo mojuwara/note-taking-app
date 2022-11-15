@@ -155,8 +155,9 @@ export const TableBlockElement = (props: any) => {
 			border={1}
 			{...props.attributes}
 			style={{
-				marginTop: 10,
+				marginTop: 16,
 				marginLeft: 10,
+				marginBottom: 16,
 				borderCollapse: "collapse",
 			}}
 		>
@@ -190,9 +191,9 @@ export const TableHeaderBlockElement = (props: any) => {
 		setAnchorEl(e.currentTarget);
 	}
 
-	const addCol = (dir: 'left' | 'right') => {
+	const addCol = (colNum: number) => {
 		setMenuOpen(false);
-		EditorCommands.addTableCol(editor, pos[1], dir);
+		EditorCommands.insertTableCol(editor, colNum);
 	}
 
 	return (
@@ -206,8 +207,8 @@ export const TableHeaderBlockElement = (props: any) => {
 				</span>
 			}
 			<Menu anchorEl={anchorEl} open={menuOpen} onClose={() => setMenuOpen(false)}>
-				<MenuItem onClick={() => addCol('left')}>Insert col to left</MenuItem>
-				<MenuItem onClick={() => addCol('right')}>Insert col to right</MenuItem>
+				<MenuItem onClick={() => addCol(pos[1])}>Insert col to left</MenuItem>
+				<MenuItem onClick={() => addCol(pos[1] + 1)}>Insert col to right</MenuItem>
 			</Menu>
 			{/* {props.element?.pos?.toString()} */}
 			{props.children}
@@ -240,9 +241,9 @@ export const TableDataBlockElement = (props: any) => {
 		setAnchorEl(e.currentTarget);
 	}
 
-	const addRow = (dir: 'above' | 'below') => {
+	const addRow = (rowNum: number) => {
 		setMenuOpen(false);
-		EditorCommands.addTableRow(editor, pos[0], dir);
+		EditorCommands.insertTableRow(editor, rowNum);
 	}
 
 	return (
@@ -257,8 +258,8 @@ export const TableDataBlockElement = (props: any) => {
 			}
 			{/* {props.element?.pos?.toString()} */}
 			<Menu anchorEl={anchorEl} open={menuOpen} onClose={() => setMenuOpen(false)}>
-				<MenuItem onClick={() => addRow('above')}>Insert row above</MenuItem>
-				<MenuItem onClick={() => addRow('below')}>Insert row below</MenuItem>
+				<MenuItem onClick={() => addRow(pos[0])}>Insert row above</MenuItem>
+				<MenuItem onClick={() => addRow(pos[0] + 1)}>Insert row below</MenuItem>
 			</Menu>
 			{props.children}
 		</td>

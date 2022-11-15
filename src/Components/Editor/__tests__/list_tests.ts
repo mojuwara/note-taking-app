@@ -9,7 +9,7 @@ let editor =createEditor();
 
 // Can't find a way to nicely create a React.KeyboardEvent<HTMLDivElement> event
 // Should be good enough for testing?
-const getKeyboardEvent = (options: KeyboardEventInit): React.KeyboardEvent<HTMLDivElement> => {
+const makeKeyboardEvent = (options: KeyboardEventInit): React.KeyboardEvent<HTMLDivElement> => {
 	const event = new KeyboardEvent('onkeydown', options) as unknown as React.KeyboardEvent<HTMLDivElement>;
 	return event;
 }
@@ -62,7 +62,7 @@ test('creating unordered lists on non-empty line', () => {
 
 test('creating unordered lists by typing "* "', () => {
 	editor.insertText("*");
-	EditorShortcuts(editor, getKeyboardEvent({key: ' '}));
+	EditorShortcuts(editor, makeKeyboardEvent({key: ' '}));
 	let expectedSel: Range = {
 		anchor: { path: [0, 0, 0], offset: 0 },
 		focus: { path: [0, 0, 0], offset: 0 }
@@ -79,7 +79,7 @@ test('creating unordered lists by typing "* "', () => {
 
 test('creating unordered lists by typing "1. "', () => {
 	editor.insertText("1.");
-	EditorShortcuts(editor, getKeyboardEvent({key: ' '}));
+	EditorShortcuts(editor, makeKeyboardEvent({key: ' '}));
 	let expectedSel: Range = {
 		anchor: { path: [0, 0, 0], offset: 0 },
 		focus: { path: [0, 0, 0], offset: 0 }
@@ -122,7 +122,7 @@ test('unindenting nested listItem', () => {
 	 * 	<li>...</li>
 	 * <ol>
 	 */
-	EditorShortcuts(editor, getKeyboardEvent({ key: 'Tab', shiftKey: true}));
+	EditorShortcuts(editor, makeKeyboardEvent({ key: 'Tab', shiftKey: true}));
 	const expectedChld = editor.children = [{
 		type: "orderedList",
 		children: [
@@ -167,7 +167,7 @@ test('unindenting listItem creates paragraph', () => {
 	 * <ol>
 	 * <p>...</p>
 	 */
-	EditorShortcuts(editor, getKeyboardEvent({ key: 'Tab', shiftKey: true }));
+	EditorShortcuts(editor, makeKeyboardEvent({ key: 'Tab', shiftKey: true }));
 	const expectedChld = [
 		{
 			type: "orderedList",
@@ -215,7 +215,7 @@ test('tab at beginning of listItem creates nested unorderedlists', () => {
 	 * 	</ol>
 	 * <ol>
 	 */
-	EditorShortcuts(editor, getKeyboardEvent({ key: 'Tab' }));
+	EditorShortcuts(editor, makeKeyboardEvent({ key: 'Tab' }));
 	const expectedChld = [
 		{
 			type: "orderedList",

@@ -3,6 +3,9 @@ import { BaseEditor } from 'slate'
 import { ReactEditor } from 'slate-react'
 import { HistoryEditor } from 'slate-history'
 
+// Used as [rowNum, colNum] - zero indexed
+export type Tuple<T> = [T, T];
+
 // TODO: Is this the proper way? Or make a .d.ts file?
 // Custom types for Slate
 export type CustomText = {
@@ -10,11 +13,22 @@ export type CustomText = {
 	bold?: boolean,
 	italic?: boolean,
 	underline?: boolean,
-	placeholder?: boolean,
+	selectedPos?: Tuple<number> | null;
 }
 
 // Better way than adding 'pos' to Generic Element?
-export type GenericElement = { type: string, children: CustomText[], pos?: Tuple<number>, selectedPos?: Tuple<number> }
+/**
+ * Catch when elements are selected and not selected
+ * When selected,
+ */
+export type GenericElement = {
+	type								: string,
+	children						: CustomText[],
+	pos?								: Tuple<number>,
+	selectedPos?				: Tuple<number>,
+	// onSelected?					: null | ((editor: CustomEditor, entry: NodeEntry) => void),
+	// onDeselected?				: null | ((editor: CustomEditor, entry: NodeEntry) => void),
+}
 export type ListElement = {type: 'listItem', children: CustomText[]}
 export type OrderedListElement = {
 	type: 'orderedList',
@@ -32,15 +46,29 @@ export type H2Element = { type: 'h2', children: CustomText[] }
 export type H3Element = { type: 'h3', children: CustomText[] }
 export type ImageElement = { type: 'image', url: string, children: CustomText[] }
 
-// Used as [rowNum, colNum] - zero indexed
-export type Tuple<T> = [T, T];
-
-export type TableDataElement = { type: 'table-data', children: CustomText[], selectedPos?: Tuple<number>, pos: Tuple<number> };
-export type TableHeaderElement = { type: 'table-header', children: CustomText[], selectedPos?: Tuple<number>, pos: Tuple<number> };
-export type TableRowElement = { type: 'table-row', children: TableHeaderElement[] | TableDataElement[], selectedPos?: Tuple<number>  };
-export type TableBodyElement = { type: 'table-body', children: TableRowElement[], selectedPos?: Tuple<number> };
-export type TableHeadElement = { type: 'table-head', children: TableRowElement[], selectedPos?: Tuple<number> };
-export type TableElement = { type: 'table', children: (TableHeadElement | TableBodyElement)[], selectedPos?: Tuple<number> };
+export type TableDataElement = {
+	type: 'table-data',
+	children: CustomText[],
+	pos: Tuple<number>,
+	selectedPos?: Tuple<number> | null,
+	// onSelected: (editor: CustomEditor, entry: NodeEntry) => void,
+};
+export type TableHeaderElement = {
+	type: 'table-header',
+	children: CustomText[],
+	pos: Tuple<number>
+	selectedPos?: Tuple<number> | null,
+	// onSelected: (editor: CustomEditor, entry: NodeEntry) => void
+};
+export type TableRowElement = { type: 'table-row', children: TableHeaderElement[] | TableDataElement[], selectedPos?: Tuple<number> | null  };
+export type TableBodyElement = { type: 'table-body', children: TableRowElement[], selectedPos?: Tuple<number> | null };
+export type TableHeadElement = { type: 'table-head', children: TableRowElement[], selectedPos?: Tuple<number> | null };
+export type TableElement = {
+	type: 'table',
+	children: (TableHeadElement | TableBodyElement)[],
+	selectedPos?: Tuple<number> | null,
+	// onDeselected: (editor: CustomEditor, entry: NodeEntry) => void,
+ };
 // export type TableContainerElement = {type: 'table-container', children: TableElement[] };
 
 export type ContainerElement = {type: 'container', children: (CustomElement | CustomText)[] }

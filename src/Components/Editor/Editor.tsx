@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 
 import {
 	// host,
@@ -11,7 +11,7 @@ import {
 	getTransitionElemClass,
 } from "../../Utils";
 
-import { createEditor } from 'slate'
+import { createEditor, Range } from 'slate'
 import { Slate, Editable, withReact, useSlate } from 'slate-react'
 
 import { withHistory } from 'slate-history'
@@ -85,6 +85,9 @@ function MyEditor(props: EditorProps) {
 		slate's internal operations to transform the value, for example:
 	*/
 
+	// Used to keep track of the current selection
+	const currSelection = useRef<Range | null>(null);
+
 	// How long to wait after the user stops making changes to save to server
 	const saveInterval = 1000 * 2;
 
@@ -124,6 +127,7 @@ function MyEditor(props: EditorProps) {
 		}
 
 		initFileContents();
+		focusOnEditor();
 
 		// TODO: Save file on file change
 		return () => {
@@ -132,23 +136,17 @@ function MyEditor(props: EditorProps) {
 	}, [editor, props.filePath]);
 
 	const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+		console.log("Keydown")
 		EditorShortcuts(editor, event);
 	}
 
-	// Save editor contents if there were any text changes
-	// TODO: If table selected, overlay options to insert new row or column
-	// TODO: Ability to inspect entire table
 	const handleEditorChange = (value: any) => {
-		// console.log("Change", value);
+		if (editor.operations.every(op => 'set_selection' === op.type) && JSON.stringify(editor.selection) !== JSON.stringify(currSelection.current))
+			EditorCommands.handleSelectionChange(editor, currSelection.current);
+		currSelection.current = editor.selection;
 
-		// Add/Remove col/row that anchor is on if table is selected
-		EditorCommands.updateTableSelection(editor);
-
-		// console.log("Selection on change", , editor.selection?.anchor?.offset)
-		const isAstChange = editor.operations.some(
-			op => 'set_selection' !== op.type
-		)
-
+		// Save editor contents if there were any text changes
+		const isAstChange = editor.operations.some(op => 'set_selection' !== op.type);
 		if (isAstChange) {
 			const newContent = JSON.stringify(value);
 			localStorage.setItem(props.filePath, newContent);
@@ -333,14 +331,18 @@ const LinkInsertButton = (props: any) => {
 	);
 }
 
-// TODO: Space outside table to allow for adding new
-const InsertTableButton = (props: any) => {
+const InsertTableButton = () => {
 	const editor = useSlate();
+	const handleClick = () => {
+		EditorCommands.insertTable(editor);
+		focusOnEditor();
+	}
+
 	return (
-		<IconButton aria-label={"Insert link"} onClick={(e) => EditorCommands.insertTable(editor)}>
+		<IconButton aria-label={"Insert table"} onClick={handleClick}>
 			<TableRowsOutlinedIcon />
 		</IconButton>
-	)
+	);
 }
 
 const BlockButton = (props: any) => {

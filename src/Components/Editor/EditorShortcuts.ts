@@ -1,6 +1,6 @@
 import { CustomEditor } from '../../Types';
 import EditorCommands from './EditorCommands';
-import { Editor, Element as SlateElement, Transforms, Node, NodeEntry, Ancestor } from 'slate';
+import { Editor, Element as SlateElement, Transforms, Node } from 'slate';
 import { focusOnEditor } from '../../Utils';
 
 // TODO: Create 'EditorCommands.currElemType' to get the current element type, use that once instead of multiple 'EditorCommands.onElemType' calls
@@ -10,13 +10,10 @@ const EditorShortcuts = (editor: CustomEditor, event: React.KeyboardEvent<HTMLDi
 	const ctrlKey = event.ctrlKey || event.metaKey;	// metaKey is Cmd key on Mac
 
 	let ancestorTypes: Set<string> = new Set<string>();
-	let ancestors: NodeEntry<Ancestor>[] = [];
-
 	const currPath = editor.selection?.focus.path;
 	if (currPath) {
 		const [editorNode] = Editor.node(editor, []);
-		ancestors = Array.from(Node.ancestors(editorNode, currPath));
-		for (const nodeEntry of ancestors) {
+		for (const nodeEntry of Array.from(Node.ancestors(editorNode, currPath))) {
 			if (SlateElement.isElement(nodeEntry[0]))
 				ancestorTypes.add(nodeEntry[0].type);
 		}
@@ -60,18 +57,18 @@ const EditorShortcuts = (editor: CustomEditor, event: React.KeyboardEvent<HTMLDi
 	if (event.key === 'Enter' && ancestorTypes.has("table")) {
 		event.preventDefault();
 
-		// Add new row below if 'Enter' is pressed on the last cell
-		const [tableNode] = EditorCommands.getElemType(editor, "table");
-		if (!tableNode || !SlateElement.isElement(tableNode) || tableNode.type !== 'table')
+		const [tableNode, tablePath] = EditorCommands.getElemType(editor, "table");
+		if (!SlateElement.isElement(tableNode) || tableNode.type !== 'table')
 			return;
 
-		// Add row below if last cell is selected. TODO: Update selection to first cell in new row
+		// Add new row below if 'Enter' is pressed on the last cell
 		if (tableNode.selectedPos && EditorCommands.onLastCell(editor))
-			EditorCommands.addTableRow(editor, tableNode.selectedPos[0], 'below');
+			EditorCommands.insertTableRow(editor, tableNode.selectedPos[0] + 1);
 
-		// Add new para. if beginning of table is selected. TODO: Move selection to new paragraph
+		// Add new para. if beginning of first cell in table is selected and 'Enter' is pressed.
+		// TODO: Move selection to new paragraph
 		if (tableNode.selectedPos && EditorCommands.atTableStart(editor))
-			EditorCommands.insertParagraph(editor);
+			EditorCommands.insertParagraph(editor, tablePath);
 	}
 
 	// convert paragraph to ordered or unordered list
