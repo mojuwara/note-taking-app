@@ -66,7 +66,6 @@ const EditorShortcuts = (editor: CustomEditor, event: React.KeyboardEvent<HTMLDi
 			EditorCommands.insertTableRow(editor, tableNode.selectedPos[0] + 1);
 
 		// Add new para. if beginning of first cell in table is selected and 'Enter' is pressed.
-		// TODO: Move selection to new paragraph
 		if (tableNode.selectedPos && EditorCommands.atTableStart(editor))
 			EditorCommands.insertParagraph(editor, tablePath);
 	}

@@ -18,23 +18,14 @@ const EditorCommands = {
 			return;
 
 		// call onDeselected() for all nodes down current path
-		for (let i = 1; i <= editor.selection.focus.path.length; i++) {
-			const [deselectedNode, deselectedNodePath] = Editor.node(editor, editor.selection.focus.path.slice(0, i));
-			if (SlateElement.isElement(deselectedNode) && deselectedNode.type === "table")
-				TableHelper.onTableDeselected(editor, [deselectedNode, deselectedNodePath]);
-		}
+		EditorCommands.checkDeselectedElems(editor, editor.selection);
 
 		if (updateFn)
 			updateFn();
-
 		Transforms.select(editor, newSel);
 
 		// call onSelected() for all nodes down new path
-		for (let i = 1; i <= newSel.focus.path.length; i++) {
-			const [selectedNode, selectedNodePath] = Editor.node(editor, newSel.focus.path.slice(0, i));
-			if (SlateElement.isElement(selectedNode) && (selectedNode.type === "table-data" || selectedNode.type === "table-header"))
-				TableHelper.onTableSelected(editor, [selectedNode, selectedNodePath]);
-		}
+		EditorCommands.checkSelectedElems(editor, newSel);
 	},
 
 	handleSelectionChange(editor: CustomEditor, oldSel: Range | null) {
@@ -43,30 +34,28 @@ const EditorCommands = {
 
 		// If no old selection, call onSelected() for all nodes down path
 		if (!oldSel) {
-			for (let i = 0; i <= editor.selection.focus.path.length; i++) {
-				const [selectedNode, selectedNodePath] = Editor.node(editor, editor.selection.focus.path.slice(0, i));
-				if (SlateElement.isElement(selectedNode) && (selectedNode.type === "table-data" || selectedNode.type === "table-header"))
-					TableHelper.onTableSelected(editor, [selectedNode, selectedNodePath]);
-			}
+			EditorCommands.checkSelectedElems(editor, editor.selection);
 			return;
 		}
 
-		// If old and new selection, call onDeselected() or onSelected() from the common ancestor
-		// const [root] = Editor.node(editor, []);
-		// const [, ancestPath] = Node.common(root, editor.selection.focus.path, oldSel.focus.path);
+		// call onDeselected() for all old nodes and onSelected on new selected nodes
+		EditorCommands.checkDeselectedElems(editor, oldSel);
+		EditorCommands.checkSelectedElems(editor, editor.selection);
+	},
 
-		// call onDeselected() for all nodes down current path
+	checkSelectedElems(editor: CustomEditor, selection: Range) {
+		for (let i = 1; i <= selection.focus.path.length; i++) {
+			const [selectedNode, selectedNodePath] = Editor.node(editor, selection.focus.path.slice(0, i));
+			if (SlateElement.isElement(selectedNode) && (selectedNode.type === "table-data" || selectedNode.type === "table-header"))
+				TableHelper.onTableSelected(editor, [selectedNode, selectedNodePath]);
+		}
+	},
+
+	checkDeselectedElems(editor: CustomEditor, oldSel: Range) {
 		for (let i = 1; i <= oldSel.focus.path.length; i++) {
 			const [deselectedNode, deselectedNodePath] = Editor.node(editor, oldSel.focus.path.slice(0, i));
 			if (SlateElement.isElement(deselectedNode) && deselectedNode.type === "table")
 				TableHelper.onTableDeselected(editor, [deselectedNode, deselectedNodePath]);
-		}
-
-		// call onSelected() for all nodes down new path
-		for (let i = 1; i <= editor.selection.focus.path.length; i++) {
-			const [selectedNode, selectedNodePath] = Editor.node(editor, editor.selection.focus.path.slice(0, i));
-			if (SlateElement.isElement(selectedNode) && (selectedNode.type === "table-data" || selectedNode.type === "table-header"))
-				TableHelper.onTableSelected(editor, [selectedNode, selectedNodePath]);
 		}
 	},
 
