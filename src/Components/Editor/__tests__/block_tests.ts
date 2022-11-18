@@ -1,5 +1,6 @@
 import assert from 'assert';
 import { createEditor } from 'slate';
+import { ElementTypes } from '../../../Types';
 import EditorCommands from '../EditorCommands';
 
 // TODO: slatejs docs use slate-hyperscript but I'm unable to get it working
@@ -7,7 +8,7 @@ let editor = createEditor();
 
 beforeEach(() => {
 	editor.children = [{
-		type: "paragraph",
+		type: ElementTypes.PARAGRAPH,
 		children: [{ text: "" }]
 	}];
 

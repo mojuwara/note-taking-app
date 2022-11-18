@@ -1,4 +1,4 @@
-import { CustomEditor } from '../../Types';
+import { CustomEditor, ElementTypes } from '../../Types';
 import EditorCommands from './EditorCommands';
 import { Editor, Element as SlateElement, Transforms, Node } from 'slate';
 import { focusOnEditor } from '../../Utils';
@@ -54,10 +54,10 @@ const EditorShortcuts = (editor: CustomEditor, event: React.KeyboardEvent<HTMLDi
 		EditorCommands.toggleBlock(editor, "h3");
 	}
 
-	if (event.key === 'Enter' && ancestorTypes.has("table")) {
+	if (event.key === 'Enter' && ancestorTypes.has(ElementTypes.TABLE)) {
 		event.preventDefault();
 
-		const [tableNode, tablePath] = EditorCommands.getElemType(editor, "table");
+		const [tableNode, tablePath] = EditorCommands.getElemType(editor, ElementTypes.TABLE);
 		if (!SlateElement.isElement(tableNode) || tableNode.type !== 'table')
 			return;
 
@@ -71,9 +71,9 @@ const EditorShortcuts = (editor: CustomEditor, event: React.KeyboardEvent<HTMLDi
 	}
 
 	// convert paragraph to ordered or unordered list
-	if (event.key === ' ' && ancestorTypes.has("paragraph")) {
+	if (event.key === ' ' && ancestorTypes.has(ElementTypes.PARAGRAPH)) {
 		// Right before need space is added
-		const [paragraphNode] = EditorCommands.getElemType(editor, "paragraph");
+		const [paragraphNode] = EditorCommands.getElemType(editor, ElementTypes.PARAGRAPH);
 		if (!("children" in paragraphNode && paragraphNode.children.length))
 			return;
 

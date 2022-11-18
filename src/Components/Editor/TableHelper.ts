@@ -6,6 +6,7 @@ import {
 	TableHeaderElement,
 	TableRowElement,
 	CustomEditor,
+	ElementTypes,
 } from "../../Types";
 
 import EditorCommands from "./EditorCommands";
@@ -33,21 +34,21 @@ export const TableHelper = {
 		* 	</table>
 		*  </dvi>
 		 */
-		const headerCell1: TableHeaderElement = { type: 'table-header', pos: [0, 0], children: [{ text: '' }]};
-		const headerCell2: TableHeaderElement = { type: 'table-header', pos: [0, 1], children: [{ text: '' }]};
+		const headerCell1: TableHeaderElement = { type: ElementTypes.TABLE_HEADER, pos: [0, 0], children: [{ text: '' }]};
+		const headerCell2: TableHeaderElement = { type: ElementTypes.TABLE_HEADER, pos: [0, 1], children: [{ text: '' }]};
 
-		const headRow: TableRowElement = { type: 'table-row', children: [headerCell1, headerCell2] };
-		const tableHead: TableHeadElement = { type: 'table-head', children: [headRow] };
+		const headRow: TableRowElement = { type: ElementTypes.TABLE_ROW, children: [headerCell1, headerCell2] };
+		const tableHead: TableHeadElement = { type: ElementTypes.TABLE_HEAD, children: [headRow] };
 
-		const bodyCell1: TableDataElement = { type: 'table-data', pos: [1, 0], children: [{ text: '' }]};
-		const bodyCell2: TableDataElement = { type: 'table-data', pos: [1, 1], children: [{ text: '' }]};
+		const bodyCell1: TableDataElement = { type: ElementTypes.TABLE_DATA, pos: [1, 0], children: [{ text: '' }]};
+		const bodyCell2: TableDataElement = { type: ElementTypes.TABLE_DATA, pos: [1, 1], children: [{ text: '' }]};
 
-		const bodyRow: TableRowElement = { type: 'table-row', children: [bodyCell1, bodyCell2] };
-		const tableBody: TableBodyElement = { type: 'table-body', children: [bodyRow] };
+		const bodyRow: TableRowElement = { type: ElementTypes.TABLE_ROW, children: [bodyCell1, bodyCell2] };
+		const tableBody: TableBodyElement = { type: ElementTypes.TABLE_BODY, children: [bodyRow] };
 
-		const table: TableElement = {type: 'table', children: [tableHead, tableBody]};
+		const table: TableElement = {type: ElementTypes.TABLE, children: [tableHead, tableBody]};
 
-		const [paraNode] = EditorCommands.getElemType(editor, "paragraph");
+		const [paraNode] = EditorCommands.getElemType(editor, ElementTypes.PARAGRAPH);
 		const onEmptyNode = SlateElement.isElement(paraNode) && Editor.isEmpty(editor, paraNode);
 
 		const updateFn = () => {
@@ -78,7 +79,7 @@ export const TableHelper = {
 	},
 
 	// selectTableStart(editor: CustomEditor) {
-	// 	const [, tablePath] = EditorCommands.getElemType(editor, "table");
+	// 	const [, tablePath] = EditorCommands.getElemType(editor, ElementTypes.TABLE);
 	// 	// Transforms.select(editor, {path: tablePath.concat(0, 0, 0, 0), offset: 0 });
 	// 	const newSel = {
 	// 		anchor: { path: tablePath.concat(0, 0, 0, 0), offset: 0 }, // in table-head, table-row, table-header, text node
@@ -88,7 +89,7 @@ export const TableHelper = {
 	// },
 
 	insertTableCol(editor: CustomEditor, colNum: number) {
-		const [, tablePath] = EditorCommands.getElemType(editor, "table");
+		const [, tablePath] = EditorCommands.getElemType(editor, ElementTypes.TABLE);
 
 		const updateFn = () => {
 			const tableRows = Array.from(Editor.nodes(editor, {
@@ -121,12 +122,12 @@ export const TableHelper = {
 	},
 
 	onLastCell(editor: CustomEditor) {
-		if (!EditorCommands.onElemType(editor, "table"))
+		if (!EditorCommands.onElemType(editor, ElementTypes.TABLE))
 			return false;
 
 		// Narrowing to make TypeScript happy
-		const [tableNode, tableNodePath] = EditorCommands.getElemType(editor, "table");
-		if (!SlateElement.isElement(tableNode) || !(tableNode.type === "table") || !tableNode.selectedPos)
+		const [tableNode, tableNodePath] = EditorCommands.getElemType(editor, ElementTypes.TABLE);
+		if (!SlateElement.isElement(tableNode) || !(tableNode.type === ElementTypes.TABLE) || !tableNode.selectedPos)
 			return false;
 
 		const lastCell = Array.from(Editor.nodes(editor, {
@@ -142,11 +143,11 @@ export const TableHelper = {
 	},
 
 	atTableStart(editor: CustomEditor) {
-		if (!EditorCommands.onElemType(editor, "table"))
+		if (!EditorCommands.onElemType(editor, ElementTypes.TABLE))
 			return false;
 
-		const [tableNode] = EditorCommands.getElemType(editor, "table");
-		if (!SlateElement.isElement(tableNode) || !(tableNode.type === "table") || !tableNode.selectedPos)
+		const [tableNode] = EditorCommands.getElemType(editor, ElementTypes.TABLE);
+		if (!SlateElement.isElement(tableNode) || !(tableNode.type === ElementTypes.TABLE) || !tableNode.selectedPos)
 			return false;
 
 		return (tableNode.selectedPos[0] === 0 && tableNode.selectedPos[0] === 0 && editor.selection?.focus.offset === 0);
@@ -166,14 +167,14 @@ export const TableHelper = {
 			const firstDataRow = tableBody.children[0].children;
 			const newDataRow: TableDataElement[] = firstDataRow.map(() => {
 				return {
-					type: 'table-data',
+					type: ElementTypes.TABLE_DATA,
 					pos: [-1, -1],
 					children: [{ text: '' }],
 				};
 			});
 
 			Transforms.insertNodes(editor,
-				{ type: 'table-row', children: newDataRow },
+				{ type: ElementTypes.TABLE_ROW, children: newDataRow },
 				{ at: [...tableBodyPath, rowNum] }
 			);
 			TableHelper.updateTableCellsPos(editor);
@@ -190,10 +191,10 @@ export const TableHelper = {
 	},
 
 	updateTableCellsPos(editor: CustomEditor) {
-		if (!EditorCommands.onElemType(editor, "table"))
+		if (!EditorCommands.onElemType(editor, ElementTypes.TABLE))
 			return;
 
-		const [, tablePath] = EditorCommands.getElemType(editor, "table");
+		const [, tablePath] = EditorCommands.getElemType(editor, ElementTypes.TABLE);
 		const tableRows = Array.from(Editor.nodes(editor, {
 			at: tablePath,
 			match: n => SlateElement.isElement(n) && n.type === 'table-row'
@@ -214,7 +215,7 @@ export const TableHelper = {
 	},
 
 	onTableSelected(editor: CustomEditor, nodeEntry: NodeEntry) {
-		if (!EditorCommands.onElemType(editor, "table") || !editor.selection?.anchor?.path || !nodeEntry)
+		if (!EditorCommands.onElemType(editor, ElementTypes.TABLE) || !editor.selection?.anchor?.path || !nodeEntry)
 			return;
 
 		// Only the selected data or header type is allowed to propagate the selectedPos to its child cells
@@ -222,7 +223,7 @@ export const TableHelper = {
 			return;
 
 		// Recursively update all child nodes to store update selected cell
-		const tableNodeEntry = EditorCommands.getElemType(editor, "table");
+		const tableNodeEntry = EditorCommands.getElemType(editor, ElementTypes.TABLE);
 		if (SlateElement.isElement(tableNodeEntry[0]) && "pos" in nodeEntry[0]) {
 			const position = nodeEntry[0].pos;
 			EditorCommands.recursivelySet(editor, tableNodeEntry, {'selectedPos': position});
@@ -232,7 +233,7 @@ export const TableHelper = {
 	// Remove selectedPos for this table and descendents
 	onTableDeselected(editor: CustomEditor, nodeEntry: NodeEntry) {
 		// When the table is no longer selected, let the cells know
-		if (!SlateElement.isElement(nodeEntry[0]) || nodeEntry[0].type !== "table")
+		if (!SlateElement.isElement(nodeEntry[0]) || nodeEntry[0].type !== ElementTypes.TABLE)
 			return;
 		EditorCommands.recursivelySet(editor, nodeEntry, {selectedPos: null});
 	},

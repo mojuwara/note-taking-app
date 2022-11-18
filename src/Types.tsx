@@ -1,4 +1,3 @@
-// This example is for an Editor with `ReactEditor` and `HistoryEditor`
 import { BaseEditor } from 'slate'
 import { ReactEditor } from 'slate-react'
 import { HistoryEditor } from 'slate-history'
@@ -6,95 +5,127 @@ import { HistoryEditor } from 'slate-history'
 // Used as [rowNum, colNum] - zero indexed
 export type Tuple<T> = [T, T];
 
-// TODO: Is this the proper way? Or make a .d.ts file?
+// Alphabetical order
+export enum ElementTypes {
+	CODE 						= "code",
+	H1 							="h1",
+	H2 							= "h2",
+	H3 							= "h3",
+	IMAGE 					= "image",
+	LINK 						= "link",
+	LIST_ITEM 			= "listItem",
+	LIST_ORDERED 		= "orderedList",
+	LIST_UNORDERED 	= "unorderedList",
+	PARAGRAPH 			= "paragraph",
+	TABLE 					= "table",
+	TABLE_BODY 			= "table-body",
+	TABLE_DATA 			= "table-data",
+	TABLE_HEAD 			= "table-head",
+	TABLE_HEADER 		= "table-header",
+	TABLE_ROW 			= "table-row",
+}
+
 // Custom types for Slate
 export type CustomText = {
-	text: string;
-	bold?: boolean,
-	italic?: boolean,
-	underline?: boolean,
+	text				: string;
+	bold?				: boolean,
+	italic?			: boolean,
+	underline?	: boolean,
 	selectedPos?: Tuple<number> | null;
 }
 
-// Better way than adding 'pos' to Generic Element?
-/**
- * Catch when elements are selected and not selected
- * When selected,
- */
 export type GenericElement = {
 	type								: string,
 	children						: CustomText[],
 	pos?								: Tuple<number>,
 	selectedPos?				: Tuple<number>,
-	// onSelected?					: null | ((editor: CustomEditor, entry: NodeEntry) => void),
-	// onDeselected?				: null | ((editor: CustomEditor, entry: NodeEntry) => void),
-}
-export type ListElement = {type: 'listItem', children: CustomText[]}
-export type OrderedListElement = {
-	type: 'orderedList',
-	children: (OrderedListElement | UnorderedListElement | ListElement)[],
 };
-export type UnorderedListElement = {
-	type: 'unorderedList',
-	children: (OrderedListElement | UnorderedListElement | ListElement)[],
+
+export type CodeElement = { type: ElementTypes.CODE, children: CustomText[] };
+
+export type H1Element = { type: ElementTypes.H1, children: CustomText[] };
+export type H2Element = { type: ElementTypes.H2, children: CustomText[] };
+export type H3Element = { type: ElementTypes.H3, children: CustomText[] };
+
+export type ImageElement = { type: ElementTypes.IMAGE, url: string, children: CustomText[] }
+
+export type LinkElement = { type: ElementTypes.LINK, href: string, children: CustomText[] }
+
+export type ListElement = { type: ElementTypes.LIST_ITEM, children: CustomText[] };
+
+export type ListOrderedElement = {
+	type		: ElementTypes.LIST_ORDERED,
+	children: (ListOrderedElement | ListUnorderedElement | ListElement)[],
 };
-export type CodeElement = { type: 'code', children: CustomText[] }
-export type ParagraphElement = { type: 'paragraph', children: (CustomText | LinkElement | ImageElement)[] }
-export type LinkElement = { type: 'link', href: string, children: CustomText[] }
-export type H1Element = { type: 'h1', children: CustomText[] }
-export type H2Element = { type: 'h2', children: CustomText[] }
-export type H3Element = { type: 'h3', children: CustomText[] }
-export type ImageElement = { type: 'image', url: string, children: CustomText[] }
+
+export type ListUnorderedElement = {
+	type		: ElementTypes.LIST_UNORDERED,
+	children: (ListOrderedElement | ListUnorderedElement | ListElement)[],
+};
+
+export type ParagraphElement = {
+	type		: ElementTypes.PARAGRAPH,
+	children: (CustomText | LinkElement | ImageElement)[]
+};
+
+export type TableElement = {
+	type				: ElementTypes.TABLE,
+	children		: (TableHeadElement | TableBodyElement)[],
+	selectedPos?: Tuple<number> | null,
+};
+
+export type TableBodyElement = {
+	type				: ElementTypes.TABLE_BODY,
+	children		: TableRowElement[],
+	selectedPos?: Tuple<number> | null
+};
 
 export type TableDataElement = {
-	type: 'table-data',
-	children: CustomText[],
-	pos: Tuple<number>,
+	type				: ElementTypes.TABLE_DATA,
+	children		: CustomText[],
+	pos					: Tuple<number>,
 	selectedPos?: Tuple<number> | null,
-	// onSelected: (editor: CustomEditor, entry: NodeEntry) => void,
 };
+
+export type TableHeadElement = {
+	type				: ElementTypes.TABLE_HEAD,
+	children		: TableRowElement[],
+	selectedPos?: Tuple<number> | null
+};
+
 export type TableHeaderElement = {
-	type: 'table-header',
-	children: CustomText[],
-	pos: Tuple<number>
+	type				: ElementTypes.TABLE_HEADER,
+	children		: CustomText[],
+	pos					: Tuple<number>
 	selectedPos?: Tuple<number> | null,
-	// onSelected: (editor: CustomEditor, entry: NodeEntry) => void
 };
-export type TableRowElement = { type: 'table-row', children: TableHeaderElement[] | TableDataElement[], selectedPos?: Tuple<number> | null  };
-export type TableBodyElement = { type: 'table-body', children: TableRowElement[], selectedPos?: Tuple<number> | null };
-export type TableHeadElement = { type: 'table-head', children: TableRowElement[], selectedPos?: Tuple<number> | null };
-export type TableElement = {
-	type: 'table',
-	children: (TableHeadElement | TableBodyElement)[],
+export type TableRowElement = {
+	type				: ElementTypes.TABLE_ROW,
+	children		: TableHeaderElement[] | TableDataElement[],
 	selectedPos?: Tuple<number> | null,
-	// onDeselected: (editor: CustomEditor, entry: NodeEntry) => void,
- };
-// export type TableContainerElement = {type: 'table-container', children: TableElement[] };
+};
 
-export type ContainerElement = {type: 'container', children: (CustomElement | CustomText)[] }
-
+// Alphabetical
 export type CustomElement = GenericElement
-| UnorderedListElement
-| OrderedListElement
-| TableElement
-| TableHeaderElement
-| TableDataElement
-| TableRowElement
-| TableBodyElement
-| TableHeadElement
-| ParagraphElement
-| ContainerElement
-| ImageElement
-| CodeElement
-| LinkElement
-| ListElement
-| H1Element
-| H2Element
-| H3Element;
+	| CodeElement
+	| H1Element
+	| H2Element
+	| H3Element
+	| ImageElement
+	| LinkElement
+	| ListElement
+	| ListOrderedElement
+	| ListUnorderedElement
+	| ParagraphElement
+	| TableElement
+	| TableBodyElement
+	| TableDataElement
+	| TableHeadElement
+	| TableHeaderElement
+	| TableRowElement;
 
 export type CustomEditor = BaseEditor & ReactEditor & HistoryEditor;
 
-// Nodes => Editor, Elements(defined above) and Text nodes
 declare module 'slate' {
 	interface CustomTypes {
 		Text: CustomText

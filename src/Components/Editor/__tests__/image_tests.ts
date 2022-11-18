@@ -1,5 +1,6 @@
 import assert from 'assert';
 import { Range, createEditor, Descendant } from 'slate';
+import { ElementTypes } from '../../../Types';
 import EditorCommands from '../EditorCommands';
 import { withImages } from '../EditorPlugins';
 
@@ -8,7 +9,7 @@ let editor = withImages(createEditor());
 
 beforeEach(() => {
 	editor.children = [{
-		type: "paragraph",
+		type: ElementTypes.PARAGRAPH,
 		children: [{ text: "" }]
 	}];
 
@@ -30,10 +31,10 @@ test('embedded images', () => {
 		};
 
 		const expectedChld: Descendant[] = [{
-			type: "paragraph",
+			type: ElementTypes.PARAGRAPH,
 			children: [
 				{ text: "" },
-				{ type: "image", url, children: [{ text: "" }] },
+				{ type: ElementTypes.IMAGE, url, children: [{ text: "" }] },
 				{ text: "" }
 			]
 		}];

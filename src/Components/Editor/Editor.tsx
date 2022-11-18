@@ -1,13 +1,11 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 
 import {
-	// host,
 	DefaultFileContent
 } from "../../Constants";
 import {
 	focusOnEditor,
 	getStorageItem,
-	// getElemText,
 	getTransitionElemClass,
 } from "../../Utils";
 
@@ -34,9 +32,10 @@ import ImageOutlinedIcon from '@mui/icons-material/ImageOutlined';
 import InsertLinkOutlinedIcon from '@mui/icons-material/InsertLinkOutlined';
 import Popper from '@mui/material/Popper';
 
+import { ElementTypes } from "../../Types";
 import EditorCommands from "./EditorCommands";
 import EditorShortcuts from "./EditorShortcuts";
-import { withImages, withInlineLinks } from "./EditorPlugins";
+import { withImages, withInlineLinks, withHtml } from "./EditorPlugins";
 
 import {
 	H1BlockElement,
@@ -49,7 +48,6 @@ import {
 	OrderedListBlockElement,
 	UnorderedListBlockElement,
 	LinkBlockElement,
-	ContainerBlockElement,
 	ParagraphBlockElement,
 	TableBlockElement,
 	TableHeadBlockElement,
@@ -57,7 +55,6 @@ import {
 	TableHeaderBlockElement,
 	TableBodyBlockElement,
 	TableDataBlockElement,
-	// TableContainerBlockElement,
 } from './BlockElements';
 
 // import axios from "axios";
@@ -95,15 +92,13 @@ function MyEditor(props: EditorProps) {
 	const [timeoutID, setTimeoutID] = useState<NodeJS.Timer>();
 
 	// Editor object
-	const editor = useMemo(() => withInlineLinks(withImages(withHistory(withReact(createEditor())))), []);
-
-	// Object where each key is the plain text in a block and its value is an array of strings
-	// const [suggestions, setSuggestions] = useState<any>({});
+	const editor = useMemo(
+		() => withHtml(withInlineLinks(withImages(withHistory(withReact(createEditor())))))
+	, []);
 
 	const initialValue = useMemo(() => getStorageItem(props.filePath, DefaultFileContent)
 	,	[props.filePath]);
 
-	// TODO: Simplify logic
 	// Load file from localStorage if available, else fetch from server and cache
 	useEffect(() => {
 		const initFileContents = async () => {
@@ -125,10 +120,8 @@ function MyEditor(props: EditorProps) {
 				console.error(error);
 			}
 		}
-
 		initFileContents();
 		focusOnEditor();
-
 		// TODO: Save file on file change
 		return () => {
 
@@ -161,50 +154,45 @@ function MyEditor(props: EditorProps) {
 
 	const getBlockElement = (props: any) => {
 		switch (props.element.type) {
-			case 'code':
+			case ElementTypes.CODE:
 				return <CodeBlockElement {...props} />;
-			case 'listItem':
-				return <ListItemBlockElement {...props} />;
-			case 'orderedList':
-				return <OrderedListBlockElement {...props} />;
-			case 'unorderedList':
-				return <UnorderedListBlockElement {...props} />;
-			case 'h1':
+			case ElementTypes.H1:
 				return <H1BlockElement {...props} />;
-			case 'h2':
+			case ElementTypes.H2:
 				return <H2BlockElement {...props} />;
-			case 'h3':
+			case ElementTypes.H3:
 				return <H3BlockElement {...props} />;
-			case 'image':
+			case ElementTypes.IMAGE:
 				return <ImageBlockElement {...props} />;
-			case 'link':
+			case ElementTypes.LINK:
 				return <LinkBlockElement {...props} />;
-			case 'container':
-				return <ContainerBlockElement {...props} />;
-			case 'paragraph':
+			case ElementTypes.LIST_ITEM:
+				return <ListItemBlockElement {...props} />;
+			case ElementTypes.LIST_ORDERED:
+				return <OrderedListBlockElement {...props} />;
+			case ElementTypes.LIST_UNORDERED:
+				return <UnorderedListBlockElement {...props} />;
+			case ElementTypes.PARAGRAPH:
 				return <ParagraphBlockElement {...props} />;
-			case 'table':
+			case ElementTypes.TABLE:
 				return <TableBlockElement {...props} />;
-			case 'table-head':
-				return <TableHeadBlockElement {...props} />;
-			case 'table-row':
-				return <TableRowBlockElement {...props} />;
-			case 'table-header':
-				return <TableHeaderBlockElement {...props} />;
-			case 'table-body':
+			case ElementTypes.TABLE_BODY:
 				return <TableBodyBlockElement {...props} />;
-			case 'table-data':
+			case ElementTypes.TABLE_DATA:
 				return <TableDataBlockElement {...props} />;
+			case ElementTypes.TABLE_HEAD:
+				return <TableHeadBlockElement {...props} />;
+			case ElementTypes.TABLE_HEADER:
+				return <TableHeaderBlockElement {...props} />;
+			case ElementTypes.TABLE_ROW:
+				return <TableRowBlockElement {...props} />;
 			default:
 				return <DefaultBlockElement {...props} />;
 		}
 	}
 
 	const renderElement = (props: any) => {
-		let element = getBlockElement(props);
-		return element;
-		// const elemSuggestions = getElemSuggestions(props.element);
-		// return <BlockElementContainer element={element} suggestions={elemSuggestions} />
+		return getBlockElement(props);
 	};
 
 	const renderLeaf = useCallback((props: any) => <Leaf {...props} />, []);
@@ -219,11 +207,10 @@ function MyEditor(props: EditorProps) {
 					<MarkButton mark="bold" icon={<FormatBoldIcon />} label="bold" />
 					<MarkButton mark="italic" icon={<FormatItalicIcon />} label="italic" />
 					<MarkButton mark="underline" icon={<FormatUnderlinedIcon />} label="underline" />
-					<LinkInsertButton />	{/* Popup, not block element */}
-					<BlockButton block="code" icon={<CodeIcon />} label="code" />
-					{/* <Divider orientation="vertical" flexItem /> */}
-					<BlockButton block="orderedList" icon={<FormatListNumberedIcon />} label="orderedList" />
-					<BlockButton block="unorderedList" icon={<FormatListBulletedIcon />} label="unorderedList" />
+					<LinkInsertButton />
+					<BlockButton block={ElementTypes.CODE} icon={<CodeIcon />} label="code" />
+					<BlockButton block={ElementTypes.LIST_ORDERED} icon={<FormatListNumberedIcon />} label="orderedList" />
+					<BlockButton block={ElementTypes.LIST_UNORDERED} icon={<FormatListBulletedIcon />} label="unorderedList" />
 					<InsertTableButton />
 					<UploadImageButton />
 				</Toolbar>
@@ -320,7 +307,7 @@ const LinkInsertButton = (props: any) => {
 			<InsertLinkOutlinedIcon />
 			<Popper open={open} anchorEl={anchorEl}>
 				<Box sx={{ border: 1, p: 1, bgcolor: 'background.paper' }}>
-					<TextField onClick={(e) => e.stopPropagation()} label="Link" variant="outlined" size="small" onChange={e => handleChange(e, setHref)} />
+					<TextField onClick={(e) => e.stopPropagation()} label={ElementTypes.LINK} variant="outlined" size="small" onChange={e => handleChange(e, setHref)} />
 					<TextField onClick={(e) => e.stopPropagation()} label="Display" variant="outlined" size="small" onChange={e => handleChange(e, setDisplayText)} />
 					<Button variant="contained" onClick={handleCreateClick}>
 						Create

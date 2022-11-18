@@ -1,5 +1,7 @@
 import { CustomEditor, CustomElement } from '../../Types';
 import EditorCommands from './EditorCommands';
+import { Transforms } from 'slate';
+import { deserialize } from './CopyPasteHelper';
 
 // Support drag-and-drop and copy-paste images
 export const withImages = (e: CustomEditor): CustomEditor => {
@@ -38,4 +40,33 @@ export const withInlineLinks = (e: CustomEditor) => {
 	}
 
 	return e;
+};
+
+// For pasting html into the editor
+export const withHtml = (e: CustomEditor) => {
+	const {insertData} = e;
+
+	e.insertData = (data: DataTransfer) => {
+		const html = data.getData('text/html');
+		if (!html) {
+			insertData(data);
+			return;
+		}
+
+		const parsed = new DOMParser().parseFromString(html, 'text/html');
+		const fragment = deserialize(parsed.body)
+		Transforms.insertFragment(e, fragment);
+	}
+	return e;
 }
+
+// For pasting rich text content into the editor
+// export const withRtf = (e: CustomEditor) => {
+// 	const { insertData } = e;
+
+// 	e.insertData = (data: DataTransfer) => {
+// 		insertData(data);
+// 	}
+
+// 	return e;
+// }

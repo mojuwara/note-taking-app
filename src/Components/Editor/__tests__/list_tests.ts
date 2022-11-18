@@ -1,6 +1,7 @@
 import assert from 'assert';
 import React from 'react';
 import { Range, createEditor, Descendant } from 'slate';
+import { ElementTypes } from '../../../Types';
 import EditorCommands from '../EditorCommands';
 import EditorShortcuts from '../EditorShortcuts';
 
@@ -16,7 +17,7 @@ const makeKeyboardEvent = (options: KeyboardEventInit): React.KeyboardEvent<HTML
 
 beforeEach(() => {
 	editor.children = [{
-		type: "paragraph",
+		type: ElementTypes.PARAGRAPH,
 		children: [{ text: "" }]
 	}];
 
@@ -27,15 +28,15 @@ beforeEach(() => {
 });
 
 test('creating unordered lists on empty line', () => {
-	EditorCommands.toggleBlock(editor, "unorderedList");
+	EditorCommands.toggleBlock(editor, ElementTypes.LIST_UNORDERED);
 	let expectedSel: Range = {
 		anchor: { path: [0, 0, 0], offset: 0 },
 		focus: { path: [0, 0, 0], offset: 0 }
 	}
 
 	let expectedChld: Descendant[] = [{
-		type: "unorderedList",
-		children: [{type: "listItem", children:[{	text: '' }]}]
+		type: ElementTypes.LIST_UNORDERED,
+		children: [{type: ElementTypes.LIST_ITEM, children:[{	text: '' }]}]
 	}];
 
 	assert.deepEqual(editor.children, expectedChld);
@@ -45,15 +46,15 @@ test('creating unordered lists on empty line', () => {
 test('creating unordered lists on non-empty line', () => {
 	const s = "note";
 	editor.insertText(s);
-	EditorCommands.toggleBlock(editor, "unorderedList");
+	EditorCommands.toggleBlock(editor, ElementTypes.LIST_UNORDERED);
 	let expectedSel: Range = {
 		anchor: { path: [0, 0, 0], offset: s.length },
 		focus: { path: [0, 0, 0], offset: s.length }
 	}
 
 	let expectedChld: Descendant[] = [{
-		type: "unorderedList",
-		children: [{type: "listItem", children: [{ text: s }]}]
+		type: ElementTypes.LIST_UNORDERED,
+		children: [{type: ElementTypes.LIST_ITEM, children: [{ text: s }]}]
 	}];
 
 	assert.deepEqual(editor.children, expectedChld);
@@ -69,8 +70,8 @@ test('creating unordered lists by typing "* "', () => {
 	}
 
 	let expectedChld: Descendant[] = [{
-		type: "unorderedList",
-		children: [{type: "listItem", children: [{ text: "" }]}]
+		type: ElementTypes.LIST_UNORDERED,
+		children: [{type: ElementTypes.LIST_ITEM, children: [{ text: "" }]}]
 	}];
 
 	assert.deepEqual(editor.children, expectedChld);
@@ -86,8 +87,8 @@ test('creating unordered lists by typing "1. "', () => {
 	}
 
 	let expectedChld: Descendant[] = [{
-		type: "orderedList",
-		children: [{type: "listItem", children: [{ text: "" }]}]
+		type: ElementTypes.LIST_ORDERED,
+		children: [{type: ElementTypes.LIST_ITEM, children: [{ text: "" }]}]
 	}];
 
 	assert.deepEqual(editor.children, expectedChld);
@@ -105,10 +106,10 @@ test('unindenting nested listItem', () => {
 	 */
 	const s = "Inside nested list";
 	editor.children = [{
-		type: "orderedList",
+		type: ElementTypes.LIST_ORDERED,
 		children: [
-			{type: "listItem", children: [{ text: "Top level" }]},
-			{type: "orderedList", children: [{ type: "listItem", children: [{ text: s }]}]},
+			{type: ElementTypes.LIST_ITEM, children: [{ text: "Top level" }]},
+			{type: ElementTypes.LIST_ORDERED, children: [{ type: ElementTypes.LIST_ITEM, children: [{ text: s }]}]},
 		]
 	}];
 
@@ -124,10 +125,10 @@ test('unindenting nested listItem', () => {
 	 */
 	EditorShortcuts(editor, makeKeyboardEvent({ key: 'Tab', shiftKey: true}));
 	const expectedChld = editor.children = [{
-		type: "orderedList",
+		type: ElementTypes.LIST_ORDERED,
 		children: [
-			{type: "listItem", children: [{ text: "Top level" }]},
-			{type: "listItem", children: [{ text: s }]},
+			{type: ElementTypes.LIST_ITEM, children: [{ text: "Top level" }]},
+			{type: ElementTypes.LIST_ITEM, children: [{ text: s }]},
 		]
 	}];
 
@@ -149,10 +150,10 @@ test('unindenting listItem creates paragraph', () => {
 	 */
 	const s = "Inside nested list";
 	editor.children = [{
-		type: "orderedList",
+		type: ElementTypes.LIST_ORDERED,
 		children: [
-			{type: "listItem", children: [{ text: "Top level" }]},
-			{type: "listItem", children: [{ text: s }]},
+			{type: ElementTypes.LIST_ITEM, children: [{ text: "Top level" }]},
+			{type: ElementTypes.LIST_ITEM, children: [{ text: s }]},
 		]
 	}];
 
@@ -170,10 +171,10 @@ test('unindenting listItem creates paragraph', () => {
 	EditorShortcuts(editor, makeKeyboardEvent({ key: 'Tab', shiftKey: true }));
 	const expectedChld = [
 		{
-			type: "orderedList",
-			children: [{type: "listItem", children: [{ text: "Top level" }]}]
+			type: ElementTypes.LIST_ORDERED,
+			children: [{type: ElementTypes.LIST_ITEM, children: [{ text: "Top level" }]}]
 		},
-		{type: "paragraph", children: [{ text: s }]},
+		{type: ElementTypes.PARAGRAPH, children: [{ text: s }]},
 	];
 
 	const expectedSel = {
@@ -194,10 +195,10 @@ test('tab at beginning of listItem creates nested unorderedlists', () => {
 	 */
 	const s = "string";
 	editor.children = [{
-			type: "orderedList",
+			type: ElementTypes.LIST_ORDERED,
 			children: [
-				{type: "listItem", children: [{ text: "Top level" }]},
-				{type: "listItem", children: [{ text: s }]},
+				{type: ElementTypes.LIST_ITEM, children: [{ text: "Top level" }]},
+				{type: ElementTypes.LIST_ITEM, children: [{ text: s }]},
 			]
 		},
 	];
@@ -218,12 +219,12 @@ test('tab at beginning of listItem creates nested unorderedlists', () => {
 	EditorShortcuts(editor, makeKeyboardEvent({ key: 'Tab' }));
 	const expectedChld = [
 		{
-			type: "orderedList",
+			type: ElementTypes.LIST_ORDERED,
 			children: [
-				{ type: "listItem", children: [{ text: "Top level" }] },
+				{ type: ElementTypes.LIST_ITEM, children: [{ text: "Top level" }] },
 				{
-					type: "orderedList",
-					children: [{ type: "listItem", children: [{ text: s }] }]
+					type: ElementTypes.LIST_ORDERED,
+					children: [{ type: ElementTypes.LIST_ITEM, children: [{ text: s }] }]
 				}
 			]
 		},

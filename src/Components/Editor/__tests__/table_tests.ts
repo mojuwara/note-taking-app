@@ -1,6 +1,7 @@
 import assert from 'assert';
 import React from 'react';
 import { Range, createEditor, Descendant, Editor } from 'slate';
+import { ElementTypes } from '../../../Types';
 import EditorCommands from '../EditorCommands';
 import EditorShortcuts from '../EditorShortcuts';
 import { TableHelper } from '../TableHelper';
@@ -17,7 +18,7 @@ const makeKeyboardEvent = (options: KeyboardEventInit): React.KeyboardEvent<HTML
 
 beforeEach(() => {
 	editor.children = [{
-		type: "paragraph",
+		type: ElementTypes.PARAGRAPH,
 		children: [{ text: "" }]
 	}];
 
@@ -37,33 +38,33 @@ test('2x2 table is created on table button click', () => {
 
 	const selectedPos: [number, number] = [0, 0];
 	let expectedChld: Descendant[] = [{
-		type: "table",
+		type: ElementTypes.TABLE,
 		selectedPos,
 		children: [
 			{
-				type: "table-head",
+				type: ElementTypes.TABLE_HEAD,
 				selectedPos,
 				children: [
 					{
-						type: "table-row",
+						type: ElementTypes.TABLE_ROW,
 						selectedPos,
 						children: [
-							{ type: "table-header", pos: [0, 0], selectedPos, children: [{ text: '', selectedPos }] },
-							{ type: "table-header", pos: [0, 1], selectedPos, children: [{ text: '', selectedPos }] },
+							{ type: ElementTypes.TABLE_HEADER, pos: [0, 0], selectedPos, children: [{ text: '', selectedPos }] },
+							{ type: ElementTypes.TABLE_HEADER, pos: [0, 1], selectedPos, children: [{ text: '', selectedPos }] },
 						]
 					}
 				]
 			},
 			{
-				type: "table-body",
+				type: ElementTypes.TABLE_BODY,
 				selectedPos,
 				children: [
 					{
-						type: "table-row",
+						type: ElementTypes.TABLE_ROW,
 						selectedPos,
 						children: [
-							{ type: "table-data", pos: [1, 0], selectedPos, children: [{ text: '', selectedPos }] },
-							{ type: "table-data", pos: [1, 1], selectedPos, children: [{ text: '', selectedPos }] },
+							{ type: ElementTypes.TABLE_DATA, pos: [1, 0], selectedPos, children: [{ text: '', selectedPos }] },
+							{ type: ElementTypes.TABLE_DATA, pos: [1, 1], selectedPos, children: [{ text: '', selectedPos }] },
 						]
 					}
 				]
@@ -96,41 +97,41 @@ test('adding a new row above', () => {
 
 	const selectedPos: [number, number] = [rowNum, 0];
 	let expectedChld: Descendant[] = [{
-		type: "table",
+		type: ElementTypes.TABLE,
 		selectedPos,
 		children: [
 			{
-				type: "table-head",
+				type: ElementTypes.TABLE_HEAD,
 				selectedPos,
 				children: [
 					{
-						type: "table-row",
+						type: ElementTypes.TABLE_ROW,
 						selectedPos,
 						children: [
-							{ type: "table-header", selectedPos, children: [{ text: '', selectedPos }], pos: [0, 0] },
-							{ type: "table-header", selectedPos, children: [{ text: '', selectedPos }], pos: [0, 1] },
+							{ type: ElementTypes.TABLE_HEADER, selectedPos, children: [{ text: '', selectedPos }], pos: [0, 0] },
+							{ type: ElementTypes.TABLE_HEADER, selectedPos, children: [{ text: '', selectedPos }], pos: [0, 1] },
 						]
 					}
 				]
 			},
 			{
-				type: "table-body",
+				type: ElementTypes.TABLE_BODY,
 				selectedPos,
 				children: [
 					{
-						type: "table-row",
+						type: ElementTypes.TABLE_ROW,
 						selectedPos,
 						children: [
-							{ type: "table-data", selectedPos, children: [{ text: '', selectedPos }], pos: [1, 0] },
-							{ type: "table-data", selectedPos, children: [{ text: '', selectedPos }], pos: [1, 1] },
+							{ type: ElementTypes.TABLE_DATA, selectedPos, children: [{ text: '', selectedPos }], pos: [1, 0] },
+							{ type: ElementTypes.TABLE_DATA, selectedPos, children: [{ text: '', selectedPos }], pos: [1, 1] },
 						]
 					},
 					{
-						type: "table-row",
+						type: ElementTypes.TABLE_ROW,
 						selectedPos,
 						children: [
-							{ type: "table-data", selectedPos, children: [{ text: s, selectedPos }], pos: [2, 0] },
-							{ type: "table-data", selectedPos, children: [{ text: '', selectedPos }], pos: [2, 1] },
+							{ type: ElementTypes.TABLE_DATA, selectedPos, children: [{ text: s, selectedPos }], pos: [2, 0] },
+							{ type: ElementTypes.TABLE_DATA, selectedPos, children: [{ text: '', selectedPos }], pos: [2, 1] },
 						]
 					}
 				]
@@ -164,41 +165,41 @@ test('adding a new row below', () => {
 
 	const selectedPos: [number, number] = [rowNum, 0];
 	let expectedChld: Descendant[] = [{
-		type: "table",
+		type: ElementTypes.TABLE,
 		selectedPos,
 		children: [
 			{
-				type: "table-head",
+				type: ElementTypes.TABLE_HEAD,
 				selectedPos,
 				children: [
 					{
-						type: "table-row",
+						type: ElementTypes.TABLE_ROW,
 						selectedPos,
 						children: [
-							{ type: "table-header", selectedPos, children: [{ text: '', selectedPos }], pos: [0, 0] },
-							{ type: "table-header", selectedPos, children: [{ text: '', selectedPos }], pos: [0, 1] },
+							{ type: ElementTypes.TABLE_HEADER, selectedPos, children: [{ text: '', selectedPos }], pos: [0, 0] },
+							{ type: ElementTypes.TABLE_HEADER, selectedPos, children: [{ text: '', selectedPos }], pos: [0, 1] },
 						]
 					}
 				]
 			},
 			{
-				type: "table-body",
+				type: ElementTypes.TABLE_BODY,
 				selectedPos,
 				children: [
 					{
-						type: "table-row",
+						type: ElementTypes.TABLE_ROW,
 						selectedPos,
 						children: [
-							{ type: "table-data", selectedPos, children: [{ text: s, selectedPos }], pos: [1, 0] },
-							{ type: "table-data", selectedPos, children: [{ text: '', selectedPos }], pos: [1, 1] },
+							{ type: ElementTypes.TABLE_DATA, selectedPos, children: [{ text: s, selectedPos }], pos: [1, 0] },
+							{ type: ElementTypes.TABLE_DATA, selectedPos, children: [{ text: '', selectedPos }], pos: [1, 1] },
 						]
 					},
 					{
-						type: "table-row",
+						type: ElementTypes.TABLE_ROW,
 						selectedPos,
 						children: [
-							{ type: "table-data", selectedPos, children: [{ text: '', selectedPos }], pos: [2, 0] },
-							{ type: "table-data", selectedPos, children: [{ text: '', selectedPos }], pos: [2, 1] },
+							{ type: ElementTypes.TABLE_DATA, selectedPos, children: [{ text: '', selectedPos }], pos: [2, 0] },
+							{ type: ElementTypes.TABLE_DATA, selectedPos, children: [{ text: '', selectedPos }], pos: [2, 1] },
 						]
 					}
 				]
@@ -231,35 +232,35 @@ test('adding a new col to the left', () => {
 
 	const selectedPos: [number, number] = [0, colNum];
 	let expectedChld: Descendant[] = [{
-		type: "table",
+		type: ElementTypes.TABLE,
 		selectedPos,
 		children: [
 			{
-				type: "table-head",
+				type: ElementTypes.TABLE_HEAD,
 				selectedPos,
 				children: [
 					{
-						type: "table-row",
+						type: ElementTypes.TABLE_ROW,
 						selectedPos,
 						children: [
-							{ type: "table-header", selectedPos, children: [{ text: '', selectedPos }], pos: [0, 0] },
-							{ type: "table-header", selectedPos, children: [{ text: '', selectedPos }], pos: [0, 1] },
-							{ type: "table-header", selectedPos, children: [{ text: '', selectedPos }], pos: [0, 2] },
+							{ type: ElementTypes.TABLE_HEADER, selectedPos, children: [{ text: '', selectedPos }], pos: [0, 0] },
+							{ type: ElementTypes.TABLE_HEADER, selectedPos, children: [{ text: '', selectedPos }], pos: [0, 1] },
+							{ type: ElementTypes.TABLE_HEADER, selectedPos, children: [{ text: '', selectedPos }], pos: [0, 2] },
 						]
 					}
 				]
 			},
 			{
-				type: "table-body",
+				type: ElementTypes.TABLE_BODY,
 				selectedPos,
 				children: [
 					{
-						type: "table-row",
+						type: ElementTypes.TABLE_ROW,
 						selectedPos,
 						children: [
-							{ type: "table-data", selectedPos, children: [{ text: '', selectedPos }], pos: [1, 0] },
-							{ type: "table-data", selectedPos, children: [{ text: s, selectedPos }], pos: [1, 1] },
-							{ type: "table-data", selectedPos, children: [{ text: '', selectedPos }], pos: [1, 2] },
+							{ type: ElementTypes.TABLE_DATA, selectedPos, children: [{ text: '', selectedPos }], pos: [1, 0] },
+							{ type: ElementTypes.TABLE_DATA, selectedPos, children: [{ text: s, selectedPos }], pos: [1, 1] },
+							{ type: ElementTypes.TABLE_DATA, selectedPos, children: [{ text: '', selectedPos }], pos: [1, 2] },
 						]
 					}
 				]
@@ -292,35 +293,35 @@ test('adding a new col to the right', () => {
 
 	const selectedPos: [number, number] = [0, colNum];
 	let expectedChld: Descendant[] = [{
-		type: "table",
+		type: ElementTypes.TABLE,
 		selectedPos,
 		children: [
 			{
-				type: "table-head",
+				type: ElementTypes.TABLE_HEAD,
 				selectedPos,
 				children: [
 					{
-						type: "table-row",
+						type: ElementTypes.TABLE_ROW,
 						selectedPos,
 						children: [
-							{ type: "table-header", selectedPos, children: [{ text: '', selectedPos }], pos: [0, 0] },
-							{ type: "table-header", selectedPos, children: [{ text: '', selectedPos }], pos: [0, 1] },
-							{ type: "table-header", selectedPos, children: [{ text: '', selectedPos }], pos: [0, 2] },
+							{ type: ElementTypes.TABLE_HEADER, selectedPos, children: [{ text: '', selectedPos }], pos: [0, 0] },
+							{ type: ElementTypes.TABLE_HEADER, selectedPos, children: [{ text: '', selectedPos }], pos: [0, 1] },
+							{ type: ElementTypes.TABLE_HEADER, selectedPos, children: [{ text: '', selectedPos }], pos: [0, 2] },
 						]
 					}
 				]
 			},
 			{
-				type: "table-body",
+				type: ElementTypes.TABLE_BODY,
 				selectedPos,
 				children: [
 					{
-						type: "table-row",
+						type: ElementTypes.TABLE_ROW,
 						selectedPos,
 						children: [
-							{ type: "table-data", selectedPos, children: [{ text: s, selectedPos }], pos: [1, 0] },
-							{ type: "table-data", selectedPos, children: [{ text: '', selectedPos }], pos: [1, 1] },
-							{ type: "table-data", selectedPos, children: [{ text: '', selectedPos }], pos: [1, 2] },
+							{ type: ElementTypes.TABLE_DATA, selectedPos, children: [{ text: s, selectedPos }], pos: [1, 0] },
+							{ type: ElementTypes.TABLE_DATA, selectedPos, children: [{ text: '', selectedPos }], pos: [1, 1] },
+							{ type: ElementTypes.TABLE_DATA, selectedPos, children: [{ text: '', selectedPos }], pos: [1, 2] },
 						]
 					}
 				]
@@ -354,41 +355,41 @@ test('new row inserted when Enter is clicked and the last cell is selected', () 
 
 	const selectedPos: [number, number] = [2, 0];
 	let expectedChld: Descendant[] = [{
-		type: "table",
+		type: ElementTypes.TABLE,
 		selectedPos,
 		children: [
 			{
-				type: "table-head",
+				type: ElementTypes.TABLE_HEAD,
 				selectedPos,
 				children: [
 					{
-						type: "table-row",
+						type: ElementTypes.TABLE_ROW,
 						selectedPos,
 						children: [
-							{ type: "table-header", selectedPos, children: [{ text: '', selectedPos }], pos: [0, 0] },
-							{ type: "table-header", selectedPos, children: [{ text: '', selectedPos }], pos: [0, 1] },
+							{ type: ElementTypes.TABLE_HEADER, selectedPos, children: [{ text: '', selectedPos }], pos: [0, 0] },
+							{ type: ElementTypes.TABLE_HEADER, selectedPos, children: [{ text: '', selectedPos }], pos: [0, 1] },
 						]
 					}
 				]
 			},
 			{
-				type: "table-body",
+				type: ElementTypes.TABLE_BODY,
 				selectedPos,
 				children: [
 					{
-						type: "table-row",
+						type: ElementTypes.TABLE_ROW,
 						selectedPos,
 						children: [
-							{ type: "table-data", selectedPos, children: [{ text: '', selectedPos }], pos: [1, 0] },
-							{ type: "table-data", selectedPos, children: [{ text: s, selectedPos }], pos: [1, 1] },
+							{ type: ElementTypes.TABLE_DATA, selectedPos, children: [{ text: '', selectedPos }], pos: [1, 0] },
+							{ type: ElementTypes.TABLE_DATA, selectedPos, children: [{ text: s, selectedPos }], pos: [1, 1] },
 						]
 					},
 					{
-						type: "table-row",
+						type: ElementTypes.TABLE_ROW,
 						selectedPos,
 						children: [
-							{ type: "table-data", selectedPos, children: [{ text: '', selectedPos }], pos: [2, 0] },
-							{ type: "table-data", selectedPos, children: [{ text: '', selectedPos }], pos: [2, 1] },
+							{ type: ElementTypes.TABLE_DATA, selectedPos, children: [{ text: '', selectedPos }], pos: [2, 0] },
+							{ type: ElementTypes.TABLE_DATA, selectedPos, children: [{ text: '', selectedPos }], pos: [2, 1] },
 						]
 					}
 				]
@@ -417,31 +418,31 @@ test('paragraph is inserted above if enter is clicked at very first cell', () =>
 
 	let expectedChld: Descendant[] = [
 		{
-			type: "paragraph",
+			type: ElementTypes.PARAGRAPH,
 			children: [{ text: "" }]
 		},
 		{
-		type: "table",
+		type: ElementTypes.TABLE,
 		children: [
 			{
-				type: "table-head",
+				type: ElementTypes.TABLE_HEAD,
 				children: [
 					{
-						type: "table-row",
+						type: ElementTypes.TABLE_ROW,
 						children: [
-							{ type: "table-header", children: [{ text: ''  }], pos: [0, 0] },
-							{ type: "table-header", children: [{ text: ''  }], pos: [0, 1] },
+							{ type: ElementTypes.TABLE_HEADER, children: [{ text: ''  }], pos: [0, 0] },
+							{ type: ElementTypes.TABLE_HEADER, children: [{ text: ''  }], pos: [0, 1] },
 						]
 					}
 				]
 			},
 			{
-				type: "table-body",
+				type: ElementTypes.TABLE_BODY,
 				children: [{
-					type: "table-row",
+					type: ElementTypes.TABLE_ROW,
 					children: [
-						{ type: "table-data", children: [{ text: ''  }], pos: [1, 0] },
-						{ type: "table-data", children: [{ text: ''  }], pos: [1, 1] },
+						{ type: ElementTypes.TABLE_DATA, children: [{ text: ''  }], pos: [1, 0] },
+						{ type: ElementTypes.TABLE_DATA, children: [{ text: ''  }], pos: [1, 1] },
 					]
 				}]
 			},

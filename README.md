@@ -89,6 +89,8 @@
 - TODO - Remove 'any' for TypeScript
 - TODO - Use downLevelIteration to take advantage of generators instead of Array.from()
 - TODO - Stop using toString() to check array equality to stringify() for object equality
+- TODO - Ctrl+A should select all content
+	- TODO - If all content is selected and Backspace is pressed, replace with editor initialValue
 - TODO - Keep track of editor.selection in localStorage?
 - TODO - Tab pressed while on table cell moves to the next cell
 - TODO - Support TODO lists in notes

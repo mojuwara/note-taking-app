@@ -1,5 +1,6 @@
 import assert from 'assert';
 import { Range, createEditor, Descendant } from 'slate';
+import { ElementTypes } from '../../../Types';
 import EditorCommands from '../EditorCommands';
 import { withInlineLinks } from '../EditorPlugins';
 
@@ -8,7 +9,7 @@ let editor = withInlineLinks(createEditor());
 
 beforeEach(() => {
 	editor.children = [{
-		type: "paragraph",
+		type: ElementTypes.PARAGRAPH,
 		children: [{ text: "" }]
 	}];
 
@@ -32,10 +33,10 @@ test('embedded links', () => {
 	};
 
 	const expectedChld: Descendant[] = [{
-		type: "paragraph",
+		type: ElementTypes.PARAGRAPH,
 		children: [
 			{ text: "" },
-			{ type: "link", href, children: [{text: displayText}] },
+			{ type: ElementTypes.LINK, href, children: [{text: displayText}] },
 			{ text: "" }
 		]
 	}];

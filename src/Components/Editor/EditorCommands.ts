@@ -1,5 +1,5 @@
 import { TableHelper } from "./TableHelper";
-import { CustomEditor, ImageElement } from "../../Types";
+import { CustomEditor, ElementTypes, ImageElement } from "../../Types";
 
 import { Editor, Transforms, Element as SlateElement, Node, NodeEntry, Path, Range } from 'slate'
 
@@ -54,7 +54,7 @@ const EditorCommands = {
 	checkDeselectedElems(editor: CustomEditor, oldSel: Range) {
 		for (let i = 1; i <= oldSel.focus.path.length; i++) {
 			const [deselectedNode, deselectedNodePath] = Editor.node(editor, oldSel.focus.path.slice(0, i));
-			if (SlateElement.isElement(deselectedNode) && deselectedNode.type === "table")
+			if (SlateElement.isElement(deselectedNode) && deselectedNode.type === ElementTypes.TABLE)
 				TableHelper.onTableDeselected(editor, [deselectedNode, deselectedNodePath]);
 		}
 	},
@@ -89,7 +89,7 @@ const EditorCommands = {
 
 	insertLink(editor: CustomEditor, href: string, displayText: string) {
 		const updateFn = () => {
-			Transforms.insertNodes(editor, { type: 'link', href, children: [{ text: displayText }] });
+			Transforms.insertNodes(editor, { type: ElementTypes.LINK, href, children: [{ text: displayText }] });
 		}
 
 		const newLoc = EditorCommands.getLocAfterInlineInsert(editor);
@@ -102,7 +102,7 @@ const EditorCommands = {
 		const loadImageInEditor = () => {
 			const url = reader.result as string;
 			const updateFn = () => {
-				const image: ImageElement = { type: 'image', url, children: [{ text: '' }] };
+				const image: ImageElement = { type: ElementTypes.IMAGE, url, children: [{ text: '' }] };
 				Transforms.insertNodes(editor, image);
 			}
 

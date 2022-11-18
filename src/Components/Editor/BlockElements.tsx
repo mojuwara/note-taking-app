@@ -11,7 +11,6 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import EditorCommands from './EditorCommands';
 
-// Contains the actual block elements
 export const BlockElementContainer = ({ element, suggestions }: any) => {
 	const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
@@ -42,7 +41,6 @@ export const BlockElementContainer = ({ element, suggestions }: any) => {
 	);
 }
 
-// Element renderers
 export const DefaultBlockElement = (props: any) => {
 	return <span {...props.attributes}>{props.children}</span>;
 }
@@ -53,8 +51,6 @@ export const ParagraphBlockElement = (props: any) => {
 
 export const CodeBlockElement = (props: any) => {
 	return (
-		// props.attributes contains attrs that should be rendered at top-most elem of your block
-		// props.children contains the leaves, the text nodes
 		<pre {...props.attributes}>
 			<code>{props.children}</code>
 		</pre>
@@ -107,10 +103,6 @@ export const H3BlockElement = (props: any) => {
 			{props.children}
 		</h3>
 	);
-}
-
-export const ContainerBlockElement = (props: any) => {
-	return <div {...props.attributes}>{props.children}</div>;
 }
 
 export const ImageBlockElement = (props: any) => {
@@ -210,7 +202,6 @@ export const TableHeaderBlockElement = (props: any) => {
 				<MenuItem onClick={() => addCol(pos[1])}>Insert col to left</MenuItem>
 				<MenuItem onClick={() => addCol(pos[1] + 1)}>Insert col to right</MenuItem>
 			</Menu>
-			{/* {props.element?.pos?.toString()} */}
 			{props.children}
 		</th>
 	);
@@ -256,7 +247,6 @@ export const TableDataBlockElement = (props: any) => {
 					...
 				</span>
 			}
-			{/* {props.element?.pos?.toString()} */}
 			<Menu anchorEl={anchorEl} open={menuOpen} onClose={() => setMenuOpen(false)}>
 				<MenuItem onClick={() => addRow(pos[0])}>Insert row above</MenuItem>
 				<MenuItem onClick={() => addRow(pos[0] + 1)}>Insert row below</MenuItem>
