@@ -105,7 +105,7 @@ export type TableRowElement = {
 	selectedPos?: Tuple<number> | null,
 };
 
-// Alphabetical
+// Alphabetical order
 export type CustomElement = GenericElement
 	| CodeElement
 	| H1Element

@@ -3,7 +3,6 @@ import EditorCommands from './EditorCommands';
 import { Editor, Element as SlateElement, Transforms, Node } from 'slate';
 import { focusOnEditor } from '../../Utils';
 
-// TODO: Create 'EditorCommands.currElemType' to get the current element type, use that once instead of multiple 'EditorCommands.onElemType' calls
 // Triggers before any change to the editor, selection will be one step behind if arrow pressed
 const EditorShortcuts = (editor: CustomEditor, event: React.KeyboardEvent<HTMLDivElement>) => {
 	const shiftKey = event.shiftKey;

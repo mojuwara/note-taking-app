@@ -1,6 +1,6 @@
 import { CustomEditor, CustomElement } from '../../Types';
 import EditorCommands from './EditorCommands';
-import { Transforms } from 'slate';
+import { Editor, Transforms, Element as SlateElement } from 'slate';
 import { deserialize } from './CopyPasteHelper';
 
 // Support drag-and-drop and copy-paste images
@@ -48,13 +48,18 @@ export const withHtml = (e: CustomEditor) => {
 
 	e.insertData = (data: DataTransfer) => {
 		const html = data.getData('text/html');
-		if (!html) {
+		if (!html || !e.selection) {
 			insertData(data);
 			return;
 		}
 
+		console.log("html before", html);
 		const parsed = new DOMParser().parseFromString(html, 'text/html');
-		const fragment = deserialize(parsed.body)
+		const fragment = deserialize(parsed.body);
+		console.log("fragment after", fragment)
+
+		// const currNode = Editor.node(e, e.selection)[0];
+		// if (SlateElement.isElement(currNode) && e.isInline(currNode) && SlateElement.isElement(fragment[0]) && e.isInline(fragment[0]))
 		Transforms.insertFragment(e, fragment);
 	}
 	return e;
