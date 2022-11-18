@@ -1,8 +1,7 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 
-import {
-	DefaultFileContent
-} from "../../Constants";
+import { DefaultFileContent } from "../../Constants";
+
 import {
 	focusOnEditor,
 	getStorageItem,
@@ -10,27 +9,18 @@ import {
 } from "../../Utils";
 
 import { createEditor, Range } from 'slate'
-import { Slate, Editable, withReact, useSlate } from 'slate-react'
-
 import { withHistory } from 'slate-history'
+import { Slate, Editable, withReact } from 'slate-react'
 
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
 import Toolbar from '@mui/material/Toolbar';
 import Divider from '@mui/material/Divider';
-import TextField from '@mui/material/TextField';
-import IconButton from '@mui/material/IconButton'
-
 import CodeIcon from '@mui/icons-material/Code';
 import FormatBoldIcon from '@mui/icons-material/FormatBold';
 import FormatItalicIcon from '@mui/icons-material/FormatItalic';
 import FormatUnderlinedIcon from '@mui/icons-material/FormatUnderlined';
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered';
-import TableRowsOutlinedIcon from '@mui/icons-material/TableRowsOutlined';
-import ImageOutlinedIcon from '@mui/icons-material/ImageOutlined';
-import InsertLinkOutlinedIcon from '@mui/icons-material/InsertLinkOutlined';
-import Popper from '@mui/material/Popper';
 
 import { ElementTypes } from "../../Types";
 import EditorCommands from "./EditorCommands";
@@ -38,6 +28,7 @@ import EditorShortcuts from "./EditorShortcuts";
 import { withImages, withInlineLinks, withHtml } from "./EditorPlugins";
 
 import {
+	Leaf,
 	H1BlockElement,
 	H2BlockElement,
 	H3BlockElement,
@@ -56,6 +47,14 @@ import {
 	TableBodyBlockElement,
 	TableDataBlockElement,
 } from './BlockElements';
+
+import {
+	MarkButton,
+	BlockButton,
+	LinkInsertButton,
+	UploadImageButton,
+	InsertTableButton,
+} from "./EditorToolbar";
 
 // import axios from "axios";
 
@@ -225,144 +224,6 @@ function MyEditor(props: EditorProps) {
 					renderElement={renderElement} />
 			</Slate>
 		</Box>
-	);
-}
-
-const MarkButton = (props: any) => {
-	const editor = useSlate();
-	const { mark, label, icon } = props;
-
-	const handleClick = (e: any) => {
-		e.preventDefault();
-		EditorCommands.toggleMark(editor, mark);
-		focusOnEditor();
-	}
-
-	const markActive = EditorCommands.isMarkActive(editor, mark);
-	return (
-		<IconButton
-			aria-label={label}
-			onMouseDown={handleClick}
-			color={(markActive) ? "secondary" : "default"}
-		>
-			{icon}
-		</IconButton>
-	)
-}
-
-const UploadImageButton = () => {
-	const editor = useSlate();
-	const handleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-		if (!e.target.files || !e.target.files.length)
-			return;
-
-		for (let i = 0; i < e.target.files.length; i++) {
-			const file = e.target.files.item(i);
-			if (file)
-				EditorCommands.insertImage(editor, file);
-		}
-		focusOnEditor();
-	}
-
-	return (
-		<span>
-			<IconButton aria-label={"Upload files"} component="label">
-				<input hidden type="file" multiple accept="image/*" onChange={handleChange} />
-				<ImageOutlinedIcon />
-			</IconButton>
-		</span>
-	)
-}
-
-const LinkInsertButton = (props: any) => {
-	const editor = useSlate();
-
-	const [href, setHref] = useState('');
-	const [open, setOpen] = useState(false);
-	const [displayText, setDisplayText] = useState('');
-	const [anchorEl, setAnochorEl] = useState<null | HTMLElement>(null);
-
-	const handleClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-		setOpen(!open);
-		e.stopPropagation();
-		setAnochorEl(e.currentTarget);
-	};
-
-	const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, setter: React.Dispatch<React.SetStateAction<string>>) => {
-		e.stopPropagation();
-		setter(e.target.value);
-	};
-
-	const handleCreateClick = () => {
-		EditorCommands.insertLink(editor, href, displayText)
-		focusOnEditor();
-	}
-
-	// TODO: Close on outside click or change to dialogue
-	// TODO: Cmd + click should open link if link is selected, override editor.insertText
-	// TODO: Links should be inline-block
-	// TODO: Pressing enter at link-end creates a new link
-	return (
-		<IconButton aria-label={"Insert link"} onClick={(e) => handleClick(e)}>
-			<InsertLinkOutlinedIcon />
-			<Popper open={open} anchorEl={anchorEl}>
-				<Box sx={{ border: 1, p: 1, bgcolor: 'background.paper' }}>
-					<TextField onClick={(e) => e.stopPropagation()} label={ElementTypes.LINK} variant="outlined" size="small" onChange={e => handleChange(e, setHref)} />
-					<TextField onClick={(e) => e.stopPropagation()} label="Display" variant="outlined" size="small" onChange={e => handleChange(e, setDisplayText)} />
-					<Button variant="contained" onClick={handleCreateClick}>
-						Create
-					</Button>
-				</Box>
-			</Popper>
-		</IconButton>
-	);
-}
-
-const InsertTableButton = () => {
-	const editor = useSlate();
-	const handleClick = () => {
-		EditorCommands.insertTable(editor);
-		focusOnEditor();
-	}
-
-	return (
-		<IconButton aria-label={"Insert table"} onClick={handleClick}>
-			<TableRowsOutlinedIcon />
-		</IconButton>
-	);
-}
-
-const BlockButton = (props: any) => {
-	const editor = useSlate();
-	const { block, label, icon } = props;
-
-	const handleClick = (e: any) => {
-		e.preventDefault();
-		EditorCommands.toggleBlock(editor, block);
-		focusOnEditor();
-	}
-
-	const blockActive = EditorCommands.isBlockActive(editor, block);
-	return (
-		<IconButton
-			aria-label={label}
-			onMouseDown={handleClick}
-			color={(blockActive) ? "secondary" : "default"}>
-			{icon}
-		</IconButton>
-	)
-}
-
-// Tell Slate how to render leaves/text for custom formatting
-const Leaf = (props: any) => {
-	const style = {
-		fontWeight: (props.leaf.bold) ? 'bold' : 'normal',
-		fontStyle: (props.leaf.italic) ? 'italic' : 'normal',
-		textDecoration: (props.leaf.underline) ? 'underline' : 'none'
-	}
-
-	return (
-		<span {...props.attributes} style={style}>{props.children}</span>
 	);
 }
 

@@ -41,6 +41,18 @@ export const BlockElementContainer = ({ element, suggestions }: any) => {
 	);
 }
 
+export const Leaf = (props: any) => {
+	const style = {
+		fontWeight: (props.leaf.bold) ? 'bold' : 'normal',
+		fontStyle: (props.leaf.italic) ? 'italic' : 'normal',
+		textDecoration: (props.leaf.underline) ? 'underline' : 'none'
+	}
+
+	return (
+		<span {...props.attributes} style={style}>{props.children}</span>
+	);
+}
+
 export const DefaultBlockElement = (props: any) => {
 	return <span {...props.attributes}>{props.children}</span>;
 }
