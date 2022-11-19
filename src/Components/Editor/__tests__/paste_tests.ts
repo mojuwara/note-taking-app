@@ -98,7 +98,28 @@ test('pasting text with formatting', () => {
 });
 
 test('pasting links', () => {
+	const link = '<a href="www.google.com">Google</a>';
 
+	const data = new DataTransfer();
+	data.setData('text/html', link);
+	editor.insertData(data);
+
+	let expectedSel: Range = {
+		anchor: { path: [0, 2], offset: 0 },
+		focus: { path: [0, 2], offset: 0 }
+	}
+
+	let expectedChld: Descendant[] = [{
+		type: ElementTypes.PARAGRAPH,
+		children: [
+			{ text: ''},
+			{ type: ElementTypes.LINK, href: 'www.google.com', children: [{text: 'Google'}]},
+			{ text: '' },
+		]
+	}];
+
+	assert.deepEqual(editor.children, expectedChld);
+	assert.deepEqual(editor.selection, expectedSel);
 });
 
 test('pasting unordered lists', () => {

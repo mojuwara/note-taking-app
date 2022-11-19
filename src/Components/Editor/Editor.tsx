@@ -25,7 +25,7 @@ import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered';
 import { ElementTypes } from "../../Types";
 import EditorCommands from "./EditorCommands";
 import EditorShortcuts from "./EditorShortcuts";
-import { withImages, withInlineLinks, withHtml } from "./EditorPlugins";
+import { withImages, withHtml } from "./EditorPlugins";
 
 import {
 	Leaf,
@@ -92,7 +92,7 @@ function MyEditor(props: EditorProps) {
 
 	// Editor object
 	const editor = useMemo(
-		() => withHtml(withInlineLinks(withImages(withHistory(withReact(createEditor())))))
+		() => withHtml(withImages(withHistory(withReact(createEditor()))))
 	, []);
 
 	const initialValue = useMemo(() => getStorageItem(props.filePath, DefaultFileContent)

@@ -122,7 +122,7 @@ export const TableHelper = {
 	},
 
 	onLastCell(editor: CustomEditor) {
-		if (!EditorCommands.onElemType(editor, ElementTypes.TABLE))
+		if (!EditorCommands.onElemType(editor, [ElementTypes.TABLE]))
 			return false;
 
 		// Narrowing to make TypeScript happy
@@ -143,7 +143,7 @@ export const TableHelper = {
 	},
 
 	atTableStart(editor: CustomEditor) {
-		if (!EditorCommands.onElemType(editor, ElementTypes.TABLE))
+		if (!EditorCommands.onElemType(editor, [ElementTypes.TABLE]))
 			return false;
 
 		const [tableNode] = EditorCommands.getElemType(editor, ElementTypes.TABLE);
@@ -191,7 +191,7 @@ export const TableHelper = {
 	},
 
 	updateTableCellsPos(editor: CustomEditor) {
-		if (!EditorCommands.onElemType(editor, ElementTypes.TABLE))
+		if (!EditorCommands.onElemType(editor, [ElementTypes.TABLE]))
 			return;
 
 		const [, tablePath] = EditorCommands.getElemType(editor, ElementTypes.TABLE);
@@ -215,7 +215,7 @@ export const TableHelper = {
 	},
 
 	onTableSelected(editor: CustomEditor, nodeEntry: NodeEntry) {
-		if (!EditorCommands.onElemType(editor, ElementTypes.TABLE) || !editor.selection?.anchor?.path || !nodeEntry)
+		if (!EditorCommands.onElemType(editor, [ElementTypes.TABLE]) || !editor.selection?.anchor?.path || !nodeEntry)
 			return;
 
 		// Only the selected data or header type is allowed to propagate the selectedPos to its child cells

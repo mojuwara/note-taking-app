@@ -2,7 +2,7 @@ import { Node as SlateNode } from "slate";
 import { CustomText, ElementTypes, ImageElement, LinkElement } from "../../Types";
 
 // Recursively build node tree
-export const deserialize = (elem: Node): SlateNode[] => {
+export const deserialize = (elem: Element): SlateNode[] => {
 	if (elem.nodeType === Node.TEXT_NODE && elem.textContent) {
 		return [{text: elem.textContent}];
 	} else if (elem.nodeType !== Node.ELEMENT_NODE) {
@@ -10,7 +10,8 @@ export const deserialize = (elem: Node): SlateNode[] => {
 	}
 
 	console.log("deserializing", elem, elem.nodeName)
-	let children: SlateNode[] = Array.from(elem.childNodes)
+	// Better way of setting type?
+	let children: SlateNode[] = Array.from(elem.childNodes as NodeListOf<Element>)
 		.map(node => deserialize(node))
 		.flat();
 
@@ -24,6 +25,13 @@ export const deserialize = (elem: Node): SlateNode[] => {
 		case "P":
 			typedChildren = children as (CustomText | LinkElement | ImageElement)[];
 			return [{ type: ElementTypes.PARAGRAPH, children: typedChildren }];
+		case "A":
+			const href = elem.getAttribute('href');
+			if (href) {
+				typedChildren = children as CustomText[];
+				return [{ type: ElementTypes.LINK, href, children: typedChildren}];
+			}
+			break;
 
 		// TEXT
 		case "I":

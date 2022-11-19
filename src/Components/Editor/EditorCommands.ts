@@ -167,22 +167,18 @@ const EditorCommands = {
 	},
 
 	// Check if the last element is an element of given type
-	onElemType(editor: CustomEditor, type: string) {
+	onElemType(editor: CustomEditor, types: string[]) {
 		const matches = Array.from(Editor.nodes(editor, {
-			match: (n) => !Editor.isEditor(n) && SlateElement.isElement(n) && n.type === type,
+			match: (n) => SlateElement.isElement(n) && types.includes(n.type),
 		}));
-		if (!matches.length)
-			return false
-
-		const node = matches[matches.length-1][0];
-		return SlateElement.isElement(node) && node.type === type;
+		return matches.length > 0;
 	},
 
 	// Gets the last element of that type
 	// Assumes you've already checked if onElemType
 	getElemType(editor: CustomEditor, type: string) {
 		const matches = Array.from(Editor.nodes(editor, {
-			match: (n) => !Editor.isEditor(n) && SlateElement.isElement(n) && n.type === type,
+			match: (n) => SlateElement.isElement(n) && n.type === type,
 		}));
 
 		const node = matches[matches.length - 1];

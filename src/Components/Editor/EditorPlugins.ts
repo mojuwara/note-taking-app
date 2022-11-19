@@ -1,7 +1,7 @@
-import { CustomEditor, CustomElement } from '../../Types';
+import { Transforms, } from 'slate';
 import EditorCommands from './EditorCommands';
-import { Editor, Transforms, Element as SlateElement } from 'slate';
 import { deserialize } from './CopyPasteHelper';
+import { CustomEditor, CustomElement, ElementTypes } from '../../Types';
 
 // Support drag-and-drop and copy-paste images
 export const withImages = (e: CustomEditor): CustomEditor => {
@@ -33,18 +33,13 @@ export const withImages = (e: CustomEditor): CustomEditor => {
 	return e;
 };
 
-export const withInlineLinks = (e: CustomEditor) => {
-	const {isInline} = e;
-	e.isInline = (elem: CustomElement) => {
-		return elem.type === 'link' ? true : isInline(elem);
-	}
-
-	return e;
-};
-
 // For pasting html into the editor
 export const withHtml = (e: CustomEditor) => {
-	const {insertData} = e;
+	const { insertData, isInline } = e;
+
+	e.isInline = (elem: CustomElement) => {
+		return ['link', 'image'].includes(elem.type) ? true : isInline(elem);
+	}
 
 	e.insertData = (data: DataTransfer) => {
 		const html = data.getData('text/html');
@@ -56,11 +51,17 @@ export const withHtml = (e: CustomEditor) => {
 		console.log("html before", html);
 		const parsed = new DOMParser().parseFromString(html, 'text/html');
 		const fragment = deserialize(parsed.body);
-		console.log("fragment after", fragment)
+		console.log("fragment after", fragment);
 
-		// const currNode = Editor.node(e, e.selection)[0];
-		// if (SlateElement.isElement(currNode) && e.isInline(currNode) && SlateElement.isElement(fragment[0]) && e.isInline(fragment[0]))
 		Transforms.insertFragment(e, fragment);
+
+		// If last element inserted was inline, the selection will be in the child elem
+		// Move selection to after the child elem
+		if (EditorCommands.onElemType(e, [ElementTypes.IMAGE, ElementTypes.LINK])) {
+			const newLoc = EditorCommands.getLocAfterParent(e);
+			if (newLoc)
+				EditorCommands.updateSelectedElem(e, newLoc)
+		}
 	}
 	return e;
 }
