@@ -128,7 +128,6 @@ function MyEditor(props: EditorProps) {
 	}, [editor, props.filePath]);
 
 	const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
-		console.log("Keydown")
 		EditorShortcuts(editor, event);
 	}
 

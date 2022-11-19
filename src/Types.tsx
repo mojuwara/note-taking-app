@@ -51,16 +51,16 @@ export type ImageElement = { type: ElementTypes.IMAGE, url: string, children: Cu
 
 export type LinkElement = { type: ElementTypes.LINK, href: string, children: CustomText[] }
 
-export type ListElement = { type: ElementTypes.LIST_ITEM, children: CustomText[] };
+export type ListItemElement = { type: ElementTypes.LIST_ITEM, children: CustomText[] };
 
 export type ListOrderedElement = {
 	type		: ElementTypes.LIST_ORDERED,
-	children: (ListOrderedElement | ListUnorderedElement | ListElement)[],
+	children: (ListOrderedElement | ListUnorderedElement | ListItemElement)[],
 };
 
 export type ListUnorderedElement = {
 	type		: ElementTypes.LIST_UNORDERED,
-	children: (ListOrderedElement | ListUnorderedElement | ListElement)[],
+	children: (ListOrderedElement | ListUnorderedElement | ListItemElement)[],
 };
 
 export type ParagraphElement = {
@@ -113,7 +113,7 @@ export type CustomElement = GenericElement
 	| H3Element
 	| ImageElement
 	| LinkElement
-	| ListElement
+	| ListItemElement
 	| ListOrderedElement
 	| ListUnorderedElement
 	| ParagraphElement

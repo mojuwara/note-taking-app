@@ -123,11 +123,61 @@ test('pasting links', () => {
 });
 
 test('pasting unordered lists', () => {
+	const list = '<ul>'
+		+ '<li>first item</li>'
+		+ '<li>second item</li>'
+		+ '<li>third item</li>'
+		+ '</ul>';
 
+	const data = new DataTransfer();
+	data.setData('text/html', list);
+	editor.insertData(data);
+
+	let expectedSel: Range = {
+		anchor: { path: [0, 2, 0], offset: 10 },
+		focus: { path: [0, 2, 0], offset: 10 }
+	}
+
+	let expectedChld: Descendant[] = [{
+		type: ElementTypes.LIST_UNORDERED,
+		children: [
+			{ type: ElementTypes.LIST_ITEM, children: [{ text: 'first item' }] },
+			{ type: ElementTypes.LIST_ITEM, children: [{ text: 'second item' }] },
+			{ type: ElementTypes.LIST_ITEM, children: [{ text: 'third item' }] },
+		]
+	}];
+
+	assert.deepEqual(editor.children, expectedChld);
+	assert.deepEqual(editor.selection, expectedSel);
 });
 
 test('pasting ordered lists', () => {
+	const list = '<ol>'
+		+ '<li>first item</li>'
+		+ '<li>second item</li>'
+		+ '<li>third item</li>'
+		+ '</ol>';
 
+	const data = new DataTransfer();
+	data.setData('text/html', list);
+	editor.insertData(data);
+
+	let expectedSel: Range = {
+		anchor: { path: [0, 2, 0], offset: 10 },
+		focus: { path: [0, 2, 0], offset: 10 }
+	}
+
+	let expectedChld: Descendant[] = [{
+		type: ElementTypes.LIST_ORDERED,
+		children: [
+			{ type: ElementTypes.LIST_ITEM, children: [{ text: 'first item' }] },
+			{ type: ElementTypes.LIST_ITEM, children: [{ text: 'second item' }] },
+			{ type: ElementTypes.LIST_ITEM, children: [{ text: 'third item' }] },
+		]
+	}];
+
+	assert.deepEqual(editor.children, expectedChld);
+	assert.deepEqual(editor.selection, expectedSel);
 });
 
 test('pasting tables', () => {
