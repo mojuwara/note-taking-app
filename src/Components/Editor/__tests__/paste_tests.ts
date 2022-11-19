@@ -6,7 +6,7 @@ import { withHtml } from '../EditorPlugins';
 // TODO: slatejs docs use slate-hyperscript but I'm unable to get it working
 let editor = withHtml(createEditor());
 
-const removeTags = (s: string) => s.replaceAll(/<[/]*[|b|i|u|p]>/g, "");
+const removeTags = (s: string) => s.replaceAll(/<[/]*[|b|i|u|p|h1|h2|h3]>/g, "");
 
 class DataTransfer {
 	store: Map<string, string>;
@@ -91,6 +91,69 @@ test('pasting text with formatting', () => {
 			{ text: removeTags(underline), underline: true },
 			{ text: removeTags(all), underline: true, italic: true, bold: true },
 		]
+	}];
+
+	assert.deepEqual(editor.children, expectedChld);
+	assert.deepEqual(editor.selection, expectedSel);
+});
+
+test('pasting h1', () => {
+	const s = "<h1>should be header 1</h1>";
+	const sClean = "should be header 1";
+	const data = new DataTransfer();
+	data.setData('text/html', s);
+	editor.insertData(data);
+
+	let expectedSel: Range = {
+		anchor: { path: [0, 0], offset: sClean.length },
+		focus: { path: [0, 0], offset: sClean.length }
+	}
+
+	let expectedChld: Descendant[] = [{
+		type: ElementTypes.H1,
+		children: [{ text: sClean }]
+	}];
+
+	assert.deepEqual(editor.children, expectedChld);
+	assert.deepEqual(editor.selection, expectedSel);
+});
+
+test('pasting h2', () => {
+	const s = "<h2>should be header 2</h2>";
+	const sClean = "should be header 2";
+	const data = new DataTransfer();
+	data.setData('text/html', s);
+	editor.insertData(data);
+
+	let expectedSel: Range = {
+		anchor: { path: [0, 0], offset: sClean.length },
+		focus: { path: [0, 0], offset: sClean.length }
+	}
+
+	let expectedChld: Descendant[] = [{
+		type: ElementTypes.H2,
+		children: [{ text: sClean }]
+	}];
+
+	assert.deepEqual(editor.children, expectedChld);
+	assert.deepEqual(editor.selection, expectedSel);
+});
+
+test('pasting h3', () => {
+	const s = "<h3>should be header 3</h3>";
+	const sClean = 'should be header 3';
+	const data = new DataTransfer();
+	data.setData('text/html', s);
+	editor.insertData(data);
+
+	let expectedSel: Range = {
+		anchor: { path: [0, 0], offset: sClean.length },
+		focus: { path: [0, 0], offset: sClean.length }
+	}
+
+	let expectedChld: Descendant[] = [{
+		type: ElementTypes.H3,
+		children: [{ text: sClean }]
 	}];
 
 	assert.deepEqual(editor.children, expectedChld);

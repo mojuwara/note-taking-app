@@ -24,26 +24,34 @@ export const deserialize = (elem: Element): SlateNode[] => {
 		case "BODY":
 			return children;
 		case "P":
-			children = filterEmptyTextNodes(children);
 			typedChildren = children as (CustomText | LinkElement | ImageElement)[];
 			return [{ type: ElementTypes.PARAGRAPH, children: typedChildren }];
 		case "A":
 			const href = elem.getAttribute('href');
-			if (href) {
-				children = filterEmptyTextNodes(children);
-				typedChildren = children as CustomText[];
-				return [{ type: ElementTypes.LINK, href, children: typedChildren}];
-			}
-			break;
+			if (!href)
+				break;
+			typedChildren = children as CustomText[];
+			return [{ type: ElementTypes.LINK, href, children: typedChildren}];
 		case "LI":
 			typedChildren = children as CustomText[];
 			return [{type: ElementTypes.LIST_ITEM, children: typedChildren}];
 		case "UL":
+			children = filterEmptyTextNodes(children);
 			typedChildren = children as (ListOrderedElement | ListUnorderedElement | ListItemElement)[];
 			return [{type: ElementTypes.LIST_UNORDERED, children: typedChildren}];
 		case "OL":
+			children = filterEmptyTextNodes(children);
 			typedChildren = children as (ListOrderedElement | ListUnorderedElement | ListItemElement)[];
 			return [{ type: ElementTypes.LIST_ORDERED, children: typedChildren }];
+		case "H1":
+			typedChildren = children as CustomText[];
+			return [{ type: ElementTypes.H1, children: typedChildren }];
+		case "H2":
+			typedChildren = children as CustomText[];
+			return [{ type: ElementTypes.H2, children: typedChildren }];
+		case "H3":
+			typedChildren = children as CustomText[];
+			return [{ type: ElementTypes.H3, children: typedChildren }];
 
 		// TEXT
 		case "I":
