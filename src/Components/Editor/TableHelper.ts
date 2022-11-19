@@ -59,7 +59,7 @@ export const TableHelper = {
 
 		const newLoc = this.getLocAfterTblInsert(editor, onEmptyNode);
 		if (newLoc)
-			EditorCommands.updateSelectedElem(editor, newLoc, updateFn);
+			EditorCommands.updateEditor(editor, newLoc, updateFn);
 	},
 
 	getLocAfterTblInsert(editor: CustomEditor, onEmptyNode: boolean) {
@@ -118,7 +118,7 @@ export const TableHelper = {
 			anchor: {path: [...tablePath, 0, 0, colNum, 0], offset: 0},
 			focus: { path: [...tablePath, 0, 0, colNum, 0], offset: 0}
 		}
-		EditorCommands.updateSelectedElem(editor, newSel, updateFn);
+		EditorCommands.updateEditor(editor, newSel, updateFn);
 	},
 
 	onLastCell(editor: CustomEditor) {
@@ -184,7 +184,7 @@ export const TableHelper = {
 			anchor: {path: [...tableBodyPath, rowNum, 0, 0], offset: 0},
 			focus: { path: [...tableBodyPath, rowNum, 0, 0], offset: 0 },
 		}
-		EditorCommands.updateSelectedElem(editor, newSel, updateFn);
+		EditorCommands.updateEditor(editor, newSel, updateFn);
 		// TableHelper.updateTableCellsPos(editor);
 		// Transforms.select(editor, [...tableBodyPath, rowNum, 0, 0]);
 		// TableHelper.updateTableSelectedCell(editor);
@@ -210,6 +210,20 @@ export const TableHelper = {
 			for (let colNum = 0; colNum < cells.length; colNum++) {
 				const [, cellPath] = cells[colNum];
 				Transforms.setNodes(editor, { pos: [rowNum, colNum] }, { at: cellPath });
+			}
+		}
+	},
+
+	// Used to set the 'pos' field for nodes not in an editor
+	updateTableCellPos2(table: TableElement) {
+		let rowNum = 0;
+		for (const child of table.children) {	// table-head or table-body
+			for (const row of child.children) {	// table-row
+				for (let colNum = 0; colNum < row.children.length; colNum++)	// table-data or table-header
+					row.children[colNum].pos = [rowNum, colNum];
+
+				console.log("On row", rowNum, row.children);
+				rowNum++;
 			}
 		}
 	},

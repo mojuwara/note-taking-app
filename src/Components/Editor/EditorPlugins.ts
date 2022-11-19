@@ -48,19 +48,21 @@ export const withHtml = (e: CustomEditor) => {
 			return;
 		}
 
-		console.log("html before", html);
+		// Create elements from pasted html and update selection
+		const oldSel = e.selection;
+		console.log(html);
 		const parsed = new DOMParser().parseFromString(html, 'text/html');
+		console.log(parsed);
 		const fragment = deserialize(parsed.body);
-		console.log("fragment after", fragment);
-
 		Transforms.insertFragment(e, fragment);
+		EditorCommands.handleSelectionChange(e, oldSel);
 
-		// If last element inserted was inline, the selection will be in the child elem
-		// Move selection to after the child elem
+		// If last element inserted was an inline, the selection will be in the child elem
+		// Move selection to the text node after the inline elem
 		if (EditorCommands.onElemType(e, [ElementTypes.IMAGE, ElementTypes.LINK])) {
 			const newLoc = EditorCommands.getLocAfterParent(e);
 			if (newLoc)
-				EditorCommands.updateSelectedElem(e, newLoc)
+				EditorCommands.updateEditor(e, newLoc)
 		}
 	}
 	return e;

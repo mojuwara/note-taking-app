@@ -13,19 +13,19 @@ const EditorCommands = {
 	// onDeslected() on elements that will no longer be selected
 	// After updating the editors contents and selection, newly selected elements will
 	// have their onSelected() function called
-	updateSelectedElem(editor: CustomEditor, newSel: Range, updateFn?: () => void) {
+	updateEditor(editor: CustomEditor, newSel: Range, updateFn?: () => void) {
 		if (!editor.selection?.focus.path)
 			return;
 
 		// call onDeselected() for all nodes down current path
-		EditorCommands.checkDeselectedElems(editor, editor.selection);
+		EditorCommands.markElemsDeselected(editor, editor.selection);
 
 		if (updateFn)
 			updateFn();
 		Transforms.select(editor, newSel);
 
 		// call onSelected() for all nodes down new path
-		EditorCommands.checkSelectedElems(editor, newSel);
+		EditorCommands.markElemsSelected(editor, newSel);
 	},
 
 	handleSelectionChange(editor: CustomEditor, oldSel: Range | null) {
@@ -34,16 +34,16 @@ const EditorCommands = {
 
 		// If no old selection, call onSelected() for all nodes down path
 		if (!oldSel) {
-			EditorCommands.checkSelectedElems(editor, editor.selection);
+			EditorCommands.markElemsSelected(editor, editor.selection);
 			return;
 		}
 
 		// call onDeselected() for all old nodes and onSelected on new selected nodes
-		EditorCommands.checkDeselectedElems(editor, oldSel);
-		EditorCommands.checkSelectedElems(editor, editor.selection);
+		EditorCommands.markElemsDeselected(editor, oldSel);
+		EditorCommands.markElemsSelected(editor, editor.selection);
 	},
 
-	checkSelectedElems(editor: CustomEditor, selection: Range) {
+	markElemsSelected(editor: CustomEditor, selection: Range) {
 		for (let i = 1; i <= selection.focus.path.length; i++) {
 			const [selectedNode, selectedNodePath] = Editor.node(editor, selection.focus.path.slice(0, i));
 			if (SlateElement.isElement(selectedNode) && (selectedNode.type === "table-data" || selectedNode.type === "table-header"))
@@ -51,7 +51,7 @@ const EditorCommands = {
 		}
 	},
 
-	checkDeselectedElems(editor: CustomEditor, oldSel: Range) {
+	markElemsDeselected(editor: CustomEditor, oldSel: Range) {
 		for (let i = 1; i <= oldSel.focus.path.length; i++) {
 			const [deselectedNode, deselectedNodePath] = Editor.node(editor, oldSel.focus.path.slice(0, i));
 			if (SlateElement.isElement(deselectedNode) && deselectedNode.type === ElementTypes.TABLE)
@@ -94,7 +94,7 @@ const EditorCommands = {
 
 		const newLoc = EditorCommands.getLocAfterInlineInsert(editor);
 		if (newLoc)
-			EditorCommands.updateSelectedElem(editor, newLoc, updateFn);
+			EditorCommands.updateEditor(editor, newLoc, updateFn);
 	},
 
 	// Read up: https://developer.mozilla.org/en-US/docs/Web/API/File_API/Using_files_from_web_applications
@@ -109,7 +109,7 @@ const EditorCommands = {
 			// Insert the element and update the selection - file is loaded at this point
 			const newLoc = EditorCommands.getLocAfterInlineInsert(editor);
 			if (newLoc)
-				EditorCommands.updateSelectedElem(editor, newLoc, updateFn);
+				EditorCommands.updateEditor(editor, newLoc, updateFn);
 
 			// Callback if anyone needs the data url for this file
 			if (callback)
@@ -163,7 +163,7 @@ const EditorCommands = {
 			focus: { path: [...path, 0], offset: 0 },
 			anchor: { path: [...path, 0], offset: 0}
 		};
-		EditorCommands.updateSelectedElem(editor, newSel, updateFn);
+		EditorCommands.updateEditor(editor, newSel, updateFn);
 	},
 
 	// Check if the last element is an element of given type

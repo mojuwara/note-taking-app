@@ -244,5 +244,88 @@ test('pasting ordered lists', () => {
 });
 
 test('pasting tables', () => {
+	const table = `
+		<table>
+			<thead>
+				<tr>
+					<th>0,0</th>
+					<th>0,1</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>1,0</td>
+					<td>1,1</td>
+				</tr>
+			</tbody>
+		</table>`;
 
+	const data = new DataTransfer();
+	data.setData('text/html', table);
+	editor.insertData(data);
+
+	let expectedSel: Range = {
+		anchor: { path: [0, 1, 0, 1, 0], offset: 3 },
+		focus: { path: [0, 1, 0, 1, 0], offset: 3 }
+	}
+
+	const selectedPos: [number, number] = [1, 1];
+	let expectedChld: Descendant[] = [{
+		type: ElementTypes.TABLE,
+		selectedPos,
+		children: [
+			{
+				type: ElementTypes.TABLE_HEAD, selectedPos, children:
+				[
+					{ type: ElementTypes.TABLE_ROW, selectedPos, children:
+						[
+							{ type: ElementTypes.TABLE_HEADER, pos: [0, 0], selectedPos, children: [{selectedPos, text: '0,0'}] },
+							{ type: ElementTypes.TABLE_HEADER, pos: [0, 1], selectedPos, children: [{selectedPos, text: '0,1'}] }
+						]
+					}
+				]
+			},
+			{
+				type: ElementTypes.TABLE_BODY, selectedPos, children:
+					[
+						{
+							type: ElementTypes.TABLE_ROW, selectedPos, children:
+								[
+									{ type: ElementTypes.TABLE_DATA, pos: [1, 0], selectedPos, children: [{ selectedPos, text: '1,0' }] },
+									{ type: ElementTypes.TABLE_DATA, pos: [1, 1], selectedPos, children: [{ selectedPos, text: '1,1' }] }
+								]
+						}
+					]
+			}
+		]
+	}];
+
+	assert.deepEqual(editor.children, expectedChld);
+	assert.deepEqual(editor.selection, expectedSel);
+});
+
+test('pasting images', () => {
+	const url = "/logo192.png";
+	const img = `<img src="${url}" alt="React Logo" />`;
+
+	const data = new DataTransfer();
+	data.setData('text/html', img);
+	editor.insertData(data);
+
+	let expectedSel: Range = {
+		anchor: { path: [0, 2], offset: 0 },
+		focus: { path: [0, 2], offset: 0 }
+	}
+
+	let expectedChld: Descendant[] = [{
+		type: ElementTypes.PARAGRAPH,
+		children: [
+			{ text: '' },
+			{ type: ElementTypes.IMAGE, url, children: [{ text: '' }] },
+			{ text: '' },
+		]
+	}];
+
+	assert.deepEqual(editor.children, expectedChld);
+	assert.deepEqual(editor.selection, expectedSel);
 });

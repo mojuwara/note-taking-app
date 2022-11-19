@@ -130,10 +130,9 @@ export const ImageBlockElement = (props: any) => {
 					alt={props.url}
 					src={props.element.url}
 					style={{
+						margin: 1,
 						maxWidth: '100%',
 						maxHeight: '20em',
-						marginTop: 1,
-						marginBottom: 1,
 						boxShadow: selected && focused ? '0 0 0 3px #B4D5FF' : 'none',
 					}} />
 			</span>

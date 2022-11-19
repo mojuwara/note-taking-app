@@ -68,6 +68,7 @@ export type ParagraphElement = {
 	children: (CustomText | LinkElement | ImageElement)[]
 };
 
+// Tables copy-pasted into editor might not have the same type
 export type TableElement = {
 	type				: ElementTypes.TABLE,
 	children		: (TableHeadElement | TableBodyElement)[],
