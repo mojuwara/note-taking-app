@@ -1,4 +1,4 @@
-import { Node as SlateNode, Element as SlateElement } from "slate";
+import { Node as SlateNode } from "slate";
 import { TableHelper } from "./TableHelper";
 import {
 	CustomText,

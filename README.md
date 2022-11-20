@@ -87,6 +87,7 @@
 - TODO - Make blocks and marks enums
 - TODO - Make 'code' blocks an inline type?
 - TODO - Remove 'any' for TypeScript
+- TODO - Check size of build
 - TODO - Use downLevelIteration to take advantage of generators instead of Array.from()
 - TODO - Stop using toString() to check array equality to stringify() for object equality
 - TODO - Ctrl+A should select all content

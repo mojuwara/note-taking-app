@@ -67,14 +67,3 @@ export const withHtml = (e: CustomEditor) => {
 	}
 	return e;
 }
-
-// For pasting rich text content into the editor
-// export const withRtf = (e: CustomEditor) => {
-// 	const { insertData } = e;
-
-// 	e.insertData = (data: DataTransfer) => {
-// 		insertData(data);
-// 	}
-
-// 	return e;
-// }
