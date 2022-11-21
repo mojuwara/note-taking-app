@@ -65,8 +65,9 @@
 - Next:
 	- Fix types in BlockElements.tsx
 	- Connect with AWS
-		- Store/update files in S3
 		- Store/update folder structure in DynamoDB (Need a Lambda func?)
+			- Asynchronous
+		- Store/update files in S3
 		- Set up a domain name, HTTPS, SSL certs. & any other security-related work
 - Next next:
 	- Expand definition for acronyms and uncommon words found in file

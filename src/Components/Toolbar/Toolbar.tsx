@@ -6,10 +6,12 @@ import { Folder, FileSelection } from '../../Types';
 import { styled, useTheme } from '@mui/material/styles';
 
 import Box from '@mui/material/Box';
+import Menu from '@mui/material/Menu';
 import AppBar from '@mui/material/AppBar';
 import Drawer from '@mui/material/Drawer';
 import Toolbar from '@mui/material/Toolbar';
 import Divider from '@mui/material/Divider';
+import MenuItem from '@mui/material/MenuItem';
 import MenuIcon from '@mui/icons-material/Menu';
 import IconButton from '@mui/material/IconButton';
 import NoteAddIcon from '@mui/icons-material/NoteAdd';
@@ -56,6 +58,8 @@ const MyToolbar = (props: ToolbarProps) => {
 	const [creatingFile, setCreatingFile] = useState(false);	// Creating a file
 	const [creatingFolder, setCreatingFolder] = useState(false);	// Creating a folder
 	const [directory, setDirectory] = useState<Folder[]>(getStorageItem<Folder[]>(StorageKeys.Dir, []));	// All the users files
+	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>();
+	const acntMenuOpen = anchorEl !== null;
 
 	const updateDir = (newDir: Folder[]) => {
 		setDirectory(newDir);
@@ -130,10 +134,27 @@ const MyToolbar = (props: ToolbarProps) => {
 							<MenuIcon />
 						</IconButton>
 						<h1 style={{padding: 0, margin: 0, fontSize: 24}}>Study Buddy</h1>
-						<div>
+						<IconButton
+							color="inherit"
+							aria-label="Account Menu"
+							onClick={e => setAnchorEl(e.currentTarget)}
+							edge="start"
+						>
 							<AccountCircleIcon />
-							{/* {props.signoutBtn} */}
-						</div>
+						</IconButton>
+						<Menu
+							anchorEl={anchorEl}
+							id="account-menu"
+							open={acntMenuOpen}
+							onClose={() => setAnchorEl(null)}
+							onClick={() => setAnchorEl(null)}
+							transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+							anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+						>
+							<MenuItem>
+								{props.signoutBtn}
+							</MenuItem>
+						</Menu>
 					</Box>
 				</Toolbar>
 			</AppBar>
