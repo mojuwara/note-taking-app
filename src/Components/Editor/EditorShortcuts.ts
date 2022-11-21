@@ -118,9 +118,6 @@ const EditorShortcuts = (editor: CustomEditor, event: React.KeyboardEvent<HTMLDi
 		Transforms.insertText(editor, '    ');
 	}
 
-	// TODO:
-	// if (event.key === 'Tab' && !shiftKey) {
-
 	// If offset=0 and in nested list, unwrap
 	// If offset=0 and not in nested list, toggle list off
 	if ((event.key === 'Enter') && editor.selection?.focus.offset === 0 && ancestorTypes.has("listItem")) {

@@ -222,7 +222,6 @@ export const TableHelper = {
 				for (let colNum = 0; colNum < row.children.length; colNum++)	// table-data or table-header
 					row.children[colNum].pos = [rowNum, colNum];
 
-				console.log("On row", rowNum, row.children);
 				rowNum++;
 			}
 		}

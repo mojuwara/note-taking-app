@@ -17,9 +17,7 @@ import {
 } from "../../Types";
 
 // Recursively build node tree
-// TODO: Many text nodes with newline chars
 export const deserialize = (elem: Element): SlateNode[] => {
-	// console.log("deserializing", elem, elem.nodeName)
 	if (elem.nodeType === Node.TEXT_NODE && elem.textContent) {
 		return [{text: elem.textContent}];
 	} else if (elem.nodeType !== Node.ELEMENT_NODE) {
@@ -69,7 +67,6 @@ export const deserialize = (elem: Element): SlateNode[] => {
 		case "TABLE":
 			typedChildren = children as (TableHeadElement | TableBodyElement)[];
 			const table: TableElement = { type: ElementTypes.TABLE, children: typedChildren }
-			console.log(table)
 			TableHelper.updateTableCellPos2(table);
 			return [table];
 		case "THEAD":

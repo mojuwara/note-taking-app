@@ -11,7 +11,7 @@ export const getElemText = (element: CustomElement | CustomText): string => {
 		return element["text"];
 
 	if ("children" in element)
-		return element.children.map((child: any) => getElemText(child)).join("");
+		return element.children.map((child: CustomElement | CustomText) => getElemText(child)).join("");
 
 	return "";
 }

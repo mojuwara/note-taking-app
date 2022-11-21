@@ -4,7 +4,6 @@ import { ElementTypes } from '../../../Types';
 import EditorCommands from '../EditorCommands';
 import { withImages } from '../EditorPlugins';
 
-// TODO: slatejs docs use slate-hyperscript but I'm unable to get it working
 let editor = withImages(createEditor());
 
 beforeEach(() => {

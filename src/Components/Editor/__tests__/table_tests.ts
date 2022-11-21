@@ -6,7 +6,6 @@ import EditorCommands from '../EditorCommands';
 import EditorShortcuts from '../EditorShortcuts';
 import { TableHelper } from '../TableHelper';
 
-// TODO: slatejs docs use slate-hyperscript but I'm unable to get it working
 let editor = createEditor();
 
 // Can't find a way to nicely create a React.KeyboardEvent<HTMLDivElement> event

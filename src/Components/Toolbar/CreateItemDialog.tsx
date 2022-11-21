@@ -7,7 +7,6 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 
-// TODO: Update colors for new file icon and new folder icon
 type CreateItemProps = {
 	label: string;	// Displayed when textfield is empty
 	title: string;	// Helpful message above textfield

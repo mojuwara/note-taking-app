@@ -7,6 +7,7 @@
 - Insert images from computer
 - Insert hyperlinks
 - Insert tables
+- Paste HTML links, tables, lists and text with formatting
 
 # Slatejs Concepts
 #### Nodes
@@ -61,6 +62,17 @@
 
 
 ## Roadmap
+- Next:
+	- Fix types in BlockElements.tsx
+	- Connect with AWS
+		- Store/update files in S3
+		- Store/update folder structure in DynamoDB (Need a Lambda func?)
+		- Set up a domain name, HTTPS, SSL certs. & any other security-related work
+- Next next:
+	- Expand definition for acronyms and uncommon words found in file
+	- Send summaries for notes that are 2 weeks untouched
+	- Search
+
 - DONE - Add functionality to the text editor(Ex: bolding, underline, etc.)
 - DONE - Add a toolbar to the text editor
 - DONE - Add keyboard shortcuts to the text editor
@@ -83,8 +95,8 @@
 - DONE - Folder IDs should be generated in frontend
 - DONE - Support 'tab' button in editor focus
 - DONE - 'Tab' on ordered/unordered list should indent list
-- TODO - Support copy/paste
-- TODO - Make blocks and marks enums
+- DONE - Support copy/paste
+- DONE - Make blocks and marks enums
 - TODO - Make 'code' blocks an inline type?
 - TODO - Remove 'any' for TypeScript
 - TODO - Check size of build
@@ -92,23 +104,25 @@
 - TODO - Stop using toString() to check array equality to stringify() for object equality
 - TODO - Ctrl+A should select all content
 	- TODO - If all content is selected and Backspace is pressed, replace with editor initialValue
-- TODO - Support code/latex blocks like markdown
+- TODO - Support code/latex blocks like markdown?
+- DONE - Test copy paste from web
 - TODO - Test copy-paste from Microsoft Word, Apple Notes & Google Docs
 - TODO - Keep track of editor.selection in localStorage?
 - TODO - Tab pressed while on table cell moves to the next cell
-- TODO - Support TODO lists in notes
-- TODO - Sort files by last date modified?
+- TODO - Support TODO lists
+- TODO - Sort files by last date modified
 - TODO - Keyboard shortcut to hide Drawer
-- TODO - Display placeholder image when no file is selected
+- TODO - Display placeholder image when no file is selected or no files created
 - TODO - Support 2 levels of folders (FolderA/FolderB/file)
 - TODO - Autofocus on file creation popup(Works on Safari, not Firefox?)
 - TODO - Align toolbar items vertically
 - TODO - Lint config for code-style(double-quotes, semi-colons, etc.)
 - TODO - Display selected file name somewhere?
 - TODO - Place divider between mark icons and block icons?
-- TODO -  Keyboard shortcut for new file and new folder
-- TODO -  Delete files and folders, place files in a "Recently deleted" folder
-- TODO - Keep track of time created, modified and opened for files
+- TODO -  Keyboard shortcut for new file(Ctrl+N)
+- TODO -  Keyboard shortcut for new folder(Ctrl+Shift+N)
+- TODO -  Delete files and folders, place deleted files in a "Recently deleted" folder
+- TODO - Keep track of time files are created, modified and opened
 - TODO -  Drag/Drop to move files/folders
 - TODO -  Rename files/folders
 - TODO - Allow other users to read/write a file

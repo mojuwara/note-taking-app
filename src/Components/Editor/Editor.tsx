@@ -10,7 +10,7 @@ import {
 
 import { createEditor, Range } from 'slate'
 import { withHistory } from 'slate-history'
-import { Slate, Editable, withReact } from 'slate-react'
+import { Slate, Editable, withReact, RenderElementProps } from 'slate-react'
 
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -121,7 +121,7 @@ function MyEditor(props: EditorProps) {
 		}
 		initFileContents();
 		focusOnEditor();
-		// TODO: Save file on file change
+		// w: Save file on file change
 		return () => {
 
 		}
@@ -150,7 +150,7 @@ function MyEditor(props: EditorProps) {
 		}
 	}
 
-	const getBlockElement = (props: any) => {
+	const getBlockElement = (props: RenderElementProps) => {
 		switch (props.element.type) {
 			case ElementTypes.CODE:
 				return <CodeBlockElement {...props} />;
@@ -189,14 +189,11 @@ function MyEditor(props: EditorProps) {
 		}
 	}
 
-	const renderElement = (props: any) => {
+	const renderElement = (props: RenderElementProps) => {
 		return getBlockElement(props);
 	};
 
 	const renderLeaf = useCallback((props: any) => <Leaf {...props} />, []);
-
-	console.log(editor.children);
-	console.log(editor.selection);
 
 	return (
 		<Box className={getTransitionElemClass(props.drawerOpen)} sx={{ flex: '1' }}>

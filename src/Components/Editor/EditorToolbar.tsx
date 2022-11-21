@@ -86,9 +86,6 @@ export const LinkInsertButton = (props: any) => {
 	}
 
 	// TODO: Close on outside click or change to dialogue
-	// TODO: Cmd + click should open link if link is selected, override editor.insertText
-	// TODO: Links should be inline-block
-	// TODO: Pressing enter at link-end creates a new link
 	return (
 		<IconButton aria-label={"Insert link"} onClick={(e) => handleClick(e)}>
 			<InsertLinkOutlinedIcon />

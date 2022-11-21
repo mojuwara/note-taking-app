@@ -1,16 +1,17 @@
 import React, { useState } from 'react';
 
-import Popper from '@mui/material/Popper';
+// import Popper from '@mui/material/Popper';
 
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import { useSelected,	useFocused, useSlate } from 'slate-react';
+// import Card from '@mui/material/Card';
+// import CardContent from '@mui/material/CardContent';
+import { useSelected,	useFocused, useSlate, RenderLeafProps } from 'slate-react';
 import { Tuple } from '../../Types';
 
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import EditorCommands from './EditorCommands';
 
+/*
 export const BlockElementContainer = ({ element, suggestions }: any) => {
 	const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
@@ -40,8 +41,9 @@ export const BlockElementContainer = ({ element, suggestions }: any) => {
 		</div>
 	);
 }
+*/
 
-export const Leaf = (props: any) => {
+export const Leaf = (props: RenderLeafProps) => {
 	const style = {
 		fontWeight: (props.leaf.bold) ? 'bold' : 'normal',
 		fontStyle: (props.leaf.italic) ? 'italic' : 'normal',
@@ -176,7 +178,7 @@ export const TableRowBlockElement = (props: any) => {
 	return <tr {...props.attributes}>{props.children}</tr>;
 }
 
-// TODO - Center the horizontal button
+// TODO - Center the ellipse
 export const TableHeaderBlockElement = (props: any) => {
 	const editor = useSlate();
 	const [menuOpen, setMenuOpen] = useState(false);

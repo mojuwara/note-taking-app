@@ -50,9 +50,7 @@ export const withHtml = (e: CustomEditor) => {
 
 		// Create elements from pasted html and update selection
 		const oldSel = e.selection;
-		console.log(html);
 		const parsed = new DOMParser().parseFromString(html, 'text/html');
-		console.log(parsed);
 		const fragment = deserialize(parsed.body);
 		Transforms.insertFragment(e, fragment);
 		EditorCommands.handleSelectionChange(e, oldSel);

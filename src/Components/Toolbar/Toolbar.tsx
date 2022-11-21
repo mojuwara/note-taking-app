@@ -20,7 +20,6 @@ import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
 
 import { createNewFile, createNewFolder, getStorageItem, getTransitionElemClass } from '../../Utils';
 
-// import axios from 'axios';	// TODO: Do we NEED axios?
 import CreateItemDialog from './CreateItemDialog';
 import Directory from './Directory';
 
