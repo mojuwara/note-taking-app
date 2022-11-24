@@ -1,9 +1,13 @@
-import { BaseEditor } from 'slate'
+import { BaseEditor, BaseRange } from 'slate'
 import { ReactEditor } from 'slate-react'
 import { HistoryEditor } from 'slate-history'
 
 // Used as [rowNum, colNum] - zero indexed
 export type Tuple<T> = [T, T];
+
+export interface RangeDecoration extends BaseRange {
+	isUncommonWord? : boolean
+}
 
 // Alphabetical order
 export enum ElementTypes {
@@ -27,11 +31,12 @@ export enum ElementTypes {
 
 // Custom types for Slate
 export type CustomText = {
-	text				: string;
-	bold?				: boolean,
-	italic?			: boolean,
-	underline?	: boolean,
-	selectedPos?: Tuple<number> | null;
+	text						: string;
+	bold?						: boolean,
+	italic?					: boolean,
+	underline?			: boolean,
+	isUncommonWord?	: boolean,
+	selectedPos?		: Tuple<number> | null;
 }
 
 export type GenericElement = {

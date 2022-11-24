@@ -60,19 +60,22 @@
 - `Commands` are functions on the `Editor` interface that will perform some action on the user's current selection
 	- Commands will often make use of the `Transforms` API
 
-
 ## Roadmap
 - Next:
-	- Fix types in BlockElements.tsx
+	- Highlight uncommon words/acronyms
+		- Red highlight for words with no definition or has a definition containing uncommon words
+		- Yellow highlight for words with accepted definitions
+		- Store definitions in localStorage `{ word : definition, ... }`
+		- Hover over word to get definition
+- Next next:
 	- Connect with AWS
 		- Store/update folder structure in DynamoDB (Need a Lambda func?)
 			- Asynchronous
 		- Store/update files in S3
 		- Set up a domain name, HTTPS, SSL certs. & any other security-related work
-- Next next:
-	- Expand definition for acronyms and uncommon words found in file
 	- Send summaries for notes that are 2 weeks untouched
-	- Search
+	- Search + fuzzy search
+
 
 - DONE - Add functionality to the text editor(Ex: bolding, underline, etc.)
 - DONE - Add a toolbar to the text editor

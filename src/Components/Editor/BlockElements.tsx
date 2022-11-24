@@ -1,57 +1,82 @@
 import React, { useState } from 'react';
 
-// import Popper from '@mui/material/Popper';
-
-// import Card from '@mui/material/Card';
-// import CardContent from '@mui/material/CardContent';
-import { useSelected,	useFocused, useSlate, RenderLeafProps } from 'slate-react';
 import { Tuple } from '../../Types';
+import { isProperlyDefined, updateWordDefinition } from '../../Utils';
+import { useSelected,	useFocused, useSlate, RenderLeafProps } from 'slate-react';
 
+import Box from '@mui/material/Box';
 import Menu from '@mui/material/Menu';
+import Popper from '@mui/material/Popper';
 import MenuItem from '@mui/material/MenuItem';
 import EditorCommands from './EditorCommands';
-
-/*
-export const BlockElementContainer = ({ element, suggestions }: any) => {
-	const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
-
-	const handleMouseEnter = (e: any) => setAnchorEl(e.currentTarget);
-
-	const handleMouseLeave = (e: any) => setAnchorEl(null);
-
-	const popover = (
-		<Popper open={Boolean(anchorEl)} anchorEl={anchorEl} placement="right">
-				<Card variant="outlined" sx={{margin: 0}}>
-					<CardContent>
-						{suggestions.map((val: any, ndx: any) => <p key={ndx}>{val}</p>)}
-					</CardContent>
-				</Card>
-		</Popper>
-	);
-
-	return (
-		<div>
-			<span
-				onMouseEnter={handleMouseEnter}
-				onMouseLeave={handleMouseLeave}
-				style={{ display: 'inline-block', background: (suggestions.length) ? "lightgrey" : "white" }}>
-				{element}
-			</span>
-			{(suggestions.length > 0) && popover}
-		</div>
-	);
-}
-*/
+import TextField from '@mui/material/TextField';
 
 export const Leaf = (props: RenderLeafProps) => {
-	const style = {
+	const word = props.leaf.text;
+	const [definition, setDefinition] = React.useState('');
+
+	const handleDefinitionChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+		setDefinition(event.target.value);
+		updateWordDefinition(word, event.target.value);
+	};
+
+	const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
+	const open = anchorEl !== null;
+
+	const handlePopoverOpen = (event: React.MouseEvent<HTMLElement>) => {
+		if (!props.leaf.isUncommonWord)
+			return;
+
+		setAnchorEl((anchorEl === null) ? event.currentTarget : null);
+	};
+
+	const getBackgroundColor = () => {
+		if (!props.leaf.isUncommonWord)
+			return undefined;
+
+		return (isProperlyDefined(word)) ? 'lightgrey' : 'sandybrown';
+	}
+
+	const style: React.CSSProperties = {
+		backgroundColor: getBackgroundColor(),
 		fontWeight: (props.leaf.bold) ? 'bold' : 'normal',
 		fontStyle: (props.leaf.italic) ? 'italic' : 'normal',
-		textDecoration: (props.leaf.underline) ? 'underline' : 'none'
+		textDecoration: (props.leaf.underline) ? 'underline' : 'none',
 	}
 
 	return (
-		<span {...props.attributes} style={style}>{props.children}</span>
+		<>
+			<span style={style} {...props.attributes} onClick={handlePopoverOpen}>
+				{props.children}
+			</span>
+			<Popper open={open} anchorEl={anchorEl} placement='bottom-start'>
+				<Box sx={{ border: 1, bgcolor: 'background.paper' }}>
+					{<DictionaryPopup word={word} definition={definition} handleChange={handleDefinitionChange} />}
+				</Box>
+			</Popper>
+		</>
+	);
+}
+
+// TODO: Latex support, show common formulas/conversions
+// TODO: Save button so we update the dictionary less frequently?
+type DictionaryPopupProps = {
+	word: string;
+	definition: string;
+	handleChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+};
+export const DictionaryPopup = (props: DictionaryPopupProps) => {
+	// TODO: MUI: Too many re-renders. The layout is unstable.
+	return (
+		<TextField
+			rows={2}
+			multiline
+			variant="filled"
+			value={props.definition}
+			// onClick={handleClick}
+			onChange={props.handleChange}
+			label={`${props.word} definition`}
+		/>
 	);
 }
 

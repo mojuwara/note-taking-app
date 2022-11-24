@@ -37,6 +37,12 @@ function App({signOut, user}: any) {
 	const handleDrawerOpen = () => setDrawerOpen(true);
 	const handleDrawerClose = () => setDrawerOpen(false);
 
+	if (!user) {
+		return(
+			<View>
+			</View>
+		);
+	}
 	return (
 		// <View className="App">
 		<View>

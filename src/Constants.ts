@@ -11,6 +11,7 @@ export const DefaultFileContent = [
 export const DrawerWidth = 240;
 
 export enum StorageKeys {
-	Dir = "directory",				// Folder structure
-	Selection = "selection"		// Currentl selected file
+	Dir 			= "directory",	// Folder structure
+	Selection = "selection",	// Currentl selected file
+	Dictionary= "dictionary",	// Definition of words
 }

@@ -8,7 +8,7 @@ import {
 	getTransitionElemClass,
 } from "../../Utils";
 
-import { createEditor, Range } from 'slate'
+import { createEditor, NodeEntry, Range, Node as SlateNode, Text } from 'slate'
 import { withHistory } from 'slate-history'
 import { Slate, Editable, withReact, RenderElementProps } from 'slate-react'
 
@@ -22,7 +22,7 @@ import FormatUnderlinedIcon from '@mui/icons-material/FormatUnderlined';
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered';
 
-import { ElementTypes } from "../../Types";
+import { ElementTypes, RangeDecoration } from "../../Types";
 import EditorCommands from "./EditorCommands";
 import EditorShortcuts from "./EditorShortcuts";
 import { withImages, withHtml } from "./EditorPlugins";
@@ -60,6 +60,7 @@ import {
 
 import "./editor.css";
 import '../../App.css';
+import { CommonWords } from "../../words";
 
 type EditorProps = {
 	filePath: string;
@@ -193,6 +194,26 @@ function MyEditor(props: EditorProps) {
 		return getBlockElement(props);
 	};
 
+	const decorate = (entry: NodeEntry<SlateNode>): RangeDecoration[] => {
+		const [node, path] = entry;
+		const ranges: RangeDecoration[] = [];
+		if (!Text.isText(node))
+			return ranges;
+
+		// TODO: Account for phrases
+		let offset = 0;
+		for (const word of node.text.split(' ')) {
+			if (!CommonWords.has(word))
+				ranges.push({
+					isUncommonWord: true,
+					anchor: {path, offset},
+					focus: {path, offset: offset + word.length}
+				});
+			offset += word.length + 1;	// +1 for the space in the string
+		}
+		return ranges;
+	}
+
 	const renderLeaf = useCallback((props: any) => <Leaf {...props} />, []);
 
 	return (
@@ -214,6 +235,7 @@ function MyEditor(props: EditorProps) {
 					id="editorComponent"
 					autoFocus
 					spellCheck
+					decorate={decorate}
 					className="textEditor"
 					renderLeaf={renderLeaf}
 					onKeyDown={handleKeyDown}

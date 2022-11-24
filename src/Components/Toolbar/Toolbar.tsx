@@ -58,7 +58,7 @@ const MyToolbar = (props: ToolbarProps) => {
 	const [creatingFile, setCreatingFile] = useState(false);	// Creating a file
 	const [creatingFolder, setCreatingFolder] = useState(false);	// Creating a folder
 	const [directory, setDirectory] = useState<Folder[]>(getStorageItem<Folder[]>(StorageKeys.Dir, []));	// All the users files
-	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>();
+	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 	const acntMenuOpen = anchorEl !== null;
 
 	const updateDir = (newDir: Folder[]) => {
