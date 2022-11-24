@@ -88,6 +88,7 @@ export const focusOnEditor = () => {
 // It's a word in the CommonWords set in words.ts
 // All of the words in it's definition are either in the CommonWords set or themselves properly defined
 export const isProperlyDefined = (word: string): boolean => {
+	word = word.toLowerCase();
 	if (CommonWords.has(word) || ProperlyDefinedWords.has(word))
 		return true;
 	if (!(word in DICTIONARY))	// Not a common word, not defined and not in dict
@@ -101,9 +102,17 @@ export const isProperlyDefined = (word: string): boolean => {
 
 // Update word definition and determine if it's properly defined
 export const updateWordDefinition = (word: string, def: string) => {
+	word = word.toLocaleLowerCase();
 	DICTIONARY[word] = def;
 	ProperlyDefinedWords.delete(word);
  	isProperlyDefined(word);
 
 	localStorage.setItem(StorageKeys.Dictionary, JSON.stringify(DICTIONARY));
+}
+
+export const getUndefinedWords = (def: string) => {
+	if (def === "")
+		return [];
+
+	return def.split(' ').filter(word => !isProperlyDefined(word));
 }

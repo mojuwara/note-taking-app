@@ -27,8 +27,9 @@ import EditorCommands from "./EditorCommands";
 import EditorShortcuts from "./EditorShortcuts";
 import { withImages, withHtml } from "./EditorPlugins";
 
+import { Leaf } from './EditorLeaf';
+
 import {
-	Leaf,
 	H1BlockElement,
 	H2BlockElement,
 	H3BlockElement,
