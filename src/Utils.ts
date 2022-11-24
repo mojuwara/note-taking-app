@@ -4,7 +4,7 @@ import { Folder, File, CustomElement, CustomText, FileSelection } from "./Types"
 import { CommonWords, ProperlyDefinedWords } from './words';
 
 type DictionaryType = { [key: string]: string };
-export const DICTIONARY: DictionaryType = {};
+export const DICTIONARY: DictionaryType = getStorageItem(StorageKeys.Dictionary, {});
 
 export const getFirstFile = (f: File[]): string => (f.length) ? f[0].name : "";
 

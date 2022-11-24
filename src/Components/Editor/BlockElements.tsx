@@ -60,6 +60,7 @@ export const Leaf = (props: RenderLeafProps) => {
 
 // TODO: Latex support, show common formulas/conversions
 // TODO: Save button so we update the dictionary less frequently?
+// TODO: When typing something like formulas/units/acronyms, display popup/sidebar with useful info
 type DictionaryPopupProps = {
 	word: string;
 	definition: string;
