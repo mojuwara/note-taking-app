@@ -24,5 +24,18 @@
         ]
       }
     }
+  },
+  "storage": {
+    "studybuddy": {
+      "service": "DynamoDB",
+      "providerPlugin": "awscloudformation"
+    }
+  },
+  "function": {
+    "studybuddy": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    }
   }
 }

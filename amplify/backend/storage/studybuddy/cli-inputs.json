@@ -1,0 +1,10 @@
+{
+  "resourceName": "studybuddy",
+  "tableName": "USER_DIRECTORIES",
+  "partitionKey": {
+    "fieldName": "userID",
+    "fieldType": "string"
+  },
+  "gsi": [],
+  "triggerFunctions": []
+}

@@ -132,6 +132,7 @@
 - TODO - Allow other users to read/write a file
 - TODO - Backspace on first cell in an empty row that's not the first data row deletes that row
 - TODO - Rate limiting
+- TODO - Side-by-side viewing
 
 ### AWS
 - Authentication(Where is this stored? How to link data to logged-in user?)

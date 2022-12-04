@@ -6,13 +6,14 @@ import TextField from '@mui/material/TextField';
 
 import { RenderLeafProps } from 'slate-react';
 
-import { getUndefinedWords, isProperlyDefined, updateWordDefinition } from '../../Utils';
+import { DICTIONARY, getUndefinedWords, isProperlyDefined, updateWordDefinition } from '../../Utils';
 
+// TODO: Unit tests
 export const Leaf = (props: RenderLeafProps) => {
 	const word = props.leaf.text;
-	const [definition, setDefinition] = useState('');
 	const [persistPopper, setPersistPopper] = useState(false);
 	const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+	const [definition, setDefinition] = useState(DICTIONARY[word] || '');
 
 	// TODO: Render the entire component after updating definition
 	const handleDefinitionChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -36,19 +37,16 @@ export const Leaf = (props: RenderLeafProps) => {
 	const handleMouseEnter = (e: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
 		if (persistPopper || !props.leaf.isUncommonWord)
 			return;
-		console.log("on")
 		setAnchorEl(e.currentTarget);
 	}
 
 	const handleMouseLeave = (e: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
 		if (persistPopper || !props.leaf.isUncommonWord)
 			return;
-		console.log("off");
 		setAnchorEl(null);
 	}
 
 	const getBackgroundColor = () => {
-		console.log(word, props.leaf.isUncommonWord, isProperlyDefined(word))
 		return (props.leaf.isUncommonWord && !isProperlyDefined(word)) ? 'sandybrown' : undefined;
 	}
 
@@ -68,12 +66,12 @@ export const Leaf = (props: RenderLeafProps) => {
 	}
 
 	const style: React.CSSProperties = {
-		cursor: getCursorStyle(),
-		backgroundColor: getBackgroundColor(),
-		textDecorationLine: getTextDecorationLine(),
-		textDecorationStyle: getTextDecorationStyle(),
-		fontWeight: (props.leaf.bold) ? 'bold' : 'normal',
-		fontStyle: (props.leaf.italic) ? 'italic' : 'normal',
+		cursor							: getCursorStyle(),
+		backgroundColor			: getBackgroundColor(),
+		textDecorationLine	: getTextDecorationLine(),
+		textDecorationStyle	: getTextDecorationStyle(),
+		fontWeight					: (props.leaf.bold) ? 'bold' : 'normal',
+		fontStyle						: (props.leaf.italic) ? 'italic' : 'normal',
 	}
 
 	return (
@@ -120,7 +118,7 @@ export const DictionaryPopup = (props: DictionaryPopupProps) => {
 			helperText={helperText}
 			value={props.definition}
 			onChange={props.handleChange}
-			label={`${props.word} definition`}
+			label={`Define '${props.word}'`}
 		/>
 	);
 }

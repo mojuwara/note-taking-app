@@ -14,6 +14,15 @@
     "categories": {
       "auth": {
         "notetakingappb1f80783": {}
+      },
+      "function": {
+        "studybuddy": {
+          "deploymentBucketName": "amplify-amplify0517da779d034-staging-203457-deployment",
+          "s3Key": "amplify-builds/studybuddy-4a675438616f47344d31-build.zip"
+        }
+      },
+      "storage": {
+        "studybuddy": {}
       }
     }
   }
