@@ -1,0 +1,14 @@
+{
+  "resourceName": "StudyBuddyFileStorage",
+  "policyUUID": "f7839502",
+  "bucketName": "studybuddyfilestorage",
+  "storageAccess": "auth",
+  "guestAccess": [],
+  "authAccess": [
+    "CREATE_AND_UPDATE",
+    "READ",
+    "DELETE"
+  ],
+  "triggerFunction": "NONE",
+  "groupAccess": {}
+}

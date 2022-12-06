@@ -8,6 +8,9 @@
 - Insert hyperlinks
 - Insert tables
 - Paste HTML links, tables, lists and text with formatting
+- Provide definitions for words and easily refer back to them
+
+The Twelve-Factor App: https://12factor.net
 
 # Slatejs Concepts
 #### Nodes
@@ -76,7 +79,7 @@
 	- Send summaries for notes that are 2 weeks untouched
 	- Search + fuzzy search
 
-
+- TODO - Check NPM vulnerabilities + API/Function/Storage security
 - DONE - Add functionality to the text editor(Ex: bolding, underline, etc.)
 - DONE - Add a toolbar to the text editor
 - DONE - Add keyboard shortcuts to the text editor
@@ -132,7 +135,8 @@
 - TODO - Allow other users to read/write a file
 - TODO - Backspace on first cell in an empty row that's not the first data row deletes that row
 - TODO - Rate limiting
-- TODO - Side-by-side viewing
+- TODO - View 2 notes side-by-side
+- TODO - Retry API calls if they fail
 
 ### AWS
 - Authentication(Where is this stored? How to link data to logged-in user?)

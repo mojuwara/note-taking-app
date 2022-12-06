@@ -15,6 +15,9 @@
     },
     "s3Key": {
       "Type": "String"
+    },
+    "dirTable": {
+      "Type": "String"
     }
   },
   "Conditions": {
@@ -47,12 +50,12 @@
         "FunctionName": {
           "Fn::If": [
             "ShouldNotCreateEnvResources",
-            "studybuddy",
+            "StudyBuddyDirFunction",
             {
               "Fn::Join": [
                 "",
                 [
-                  "studybuddy",
+                  "StudyBuddyDirFunction",
                   "-",
                   {
                     "Ref": "env"
@@ -69,6 +72,9 @@
             },
             "REGION": {
               "Ref": "AWS::Region"
+            },
+            "DIR_TABLE": {
+              "Ref": "dirTable"
             }
           }
         },
@@ -89,12 +95,12 @@
         "RoleName": {
           "Fn::If": [
             "ShouldNotCreateEnvResources",
-            "notetakingappLambdaRole1cef11e3",
+            "notetakingappLambdaRole37354d82",
             {
               "Fn::Join": [
                 "",
                 [
-                  "notetakingappLambdaRole1cef11e3",
+                  "notetakingappLambdaRole37354d82",
                   "-",
                   {
                     "Ref": "env"

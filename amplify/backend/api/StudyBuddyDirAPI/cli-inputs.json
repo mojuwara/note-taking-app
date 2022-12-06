@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "paths": {
+    "/dir": {
+      "name": "/dir",
+      "lambdaFunction": "StudyBuddyDirFunction",
+      "permissions": {
+        "setting": "private",
+        "auth": [
+          "create",
+          "read",
+          "update",
+          "delete"
+        ]
+      }
+    }
+  }
+}

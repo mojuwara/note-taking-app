@@ -26,16 +26,37 @@
     }
   },
   "storage": {
-    "studybuddy": {
+    "StudyBuddyDirStorage": {
       "service": "DynamoDB",
       "providerPlugin": "awscloudformation"
+    },
+    "StudyBuddyFileStorage": {
+      "service": "S3",
+      "providerPlugin": "awscloudformation",
+      "dependsOn": []
     }
   },
   "function": {
-    "studybuddy": {
+    "StudyBuddyDirFunction": {
       "build": true,
       "providerPlugin": "awscloudformation",
       "service": "Lambda"
+    }
+  },
+  "api": {
+    "StudyBuddyDirAPI": {
+      "service": "API Gateway",
+      "providerPlugin": "awscloudformation",
+      "dependsOn": [
+        {
+          "category": "function",
+          "resourceName": "StudyBuddyDirFunction",
+          "attributes": [
+            "Name",
+            "Arn"
+          ]
+        }
+      ]
     }
   }
 }

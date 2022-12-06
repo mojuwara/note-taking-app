@@ -9,20 +9,26 @@
       "UnauthRoleName": "amplify-amplify0517da779d034-staging-203457-unauthRole",
       "StackName": "amplify-amplify0517da779d034-staging-203457",
       "StackId": "arn:aws:cloudformation:us-east-1:387170159430:stack/amplify-amplify0517da779d034-staging-203457/7c179650-595b-11ed-8312-12e18627eeef",
-      "AmplifyAppId": "d218gi8x3jnvbl"
+      "AmplifyAppId": "d218gi8x3jnvbl",
+      "APIGatewayAuthURL": "https://s3.amazonaws.com/amplify-amplify0517da779d034-staging-203457-deployment/amplify-cfn-templates/api/APIGatewayAuthStack.json"
     },
     "categories": {
       "auth": {
         "notetakingappb1f80783": {}
       },
       "function": {
-        "studybuddy": {
+        "StudyBuddyDirFunction": {
           "deploymentBucketName": "amplify-amplify0517da779d034-staging-203457-deployment",
-          "s3Key": "amplify-builds/studybuddy-4a675438616f47344d31-build.zip"
+          "s3Key": "amplify-builds/StudyBuddyDirFunction-51486456373668326555-build.zip",
+          "dirTable": "USER_DIRECTORIES-staging"
         }
       },
       "storage": {
-        "studybuddy": {}
+        "StudyBuddyDirStorage": {},
+        "StudyBuddyFileStorage": {}
+      },
+      "api": {
+        "StudyBuddyDirAPI": {}
       }
     }
   }

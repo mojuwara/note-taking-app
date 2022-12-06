@@ -152,7 +152,6 @@ export type File = {
 	createTime: Date;
 	openedTime: Date;
 	modifiedTime: Date;
-	contents: CustomElement[]
 }
 
 export type FileSelection = {

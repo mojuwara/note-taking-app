@@ -11,21 +11,32 @@ export type AmplifyDependentResourcesAttributes = {
         }
     },
     "storage": {
-        "studybuddy": {
+        "StudyBuddyDirStorage": {
             "Name": "string",
             "Arn": "string",
             "StreamArn": "string",
             "PartitionKeyName": "string",
             "PartitionKeyType": "string",
             "Region": "string"
+        },
+        "StudyBuddyFileStorage": {
+            "BucketName": "string",
+            "Region": "string"
         }
     },
     "function": {
-        "studybuddy": {
+        "StudyBuddyDirFunction": {
             "Name": "string",
             "Arn": "string",
             "Region": "string",
             "LambdaExecutionRole": "string"
+        }
+    },
+    "api": {
+        "StudyBuddyDirAPI": {
+            "RootUrl": "string",
+            "ApiName": "string",
+            "ApiId": "string"
         }
     }
 }

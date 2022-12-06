@@ -1,7 +1,8 @@
 import { v4 as uuidv4 } from 'uuid';
+import { Storage } from'aws-amplify';
+import { CommonWords, ProperlyDefinedWords } from './words';
 import { FileSep, DefaultFileContent, StorageKeys } from "./Constants";
 import { Folder, File, CustomElement, CustomText, FileSelection } from "./Types";
-import { CommonWords, ProperlyDefinedWords } from './words';
 
 type DictionaryType = { [key: string]: string };
 export const DICTIONARY: DictionaryType = getStorageItem(StorageKeys.Dictionary, {});
@@ -31,18 +32,9 @@ export const getFullPath = (fs: FileSelection): string => fs.folder + FileSep + 
 // Have server create new file, make local changes for user
 export const createNewFile = (dir: Folder[], selection: FileSelection, newFileName: string): [boolean, Folder[], FileSelection] => {
 	if (!dir.length) {
-		const time = new Date();
 		const newPath = "Unfiled Notes";
-		const [success, newDir] = createNewFolder(dir, selection, newPath);
-		newDir[0].items.push({
-			id: uuidv4(),
-			name: newFileName,
-			contents: DefaultFileContent,
-			createTime: time,
-			openedTime: time,
-			modifiedTime: time,
-		});
-		return (success) ? [true, newDir, {folder: newPath, file: newFileName}] : [false, dir, selection];
+		createNewFolder(dir, selection, newPath);
+		selection.folder = newPath;
 	}
 
 	const dirToModify = dir.filter(d => d.name === selection.folder)[0];
@@ -53,7 +45,6 @@ export const createNewFile = (dir: Folder[], selection: FileSelection, newFileNa
 	dirToModify.items.push({
 		id: uuidv4(),
 		name: newFileName,
-		contents: DefaultFileContent,
 		createTime: time,
 		openedTime: time,
 		modifiedTime: time,
@@ -115,4 +106,16 @@ export const getUndefinedWords = (def: string) => {
 		return [];
 
 	return def.split(' ').filter(word => !isProperlyDefined(word));
+}
+
+// TODO: Add callback to signal to the user that the file has been auto-saved
+export const storeFileContent = async (fullPath: string, content: any) => {
+	// Create a temporary JSON file with the contents of the file and store it in S3
+	try {
+		const response = await Storage.put(fullPath, content, { level: 'private', contentType: "application/json"});
+		console.log("Response from saving file contents", response);
+		return true
+	} catch (error) {
+		console.log("Error while saving file contents", error);
+	}
 }

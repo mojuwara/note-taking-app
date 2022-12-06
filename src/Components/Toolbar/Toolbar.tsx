@@ -1,7 +1,9 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
-import { DrawerWidth, StorageKeys } from '../../Constants';
+import { API } from 'aws-amplify';
+
 import { Folder, FileSelection } from '../../Types';
+import { DefaultFileContent, DrawerWidth, StorageKeys } from '../../Constants';
 
 import { styled, useTheme } from '@mui/material/styles';
 
@@ -20,10 +22,10 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
 
-import { createNewFile, createNewFolder, getStorageItem, getTransitionElemClass } from '../../Utils';
-
-import CreateItemDialog from './CreateItemDialog';
 import Directory from './Directory';
+import CreateItemDialog from './CreateItemDialog';
+
+import { createNewFile, createNewFolder, getStorageItem, getTransitionElemClass, storeFileContent } from '../../Utils';
 
 import '../../App.css';
 
@@ -46,6 +48,7 @@ const drawerStyle = {
 }
 
 type ToolbarProps = {
+	user: any;
 	drawerOpen: boolean;
 	signoutBtn: JSX.Element;
 	onDrawerOpen: () => void;
@@ -61,25 +64,49 @@ const MyToolbar = (props: ToolbarProps) => {
 	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 	const acntMenuOpen = anchorEl !== null;
 
-	const updateDir = (newDir: Folder[]) => {
+	// Load the folders and file names on initial render
+	useEffect(() => {
+		const fetchDir = async () => {
+			try {
+				// TODO: Does it matter if this is an env var? It's visible from the Network tab of inspect tool
+				const apiName = process.env.REACT_APP_API_DIR_NAME;
+				if (!apiName) {
+					alert("Unable to load your files")
+					return;
+				}
+
+				const init = { header: {}, response: true, queryStringParameters: { action: 'getDir', userID: props.user.username }};
+				const response = await API.get(apiName, '/dir', init);
+				const userDir: Folder[] = JSON.parse(response.data.Item.userDir.S) || [];
+				setDirectory(userDir);
+				localStorage.setItem(StorageKeys.Dir, JSON.stringify(userDir));
+			} catch (error: any) {
+				console.error(error.message)
+			}
+		}
+
+		fetchDir();
+	}, [props.user]);
+
+	const updateDir = async (newDir: Folder[]) => {
 		setDirectory(newDir);
 		localStorage.setItem(StorageKeys.Dir, JSON.stringify(newDir));
-	}
-	// Load the folders and file names on initial render
-	// useEffect(() => {
-	// 	const fetchFiles = async () => {
-	// 		try {
-	// 			const headers = { Accept: 'application/json' };
-	// 			const { data } = await axios.get<Folder[]>(`http://${host}/folders`, { headers: headers });
-	// 			setDirectory(data);
-	// 			localStorage.setItem(StorageKeys.Dir, JSON.stringify(data));
-	// 		} catch (error: any) {
-	// 			console.error(error.message)
-	// 		}
-	// 	}
 
-	// 	fetchFiles();
-	// }, []);
+		const apiName = process.env.REACT_APP_API_DIR_NAME;
+		if (!apiName) {
+			alert("Unable to load your files")
+			return;
+		}
+
+		const init = {
+			header: {}, response: true, queryStringParameters: { action: 'putDir' }, body: {
+				userID: props.user.username,
+				userDir: JSON.stringify(newDir),
+		}};
+		const response = await API.post(apiName, '/dir', init);
+		if (response.status !== 200)
+			alert("Unable to update file directory");
+	}
 
 	const createFile = (fileName: string) => {
 		const [success, newDir, selection] = createNewFile(directory, props.fileSelection, fileName);
@@ -87,6 +114,7 @@ const MyToolbar = (props: ToolbarProps) => {
 			updateDir(newDir);
 			setCreatingFile(false);
 			props.onSelectionChange(selection);
+			storeFileContent(`${props.user.username}/${selection.folder}/${selection.file}`, DefaultFileContent);
 		} else {
 			alert("Ensure this file name is unique");
 		}

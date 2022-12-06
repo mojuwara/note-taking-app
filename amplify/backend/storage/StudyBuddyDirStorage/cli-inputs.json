@@ -1,5 +1,5 @@
 {
-  "resourceName": "studybuddy",
+  "resourceName": "StudyBuddyDirStorage",
   "tableName": "USER_DIRECTORIES",
   "partitionKey": {
     "fieldName": "userID",

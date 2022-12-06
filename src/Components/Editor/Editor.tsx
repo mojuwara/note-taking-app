@@ -1,11 +1,14 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 
+import { Storage } from 'aws-amplify';
+
 import { DefaultFileContent } from "../../Constants";
 
 import {
 	focusOnEditor,
 	getStorageItem,
 	getTransitionElemClass,
+	storeFileContent,
 } from "../../Utils";
 
 import { createEditor, NodeEntry, Range, Node as SlateNode, Text } from 'slate'
@@ -64,37 +67,23 @@ import '../../App.css';
 import { CommonWords } from "../../words";
 
 type EditorProps = {
+	user: any;
 	filePath: string;
 	drawerOpen: boolean;
 }
 
 function MyEditor(props: EditorProps) {
-	/*
-	Slate text-editor
-		Context provider: Keeps track of editor, plugins, values, selection and changes
-			Must be rendered above and Editable components
-			Can provide state to toolbars, menus, etc. via useSlate hook
-
-		If you want to update the editor's content in response to events from
-		outside of slate, you need to change the children property directly.
-		The simplest way is to replace the value of editor.children
-		editor.children = newValue and trigger a re-rendering (e.g. by calling
-		editor.onChange() in the example above). Alternatively, you can use
-		slate's internal operations to transform the value, for example:
-	*/
-
-	// Used to keep track of the current selection
+	// Used to keep track of the current selection in the editor
 	const currSelection = useRef<Range | null>(null);
 
-	// How long to wait after the user stops making changes to save to server
+	// If the user stops typing for this many ms, the file will be saved in S3
 	const saveInterval = 1000 * 2;
 
 	// Timeout ID that triggers save to server
 	const [timeoutID, setTimeoutID] = useState<NodeJS.Timer>();
 
 	// Editor object
-	const editor = useMemo(
-		() => withHtml(withImages(withHistory(withReact(createEditor()))))
+	const editor = useMemo(() => withHtml(withImages(withHistory(withReact(createEditor()))))
 	, []);
 
 	const initialValue = useMemo(() => getStorageItem(props.filePath, DefaultFileContent)
@@ -103,6 +92,7 @@ function MyEditor(props: EditorProps) {
 	// Load file from localStorage if available, else fetch from server and cache
 	useEffect(() => {
 		const initFileContents = async () => {
+			// Display any contents in localStorage first
 			const contents = localStorage.getItem(props.filePath);
 			if (contents) {
 				editor.children = JSON.parse(contents);
@@ -111,23 +101,29 @@ function MyEditor(props: EditorProps) {
 			}
 
 			try {
-				// const { data } = await axios.get<string>(`http://${host}/file_contents?filePath=${props.filePath}`);
-				const data = JSON.stringify(DefaultFileContent);
-				localStorage.setItem(props.filePath, data);
+				const response = await Storage.get(`${props.user.username}/${props.filePath}`, {download: true, contentType: "application/json", level: "private"});
+				if (!response) {
+					console.log("Unable to load file contents");
+					return;
+				}
+				const blob = response.Body as Blob;
+				const fileContents = JSON.parse(await blob.text());
+				console.log("File contents from S3", fileContents);
+				localStorage.setItem(props.filePath, JSON.stringify(fileContents));
 
-				editor.children = JSON.parse(data);
+				editor.children = fileContents;
 				editor.onChange();
 			} catch (error) {
 				console.error(error);
 			}
 		}
+
 		initFileContents();
 		focusOnEditor();
-		// w: Save file on file change
-		return () => {
 
-		}
-	}, [editor, props.filePath]);
+		// Only store file contents if file was modified
+		return () => { storeFileContent(`${props.user.username}/${props.filePath}`, editor.children); }
+	}, [editor, props.filePath, props.user]);
 
 	const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
 		EditorShortcuts(editor, event);
