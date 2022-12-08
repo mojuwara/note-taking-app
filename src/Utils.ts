@@ -112,6 +112,7 @@ export const getUndefinedWords = (def: string) => {
 export const storeFileContent = async (fullPath: string, content: any) => {
 	// Create a temporary JSON file with the contents of the file and store it in S3
 	try {
+		localStorage.setItem(fullPath, JSON.stringify(content));
 		const response = await Storage.put(fullPath, content, { level: 'private', contentType: "application/json"});
 		console.log("Response from saving file contents", response);
 		return true

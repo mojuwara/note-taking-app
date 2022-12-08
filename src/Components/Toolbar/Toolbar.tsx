@@ -1,6 +1,10 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 
 import { API } from 'aws-amplify';
+import * as queries from '../../graphql/queries';
+import * as mutations from '../../graphql/mutations';
+import { GraphQLResult } from '@aws-amplify/api-graphql';
+
 
 import { Folder, FileSelection } from '../../Types';
 import { DefaultFileContent, DrawerWidth, StorageKeys } from '../../Constants';
@@ -58,6 +62,7 @@ type ToolbarProps = {
 }
 
 const MyToolbar = (props: ToolbarProps) => {
+	const  hasDir = useRef(false);
 	const [creatingFile, setCreatingFile] = useState(false);	// Creating a file
 	const [creatingFolder, setCreatingFolder] = useState(false);	// Creating a folder
 	const [directory, setDirectory] = useState<Folder[]>(getStorageItem<Folder[]>(StorageKeys.Dir, []));	// All the users files
@@ -68,20 +73,17 @@ const MyToolbar = (props: ToolbarProps) => {
 	useEffect(() => {
 		const fetchDir = async () => {
 			try {
-				// TODO: Does it matter if this is an env var? It's visible from the Network tab of inspect tool
-				const apiName = process.env.REACT_APP_API_DIR_NAME;
-				if (!apiName) {
-					alert("Unable to load your files")
-					return;
-				}
-
-				const init = { header: {}, response: true, queryStringParameters: { action: 'getDir', userID: props.user.username }};
-				const response = await API.get(apiName, '/dir', init);
-				const userDir: Folder[] = JSON.parse(response.data.Item.userDir.S) || [];
+				const response = await API.graphql({
+					query: queries.getDirectory,
+					variables: {user: props.user.username},
+				}) as GraphQLResult<any>;
+				const directory = response.data?.getDirectory?.directory;
+				hasDir.current = !!directory;
+				const userDir: Folder[] = (directory) ? JSON.parse(directory) : [];
 				setDirectory(userDir);
 				localStorage.setItem(StorageKeys.Dir, JSON.stringify(userDir));
 			} catch (error: any) {
-				console.error(error.message)
+				console.error(error)
 			}
 		}
 
@@ -92,20 +94,14 @@ const MyToolbar = (props: ToolbarProps) => {
 		setDirectory(newDir);
 		localStorage.setItem(StorageKeys.Dir, JSON.stringify(newDir));
 
-		const apiName = process.env.REACT_APP_API_DIR_NAME;
-		if (!apiName) {
-			alert("Unable to load your files")
-			return;
+		try {
+				await API.graphql({
+				query: (hasDir.current) ? mutations.updateDirectory : mutations.createDirectory,
+				variables: {input: { user: props.user.username,	directory: JSON.stringify(newDir) }}
+			});
+		} catch (error) {
+			console.log(error)
 		}
-
-		const init = {
-			header: {}, response: true, queryStringParameters: { action: 'putDir' }, body: {
-				userID: props.user.username,
-				userDir: JSON.stringify(newDir),
-		}};
-		const response = await API.post(apiName, '/dir', init);
-		if (response.status !== 200)
-			alert("Unable to update file directory");
 	}
 
 	const createFile = (fileName: string) => {

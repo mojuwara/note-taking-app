@@ -1,0 +1,12 @@
+{
+  "AppSyncApiName": "StudyBuddyDirGraphqlAPI",
+  "DynamoDBBillingMode": "PAY_PER_REQUEST",
+  "DynamoDBEnableServerSideEncryption": false,
+  "AuthCognitoUserPoolId": {
+    "Fn::GetAtt": [
+      "authnotetakingappb1f80783",
+      "Outputs.UserPoolId"
+    ]
+  },
+  "AuthModeLastUpdated": "2022-12-08T01:45:50.951Z"
+}

@@ -26,37 +26,37 @@
     }
   },
   "storage": {
-    "StudyBuddyDirStorage": {
-      "service": "DynamoDB",
-      "providerPlugin": "awscloudformation"
-    },
     "StudyBuddyFileStorage": {
       "service": "S3",
       "providerPlugin": "awscloudformation",
       "dependsOn": []
     }
   },
-  "function": {
-    "StudyBuddyDirFunction": {
-      "build": true,
-      "providerPlugin": "awscloudformation",
-      "service": "Lambda"
-    }
-  },
+  "function": {},
   "api": {
-    "StudyBuddyDirAPI": {
-      "service": "API Gateway",
+    "StudyBuddyDirGraphqlAPI": {
+      "service": "AppSync",
       "providerPlugin": "awscloudformation",
       "dependsOn": [
         {
-          "category": "function",
-          "resourceName": "StudyBuddyDirFunction",
+          "category": "auth",
+          "resourceName": "notetakingappb1f80783",
           "attributes": [
-            "Name",
-            "Arn"
+            "UserPoolId"
           ]
         }
-      ]
+      ],
+      "output": {
+        "authConfig": {
+          "defaultAuthentication": {
+            "authenticationType": "AMAZON_COGNITO_USER_POOLS",
+            "userPoolConfig": {
+              "userPoolId": "authnotetakingappb1f80783"
+            }
+          },
+          "additionalAuthenticationProviders": []
+        }
+      }
     }
   }
 }

@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "serviceConfiguration": {
+    "apiName": "StudyBuddyDirGraphqlAPI",
+    "serviceName": "AppSync",
+    "defaultAuthType": {
+      "mode": "AMAZON_COGNITO_USER_POOLS",
+      "cognitoUserPoolId": "authnotetakingappb1f80783"
+    },
+    "additionalAuthTypes": [],
+    "conflictResolution": {}
+  }
+}

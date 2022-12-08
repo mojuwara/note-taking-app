@@ -16,19 +16,11 @@
       "auth": {
         "notetakingappb1f80783": {}
       },
-      "function": {
-        "StudyBuddyDirFunction": {
-          "deploymentBucketName": "amplify-amplify0517da779d034-staging-203457-deployment",
-          "s3Key": "amplify-builds/StudyBuddyDirFunction-51486456373668326555-build.zip",
-          "dirTable": "USER_DIRECTORIES-staging"
-        }
-      },
       "storage": {
-        "StudyBuddyDirStorage": {},
         "StudyBuddyFileStorage": {}
       },
       "api": {
-        "StudyBuddyDirAPI": {}
+        "StudyBuddyDirGraphqlAPI": {}
       }
     }
   }

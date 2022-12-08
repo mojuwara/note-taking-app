@@ -120,9 +120,6 @@ function MyEditor(props: EditorProps) {
 
 		initFileContents();
 		focusOnEditor();
-
-		// Only store file contents if file was modified
-		return () => { storeFileContent(`${props.user.username}/${props.filePath}`, editor.children); }
 	}, [editor, props.filePath, props.user]);
 
 	const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
@@ -142,9 +139,9 @@ function MyEditor(props: EditorProps) {
 
 			// Clear old timeout and create a new timeout to save to server
 			clearTimeout(timeoutID);
-			setTimeoutID(setTimeout(() => {
-				// saveFileContents(props.filePath, newContent).then(response => setSuggestions(response));
-			}, saveInterval));
+			setTimeoutID(
+				setTimeout(() => storeFileContent(`${props.user.username}/${props.filePath}`, value), saveInterval)
+			);
 		}
 	}
 

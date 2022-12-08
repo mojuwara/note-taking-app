@@ -1,9 +1,0 @@
-{
-  "lambdaLayers": [],
-  "environmentVariableList": [
-    {
-      "cloudFormationParameterName": "dirTable",
-      "environmentVariableName": "DIR_TABLE"
-    }
-  ]
-}

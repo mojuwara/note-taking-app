@@ -1,0 +1,4 @@
+type Directory @model @auth(rules: [{ allow: owner }]) {
+  user: ID! @primaryKey
+  directory: String
+}
