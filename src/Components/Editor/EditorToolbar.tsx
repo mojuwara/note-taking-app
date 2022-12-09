@@ -15,11 +15,16 @@ import EditorCommands from './EditorCommands';
 import { focusOnEditor } from '../../Utils';
 import { ElementTypes } from '../../Types';
 
-export const MarkButton = (props: any) => {
-	const editor = useSlate();
-	const { mark, label, icon } = props;
+type MarkButtonProps = {
+	mark: string;
+	label: string;
+	icon: JSX.Element;
+}
 
-	const handleClick = (e: any) => {
+export const MarkButton = ({mark, label, icon}: MarkButtonProps) => {
+	const editor = useSlate();
+
+	const handleClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
 		e.preventDefault();
 		EditorCommands.toggleMark(editor, mark);
 		focusOnEditor();
@@ -61,7 +66,7 @@ export const UploadImageButton = () => {
 	)
 };
 
-export const LinkInsertButton = (props: any) => {
+export const LinkInsertButton = () => {
 	const editor = useSlate();
 
 	const [href, setHref] = useState('');
@@ -116,11 +121,16 @@ export const InsertTableButton = () => {
 	);
 };
 
-export const BlockButton = (props: any) => {
+type BlockButtonProps = {
+	label: string;
+	icon: JSX.Element;
+	block: ElementTypes;
+}
+export const BlockButton = (props: BlockButtonProps) => {
 	const editor = useSlate();
 	const { block, label, icon } = props;
 
-	const handleClick = (e: any) => {
+	const handleClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
 		e.preventDefault();
 		EditorCommands.toggleBlock(editor, block);
 		focusOnEditor();

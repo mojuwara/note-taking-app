@@ -18,7 +18,7 @@ type DirectoryProps = {
 }
 
 const Directory = (props: DirectoryProps) => {
-	const listItems = props.directory.map((folder: Folder, ndx: any) =>
+	const listItems = props.directory.map((folder: Folder, ndx: number) =>
 		<FolderListItem
 			key={ndx}
 			folder={folder}

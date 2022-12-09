@@ -11,9 +11,9 @@ import {
 	storeFileContent,
 } from "../../Utils";
 
-import { createEditor, NodeEntry, Range, Node as SlateNode, Text } from 'slate'
+import { createEditor, NodeEntry, Range, Node as SlateNode, Text, Descendant } from 'slate'
 import { withHistory } from 'slate-history'
-import { Slate, Editable, withReact, RenderElementProps } from 'slate-react'
+import { Slate, Editable, withReact, RenderElementProps, RenderLeafProps } from 'slate-react'
 
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -126,7 +126,7 @@ function MyEditor(props: EditorProps) {
 		EditorShortcuts(editor, event);
 	}
 
-	const handleEditorChange = (value: any) => {
+	const handleEditorChange = (value: Descendant[]) => {
 		if (editor.operations.every(op => 'set_selection' === op.type) && JSON.stringify(editor.selection) !== JSON.stringify(currSelection.current))
 			EditorCommands.handleSelectionChange(editor, currSelection.current);
 		currSelection.current = editor.selection;
@@ -208,7 +208,7 @@ function MyEditor(props: EditorProps) {
 		return ranges;
 	}
 
-	const renderLeaf = useCallback((props: any) => <Leaf {...props} />, []);
+	const renderLeaf = useCallback((props: RenderLeafProps) => <Leaf {...props} />, []);
 
 	return (
 		<Box className={getTransitionElemClass(props.drawerOpen)} sx={{ flex: '1' }}>

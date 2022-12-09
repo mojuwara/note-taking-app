@@ -82,7 +82,7 @@ const MyToolbar = (props: ToolbarProps) => {
 				const userDir: Folder[] = (directory) ? JSON.parse(directory) : [];
 				setDirectory(userDir);
 				localStorage.setItem(StorageKeys.Dir, JSON.stringify(userDir));
-			} catch (error: any) {
+			} catch (error) {
 				console.error(error)
 			}
 		}

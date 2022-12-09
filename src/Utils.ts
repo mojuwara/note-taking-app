@@ -109,7 +109,7 @@ export const getUndefinedWords = (def: string) => {
 }
 
 // TODO: Add callback to signal to the user that the file has been auto-saved
-export const storeFileContent = async (fullPath: string, content: any) => {
+export const storeFileContent = async (fullPath: string, content: Object) => {
 	// Create a temporary JSON file with the contents of the file and store it in S3
 	try {
 		localStorage.setItem(fullPath, JSON.stringify(content));

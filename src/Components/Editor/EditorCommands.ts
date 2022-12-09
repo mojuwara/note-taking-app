@@ -204,7 +204,7 @@ const EditorCommands = {
 	// Returns true if the block type is active
 	isBlockActive(editor: CustomEditor, block: string) {
 		const match = Array.from(Editor.nodes(editor, {
-			match: (n: any) => n.type === block,
+			match: (n: Node) => SlateElement.isElement(n) && n.type === block,
 		}));
 
 		return !!match.length;

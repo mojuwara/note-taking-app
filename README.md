@@ -79,7 +79,7 @@ The Twelve-Factor App: https://12factor.net
 	- Send summaries for notes that are 2 weeks untouched
 	- Search + fuzzy search
 
-- TODO - Check NPM vulnerabilities + API/Function/Storage security
+- DONE - Check NPM vulnerabilities + API/Function/Storage security
 - DONE - Add functionality to the text editor(Ex: bolding, underline, etc.)
 - DONE - Add a toolbar to the text editor
 - DONE - Add keyboard shortcuts to the text editor

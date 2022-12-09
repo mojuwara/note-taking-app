@@ -30,7 +30,7 @@ const CreateItemDialog = (props: CreateItemProps) => {
 						margin="dense"
 						variant="standard"
 						label={props.label}
-						onChange={(event: any) => setValue(event.target.value)}
+						onChange={(event) => setValue(event.target.value)}
 					/>
 				</DialogContent>
 				<DialogActions>
